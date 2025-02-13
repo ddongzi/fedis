@@ -1,0 +1,420 @@
+#include "ae.h"
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+
+/**
+ * @brief 初始化apistate
+ * 
+ * @param [in] eventLoop 
+ * @return int 
+ */
+static int aeApiCreate(aeEventLoop* eventLoop)
+{
+    aeApiState* apiState = malloc(sizeof(aeApiState));
+    if (apiState == NULL) {
+        return AE_ERROR;
+    }
+    apiState->epfd = epoll_create1(0);
+    if (apiState->epfd == -1) {
+        free(apiState);
+        return AE_ERROR;
+    }
+    apiState->events = malloc(sizeof(struct epoll_event) * eventLoop->maxsize);
+    if (apiState->events == NULL) {
+        free(apiState);
+        return AE_ERROR;
+    }
+    eventLoop->apiState = apiState;
+    return AE_OK;
+}
+
+/**
+ * @brief epoll_wait, 触发事件添加到fireEvents
+ * 
+ * @param [in] eventLoop 
+ * @param [in] tvp 等待秒数
+ * @return int numevents
+ */
+int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
+{
+    int numevents;
+    numevents = epoll_wait(eventLoop->apiState->epfd, 
+        eventLoop->apiState->events, 
+        eventLoop->maxsize, 
+        tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1
+        );
+    if (numevents < 0) {
+        return numevents;
+    }
+    for (int i = 0; i < numevents; i++) {
+        struct epoll_event* e = &eventLoop->apiState->events[i];
+        int mask = 0;
+        if (e->events & EPOLLIN) {
+            mask |= AE_READABLE;
+        }
+        if (e->events & EPOLLOUT) {
+            mask |= AE_WRITABLE;
+        }
+        eventLoop->fireEvents[i].fd = e->data.fd;
+        eventLoop->fireEvents[i].mask = mask;
+    }
+    return numevents;
+}
+
+
+/**
+ * @brief 找到最早到期的时间事件
+ * 
+ * @param [in] loop 
+ * @return aeTimeEvent* 
+ */
+static aeTimeEvent* aeSearchNearestTimer(aeEventLoop* loop)
+{
+    aeTimeEvent* te = loop->timeEventHead;
+    aeTimeEvent* nearest = NULL;
+    while (te) {
+        if (nearest == NULL || te->when < nearest->when) {
+            nearest = te;
+        }
+        te = te->next;
+    }
+    return nearest;
+}
+
+
+aeEventLoop *aeCreateEventLoop(int maxsize)
+{
+    aeEventLoop* eventLoop;
+    eventLoop = malloc(sizeof(aeEventLoop));
+    eventLoop->maxsize = maxsize;
+    eventLoop->events = malloc(sizeof(aeFileEvent) * maxsize);
+    eventLoop->fireEvents = malloc(sizeof(aeFileEvent) * maxsize);
+    if (aeApiCreate(eventLoop) == AE_ERROR) {
+        return NULL;
+    }
+    eventLoop->stop = 0;
+    return eventLoop;
+}
+
+/**
+ * @brief 注册文件事件
+ * 
+ * @param [in] loop 
+ * @param [in] fd 
+ * @param [in] mask ：[AE_READABLE, AE_WRITABLE]
+ * @param [in] proc : aeFileProc
+ * @param [in] data 
+ * @return int : [AE_OK, AE_ERROR]
+ */
+int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, void* data)
+{
+    if (fd >= loop->maxsize) {
+        return AE_ERROR;
+    }
+    aeFileEvent* fe = &loop->events[fd];
+    
+    // IO复用监听注册
+    if (aeApiAddEvent(loop, fd, mask) == AE_ERROR) {
+        return AE_ERROR;
+    }
+
+    fe->mask |= mask;
+    if (mask & AE_READABLE) {
+        fe->rfileProc = proc;
+    }
+    if (mask & AE_WRITABLE) {
+        fe->wfileProc = proc;
+    }
+    fe->data = data;
+    if (fd > loop->maxfd) {
+        loop->maxfd = fd;
+    }
+    printf("● create file event for fd[%d].\n", fd);
+    return AE_OK;
+}
+/**
+ * @brief 为fd注册事件
+ * 
+ * @param [in] eventLoop 
+ * @param [in] fd 
+ * @param [in] mask :[AE_READABLE, AE_WRITABLE, AE_NONE]
+ * @return int 
+ */
+int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
+{
+    struct epoll_event ee;
+    ee.data.fd = fd;
+    ee.events = 0;
+
+    if (mask == AE_NONE) {
+        return AE_OK;
+    }
+    if (mask & AE_READABLE) {
+        ee.events |= EPOLLIN;
+    }
+    if (mask & AE_WRITABLE) {
+        ee.events |= EPOLLOUT;
+    }
+    int op = eventLoop->events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
+    if (epoll_ctl(eventLoop->apiState->epfd, op, fd, &ee) == -1) {
+        printf("epoll_ctl 操作失败: %s\n", strerror(errno));
+        return AE_ERROR;
+    }
+    return AE_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param [in] seconds 
+ * @param [in] milliseconds 
+ * @return int 
+ */
+static int aeGetTime(long long* seconds, long long* milliseconds)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);    
+    *seconds = tv.tv_sec;
+    *milliseconds = tv.tv_usec / 1000;
+    return AE_OK;
+}
+/**
+ * @brief 对当前时间增加milliseconds毫秒，得到未来一个时间。
+ * 
+ * @param [in] milliseconds 要增加的毫秒数
+ * @param [in] sec 返回
+ * @param [in] ms 返回
+ * @return int 
+ */
+int aeAddMillisecondsToNow(long long milliseconds, long long* sec, long long* ms)
+{
+    long long cur_sec, cur_ms, when_sec, when_ms;
+    aeGetTime(&cur_sec, &cur_ms);
+    when_sec = cur_sec + milliseconds / 1000;
+    when_ms = cur_ms + milliseconds % 1000;
+    if (when_ms >= 1000) {
+        when_sec++;
+        when_ms -= 1000;
+    }
+    *sec = when_sec;
+    *ms = when_ms;
+    return AE_OK;
+}
+
+/**
+ * @brief 从时间事件链表中删除id的时间事件
+ * 
+ * @param [in] loop 
+ * @param [in] id 
+ * @return int 
+ */
+int aeDeleteTimeEvent(aeEventLoop* loop, long long id)
+{
+    aeTimeEvent* te, *prev = NULL;
+    te = loop->timeEventHead;
+    while (te) {
+        if (te->id == id) {
+            if (prev == NULL) {
+                loop->timeEventHead = te->next;
+            } else {
+                prev->next = te->next;
+            }
+            free(te);
+            return AE_OK;
+        }
+        prev = te;
+        te = te->next;
+    }
+    return AE_ERROR;
+}
+
+int processTimeEvents(aeEventLoop* eventLoop)
+{
+    aeTimeEvent* te;
+    long long now_sec, now_ms;
+
+    te = eventLoop->timeEventHead;
+
+    while (te) {
+        aeGetTime(&now_sec, &now_ms);
+        if (now_sec > te->when || (now_sec == te->when && now_ms >= te->when_ms)) {
+            int retval;
+            retval = te->timeProc(eventLoop, te->id, te->data);
+            if (retval != AE_NOMORE) {
+                // 为周期事件重新设置when
+                aeAddMillisecondsToNow(retval, &te->when, &te->when_ms);
+            } else {
+                aeDeleteTimeEvent(eventLoop, te->id);
+            }
+            // 可能删除后，需要重新遍历
+            te = eventLoop->timeEventHead;
+        } else {
+
+            te = te->next;
+        }
+    }
+}
+
+/**
+ * @brief 先处理定时任务，epoll_wait只等到最近定时任务时间。
+ * 
+ * @param [in] loop 
+ * @param [in] flags : [AE_TIME_EVENTS, AE_FILE_EVENTS, AE_ALL_EVENTS]
+ * @return int 
+ */
+int aeProcessEvents(aeEventLoop* loop, int flags)
+{
+
+    int numevents;
+    struct timeval tv, *tvp;
+
+    aeTimeEvent* shortest = NULL;
+
+    if (flags & AE_TIME_EVENTS) {
+        shortest = aeSearchNearestTimer(loop);
+    }
+    if (shortest) {
+        long long now = time(NULL);
+        tvp = &tv;
+        tvp->tv_sec = shortest->when - now;
+        tvp->tv_usec = 0;
+        if (tvp->tv_sec < 0) {
+            tvp->tv_sec = 0;
+        }
+    } else {
+        tvp = NULL; // 没有时间任务，文件事件可以一直等待。
+    }
+
+
+    // 文件事件: 至多等到下一个定时任务
+    numevents = aeApiPoll(loop, tvp);
+    for (int i = 0; i < numevents; i++) {
+        aeFileEvent* fe = &loop->events[loop->fireEvents[i].fd];
+        int mask = loop->fireEvents[i].mask;
+        int fd = loop->fireEvents[i].fd;
+        printf("event come: fd %d, ready %s\n", i, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
+        if (fe->mask & mask & AE_READABLE) {
+            fe->rfileProc(loop, fd, fe->data);
+        }
+        if (fe->mask & mask & AE_WRITABLE) {
+            fe->wfileProc(loop, fd, fe->data);
+        }
+    }
+
+    // 时间事件
+    if (flags & AE_TIME_EVENTS) {
+        processTimeEvents(loop);
+    }
+
+    return AE_OK;
+}
+/**
+ * @brief 更新apiState
+ * 
+ * @param [in] eventLoop 
+ * @param [in] fd 
+ * @param [in] mask : 现在的[AE_READABLE, AE_WRITABLE, AE_NONE]
+ * @return int 
+ */
+int aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask)
+{
+    aeApiState* apiState = eventLoop->apiState;
+    struct epoll_event ee;
+    if (mask == AE_NONE) {
+        // 描述符上都不监听，删除
+        epoll_ctl(apiState->epfd, EPOLL_CTL_DEL, fd, NULL);
+        return AE_OK;
+    }
+    // 描述符上还有监听，修改
+    ee.events = 0;
+    if (mask & AE_READABLE) {
+        ee.events |= EPOLLIN;
+    }
+    if (mask & AE_WRITABLE) {
+        ee.events |= EPOLLOUT;
+    }
+    ee.data.fd = fd;
+    epoll_ctl(apiState->epfd, EPOLL_CTL_MOD, fd, &ee);
+    return AE_OK;
+}
+
+/**
+ * @brief 删除fd上的mask事件监听
+ * 
+ * @param [in] loop 
+ * @param [in] fd 
+ * @param [in] mask : [AE_READABLE, AE_WRITABLE, AE_NONE]
+ * @return int 
+ */
+int aeDeleteFileEvent(aeEventLoop* loop, int fd, int mask)
+{
+    if (fd >= loop->maxsize) {
+        return AE_ERROR;
+    }
+    aeFileEvent* fe = &loop->events[fd];
+    // fd上无监听，无需del
+    if (fe->mask == AE_NONE) {
+        return AE_OK;
+    }
+    fe->mask &= ~mask;
+    // 如果del后为AE_NONE，更新maxfd
+    if (fd == loop->maxfd && fe->mask == AE_NONE) {
+        int j;
+        for (j = loop->maxfd - 1; j >= 0; j--) {
+            if (loop->events[j].mask != AE_NONE) {
+                break;
+            }
+        }
+        loop->maxfd = j;
+    }
+    // 更新apisate
+    return aeApiDelEvent(loop, fd, fe->mask);
+}
+/**
+ * @brief 创建一个时间事件,添加到ae
+ * 
+ * @param [in] loop 
+ * @param [in] ms : 在ms毫秒后
+ * @param [in] proc 
+ * @param [in] data 
+ * @return int 
+ */
+int aeCreateTimeEvent(aeEventLoop* loop, long long ms, aeTimeProc* proc, void* data)
+{
+    long long now_sec, now_ms;
+    aeTimeEvent* te;
+    te = malloc(sizeof(aeTimeEvent));
+    if (te == NULL) {
+        return AE_ERROR;
+    }
+    aeGetTime(&now_sec, &now_ms);
+    te->id = loop->timeEventNextId++;
+    te->when = now_sec;
+    te->when_ms = now_ms;
+    aeAddMillisecondsToNow(ms, &te->when, &te->when_ms);
+    
+    te->timeProc = proc;
+    te->data = data;
+    te->next = loop->timeEventHead;
+    loop->timeEventHead = te;
+    return AE_OK;
+}
+
+
+
+
+/**
+ * @brief 事件循环main
+ * 
+ * @param [in] loop 
+ */
+void aeMain(aeEventLoop* loop)
+{
+    loop->stop = 0;
+    while (!loop->stop) {
+        aeProcessEvents(loop, AE_FILE_EVENTS | AE_TIME_EVENTS);
+    }
+}

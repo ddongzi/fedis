@@ -1,0 +1,14 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "*.h": "c",
+        "array": "c",
+        "buffer": "c",
+        "internet": "c",
+        "socket": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "functional": "c",
+        "compare": "c"
+    }
+}
