@@ -41,6 +41,11 @@ typedef struct redisCommand {
 
 extern redisCommand commandsTable[];
 
+struct saveparam {
+    time_t seconds; // 保存条件：秒
+    int changes; // 保存条件：修改数
+};
+
 struct redisServer {
 
     // 基础配置
@@ -65,6 +70,8 @@ struct redisServer {
     redisDb* db;    // 数据库
     dict* commands; // 命令表: 键是字符串，值是cmd结构
 
+
+
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
@@ -74,6 +81,15 @@ struct redisServer {
     // 模块化
 
     // 持久化
+    long long dirty; // 上次SAVE之后修改了多少次,set del 
+    time_t lastSave;    // 上次SAVE时间
+    int saveCondSize; // 
+    struct saveparam* saveParams; // SAVE条件数组
+    
+    // RDB持久化
+    char* rdbFileName; //
+    pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
+    int isBgSaving; // 正在BGSAVE
 
     // 其他
     char* neterr;

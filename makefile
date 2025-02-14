@@ -14,7 +14,7 @@ TESTS = $(BIN_DIR)/test_dict $(BIN_DIR)/test_db $(BIN_DIR)/test_sds $(BIN_DIR)/t
 # 源文件（手动指定）
 REDIS_SRC = $(SRC_DIR)/ae.c $(SRC_DIR)/db.c $(SRC_DIR)/dict.c \
 	$(SRC_DIR)/list.c $(SRC_DIR)/net.c  $(SRC_DIR)/redis.c $(SRC_DIR)/sds.c \
-	$(SRC_DIR)/main.c $(SRC_DIR)/robj.c 
+	$(SRC_DIR)/main.c $(SRC_DIR)/robj.c $(SRC_DIR)/rdb.c 
 
 TEST_DICT_SRC = $(SRC_DIR)/dict.c $(TEST_DIR)/test_dict.c 
 TEST_DB_SRC = $(TEST_DIR)/test_db.c $(SRC_DIR)/db.c $(SRC_DIR)/dict.c \

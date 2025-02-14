@@ -1,6 +1,9 @@
 #include "redis.h"
 #include <strings.h>
 #include <stdarg.h>
+#include "rdb.h"
+#include <signal.h>
+#include <sys/wait.h>
 
 struct redisServer* server;
 
@@ -39,9 +42,11 @@ void commandSetProc(redisClient* client)
     int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
     if (retcode == DICT_OK) {
         addReply(client, "+OK");
+        server->dirty++;
     } else {
         addReply(client, "-ERR set error");
     }
+
 }
 void commandGetProc(redisClient* client)
 {
@@ -57,6 +62,8 @@ void commandDelProc(redisClient* client)
 {
     int retcode = dbDelete(client->db, client->argv[1]);
     if (retcode == DICT_OK) {
+        server->dirty++;
+
         addReply(client, "+OK");
     } else {
         addReply(client, "-ERR key not found");
@@ -131,7 +138,13 @@ static void* commandDictValDup(void* privdata, const void* obj)
 
 
 
-
+void appendServerSaveParam(time_t sec, int changes)
+{
+    server->saveParams = realloc(server->saveParams, sizeof(struct saveparam) * (server->saveCondSize + 1));
+    server->saveParams[server->saveCondSize].seconds = sec;
+    server->saveParams[server->saveCondSize].changes = changes;
+    server->saveCondSize++;
+}
 
 
 /**
@@ -144,7 +157,11 @@ void initServerConfig()
     server = malloc(sizeof(struct redisServer));
     server->port = REDIS_SERVERPORT;
     server->dbnum = REDIS_DEFAULT_DBNUM;
-
+    server->saveCondSize = 0;
+    server->saveParams = NULL;
+    appendServerSaveParam(900, 1);
+    appendServerSaveParam(300, 10000);
+    appendServerSaveParam(10, 1);
     
     server->maxclients = REDIS_MAX_CLIENTS;
 
@@ -161,6 +178,24 @@ void initServerConfig()
 
     printf("√ init server config.\n");
 }
+
+
+/**
+ * @brief 返回当前ms级时间戳
+ * 
+ * @return long long 
+ */
+long long mstime(void) {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return ((long long)tv.tv_sec) * 1000 + (tv.tv_usec / 1000);
+}
+
+void updateServerTime()
+{
+    server->unixtime = time(NULL);
+    server->mstime = mstime();
+}
 /**
  * @brief 定时任务
  * 
@@ -174,19 +209,55 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     // TODO 
     printf("● server cron.\n");
 
+    // TODO 检查SAVE条件，执行BGSAVE    
+    bgSaveIfNeeded();
+
+    // 更新server时间
+    updateServerTime();
+
     return 5000;
 }
 
-
+void sigChildHandler(int sig)
+{
+    pid_t pid;
+    int stat;
+    // 匹配任意子进程结束
+    while ((pid = waitpid(-1, &stat, WNOHANG)) > 0) {
+        if (server->rdbChildPid == pid) {
+            // 检查退出状态
+            if (WIFEXITED(stat) && WEXITSTATUS(stat) == 0) {
+                server->lastSave = server->unixtime;
+                printf("server know %d finished\n", pid);
+            }
+            server->rdbChildPid = -1;
+            server->dirty = 0;
+        }
+    }
+}
+void initServerSignalHandlers()
+{
+    signal(SIGCHLD, sigChildHandler);
+}
 
 void initServer()
 {
-    initServerConfig(server);
+    initServerConfig();
+    initServerSignalHandlers();
     
+    server->unixtime = time(NULL);
+    server->mstime = mstime();
+
     server->db = calloc(server->dbnum, sizeof(redisDb));
     for (int i = 0; i < server->dbnum; i++) {
         dbInit(server->db + i, i);
     }
+    server->dirty = 0;
+    server->lastSave = server->unixtime;
+
+    server->rdbChildPid = -1;
+    server->isBgSaving = 0;
+
     server->clients = listCreate();
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->neterr = calloc(1024, sizeof(char));
