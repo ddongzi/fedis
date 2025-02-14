@@ -1,8 +1,9 @@
 #include "robj.h"
 #include <stdlib.h>
 #include "sds.h"
+#include <errno.h>
 
-
+/* string object*/
 /**
  * @brief 根据encoding类型调用释放
  * 
@@ -22,7 +23,62 @@ static void _freeStringObject(robj *obj)
             break;
     }
 }
+/**
+ * @brief 创建embedded str 编码的字符串对象
+ * 
+ * @param [in] s 
+ * @return robj* 
+ */
+robj* _createEmbeddedString(const char*s)
+{
+    sds* ss = NULL;
+    unsigned long len = strlen(s);
+    // TODO : error malloc , there is extra pointer area.
+    robj* obj = calloc(1, sizeof(robj) + sizeof(sds) + len + 1);
+    obj->encoding = REDIS_ENCODING_EMBSTR;
+    obj->ptr = (char*)obj + sizeof(robj);
+    ss = obj->ptr;
+    ss->len = 0;
+    ss->free = len;
+    ss->buf = (char*)obj + sizeof(robj) + sizeof(sds);
 
+    sdscpy(ss, s);
+    return obj;
+}
+robj* _createRawString(const char* s)
+{
+    robj* obj = malloc(sizeof(robj));
+    obj->encoding = REDIS_ENCODING_RAW;
+    obj->ptr = sdsnew(s);
+    return obj;    
+}
+
+long long _string2ll(const char* s, int *succeed)
+{
+    char* endptr;
+    long long value;
+    value = strtoll(s, &endptr, 10);
+    if (endptr == s) {
+        // we can't get a availible integer from the string.
+        *succeed = 0;
+        return 0;
+    }
+    if (errno == ERANGE) {
+        // the string was too large to fit into a long long integer.
+        *succeed = 0;
+        return 0;
+    }
+    *succeed = 1;
+    return value;
+}
+
+robj* _createIntString(long long value)
+{
+    robj* obj = malloc(sizeof(robj) );
+    obj->encoding = REDIS_ENCODING_INT;
+    obj->ptr = (void*)value;
+    return obj;
+}
 /* robj */
 robj* robjCreate(int type, void *ptr)
 {
@@ -57,12 +113,15 @@ void robjDestroy(robj* obj)
     }
 }
 
-robj* robjCreateString(const char*s, unsigned long len)
+robj* robjCreateStringObject(const char*s)
 {
-    if (len <= 44) {
-        // TODO 短字符串优化:embstr编码
+    int succeed = 0;
+    long long value = _string2ll(s, &succeed);
+    if (succeed) {
+        return _createIntString(value);
     }
-    robj* obj = robjCreate(REDIS_STRING, NULL);
-    obj->ptr = sdsnew(s);
-    return obj;
+    if (strlen(s) < 32) {
+        return _createEmbeddedString(s);
+    }
+    return _createRawString(s);
 }

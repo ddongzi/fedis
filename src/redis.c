@@ -1,14 +1,39 @@
 #include "redis.h"
 #include <strings.h>
-
+#include <stdarg.h>
 
 struct redisServer* server;
 
-// TODO 只能传入s现在
-void addReply(redisClient* client, char* s) 
+
+void addReply(redisClient* client, const char* fmt, ...) 
 {
-    sdscat(client->replyBuf, s);
+    char buf[1024];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, 128, fmt, ap);
+    va_end(ap);
+
+    sdscat(client->replyBuf, buf);
 }
+
+void _encodingStr(int encoding, char *buf, int maxlen) 
+{
+    switch (encoding) {
+        case REDIS_ENCODING_EMBSTR:
+            strncpy(buf, "embstr", maxlen - 1);
+            break;
+        case REDIS_ENCODING_INT:
+            strncpy(buf, "int", maxlen - 1);
+            break;
+        case REDIS_ENCODING_RAW:
+            strncpy(buf, "raw", maxlen - 1);
+            break;
+        default:
+            strncpy(buf, "unknown", maxlen - 1);
+            break;
+    }
+}
+
 void commandSetProc(redisClient* client)
 {
     int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
@@ -37,11 +62,28 @@ void commandDelProc(redisClient* client)
         addReply(client, "-ERR key not found");
     }
 }
+void commandObjectProc(redisClient* client)
+{
+    robj* key = client->argv[2];
+    robj* op = client->argv[1];
+    if (strcasecmp(((sds*)(op->ptr))->buf, "ENCODING") == 0) {
+        robj* val = dbGet(client->db, key);
+        if (val == NULL) {
+            addReply(client, "-ERR key not found");
+        } else {
+            // TODO maybe we should use the valEncode() function
+            char buf[1024];
+            _encodingStr(val->encoding, buf, sizeof(buf));
+            addReply(client, "+%s", buf);
+        }
+    }
+}
 
 redisCommand commandsTable[] = {
     {"SET", commandSetProc, -3},
     {"GET", commandGetProc, 2},
     {"DEL", commandDelProc, 2},
+    {"OBJECT", commandObjectProc, 3}
 };
 
 
@@ -238,7 +280,7 @@ void processClientQueryBuf(redisClient* client)
             *p = '\0';
 
             // TODO 如何知道要string 还是数字
-            client->argv[client->argc - remain] = robjCreateString(s->buf, len);
+            client->argv[client->argc - remain] = robjCreateStringObject(s->buf);
             // 处理完一行
             sdsrange(s, p - s->buf + 2, s->len - 1);
             remain--;

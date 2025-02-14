@@ -6,7 +6,7 @@
 
 /* 创建测试用的 robj 作为值 */
 robj *createTestValue(const char *str) {
-    return robjCreateString(str, strlen(str));
+    return robjCreateStringObject(str);
 }
 
 /* 测试 dbCreate 和 dbFree */
@@ -24,7 +24,7 @@ void test_dbCreateFree() {
 void test_dbAddFind() {
     printf("Running %s...\n", __func__);
     redisDb *db = dbCreate(1);
-    robj *key = robjCreateString("GET", 3);
+    robj *key = robjCreateStringObject("GET");
     robj *value = createTestValue("VALUE");
 
     assert(dbAdd(db, key, value) == 0);
@@ -40,7 +40,7 @@ void test_dbAddFind() {
 void test_dbOverwriteKey() {
     printf("Running %s...\n", __func__);
     redisDb *db = dbCreate(1);
-    robj *key = robjCreateString("SET", 3);
+    robj *key = robjCreateStringObject("SET");
     robj *value1 = createTestValue("VALUE1");
     robj *value2 = createTestValue("VALUE2");
 
@@ -58,13 +58,13 @@ void test_dbOverwriteKey() {
 void test_dbDelete() {
     printf("Running %s...\n", __func__);
     redisDb *db = dbCreate(1);
-    robj *key = robjCreateString("DEL", 3);
+    robj *key = robjCreateStringObject("DEL");
     robj *value = createTestValue("DELETE_ME");
 
     assert(dbAdd(db, key, value) == 0);
     assert(dbDelete(db, key) == 0);
     // 已经释放key了，
-    robj* key2 = robjCreateString("DEL", 3);
+    robj* key2 = robjCreateStringObject("DEL");
     assert(dbGet(db, key) == NULL); // 删除后找不到
 
     dbFree(db);
@@ -75,7 +75,7 @@ void test_dbDelete() {
 void test_dbDeleteNonExistent() {
     printf("Running %s...\n", __func__);
     redisDb *db = dbCreate(1);
-    robj *key = robjCreateString("NON_EXISTENT", 13);
+    robj *key = robjCreateStringObject("NON_EXISTENT");
 
     assert(dbDelete(db, key) == -1); // 删除不存在的键
 
@@ -87,8 +87,8 @@ void test_dbDeleteNonExistent() {
 void test_dbClear() {
     printf("Running %s...\n", __func__);
     redisDb *db = dbCreate(1);
-    robj *key1 = robjCreateString("KEY1", 4);
-    robj *key2 = robjCreateString("KEY2", 4);
+    robj *key1 = robjCreateStringObject("KEY1");
+    robj *key2 = robjCreateStringObject("KEY2");
 
     robj *value1 = createTestValue("DATA1");
     robj *value2 = createTestValue("DATA2");
@@ -108,7 +108,7 @@ void test_dbClear() {
 void test_dbNullCases() {
     printf("Running %s...\n", __func__);
     redisDb *db = dbCreate(1);
-    robj *key = robjCreateString("NULL", 4);
+    robj *key = robjCreateStringObject("NULL");
 
     assert(dbAdd(NULL, key, NULL) == -1);
     assert(dbAdd(db, NULL, NULL) == -1);

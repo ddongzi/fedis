@@ -31,6 +31,6 @@ robj* robjCreate(int type, void* ptr);
 void robjDestroy(robj* obj);
 
 
-robj* robjCreateString(const char*s, unsigned long len);
+robj* robjCreateStringObject(const char*s);
 
 #endif
