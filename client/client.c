@@ -54,15 +54,19 @@ void send_command(int sock, const char *command)
 }
 
 // 读取 Redis 响应
-void read_response(int sock) {
+int read_response(int sock) {
     char buffer[BUFFER_SIZE];
     int bytes_received = recv(sock, buffer, BUFFER_SIZE - 1, 0);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
         printf("<<<: %s\n", buffer);
+        if (strcmp(buffer, "+bye" ) == 0) {
+            return 1;
+        }
     } else {
         printf("Failed to receive response from Redis.\n");
     }
+    return 0;  // 0表示正常读取，1表示断开连接
 }
 
 int main() {
@@ -78,9 +82,11 @@ int main() {
         fgets(command, BUFFER_SIZE, stdin);
         command[strcspn(command, "\n")] = 0;  // 移除换行符
         
-        if (strcmp(command, "bye") == 0) break;
+        if (strcmp(command, "exit") == 0) break;
         send_command(sock, command);
-        read_response(sock);
+        if (read_response(sock) == 1) {
+            break;  // 断开连接时，主循环结束
+        }
     }
     
     close(sock);

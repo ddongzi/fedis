@@ -90,7 +90,7 @@ void commandByeProc(redisClient* client)
 {
 
     listAddNodeTail(server->clientsToClose, listCreateNode(client));
-    printf("bye %n\n", listSize(server->clientsToClose));
+    addReply(client, "+bye");
 }
 
 redisCommand commandsTable[] = {
