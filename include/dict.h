@@ -68,4 +68,6 @@ dictIterator* dictGetIterator(dict* dict);
 dictEntry* dictIterNext(dictIterator* iter);
 void dictReleaseIterator(dictIterator* iter);
 
+int dictIsEmpty(dict* dict);
+
 #endif

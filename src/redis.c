@@ -86,11 +86,19 @@ void commandObjectProc(redisClient* client)
     }
 }
 
+void commandByeProc(redisClient* client)
+{
+
+    listAddNodeTail(server->clientsToClose, listCreateNode(client));
+    printf("bye %n\n", listSize(server->clientsToClose));
+}
+
 redisCommand commandsTable[] = {
     {"SET", commandSetProc, -3},
     {"GET", commandGetProc, 2},
     {"DEL", commandDelProc, 2},
-    {"OBJECT", commandObjectProc, 3}
+    {"OBJECT", commandObjectProc, 3},
+    {"BYE", commandByeProc, 1}
 };
 
 
@@ -162,6 +170,8 @@ void initServerConfig()
     appendServerSaveParam(900, 1);
     appendServerSaveParam(300, 10000);
     appendServerSaveParam(10, 1);
+
+    server->rdbFileName = "/home/dong/fedis/data/1.rdb";
     
     server->maxclients = REDIS_MAX_CLIENTS;
 
@@ -196,6 +206,33 @@ void updateServerTime()
     server->unixtime = time(NULL);
     server->mstime = mstime();
 }
+void freeClient(redisClient* client)
+{
+    printf("free client %d\n", client->fd);
+    close(client->fd);
+    // TODO 如果 query reply buf还有怎么办？
+    sdsfree(client->queryBuf);
+    sdsfree(client->replyBuf);
+    // 正常情况，每次执行完命令argv就destroy了，临时
+    if (client->argv) {
+        for(int i = 0; i < client->argc; i++) {
+            robjDestroy(client->argv[i]);
+        }
+    }
+    free(client);
+}
+void closeClients()
+{
+    listNode* node = listHead(server->clientsToClose);
+    printf("clientsToClose!!! , size : %d\n", listSize(server->clientsToClose));
+    while (node) {
+        redisClient* client = node->value;
+        listDelNode(server->clientsToClose, node);
+        freeClient(client);
+        node = listHead(server->clientsToClose);
+    }
+
+}
 /**
  * @brief 定时任务
  * 
@@ -215,6 +252,9 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     // 更新server时间
     updateServerTime();
 
+    // 关闭clients
+    closeClients();
+
     return 5000;
 }
 
@@ -232,6 +272,7 @@ void sigChildHandler(int sig)
             }
             server->rdbChildPid = -1;
             server->dirty = 0;
+            server->isBgSaving = 0;
         }
     }
 }
@@ -259,11 +300,16 @@ void initServer()
     server->isBgSaving = 0;
 
     server->clients = listCreate();
+    server->clientsToClose = listCreate();
+
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->neterr = calloc(1024, sizeof(char));
     memset(server->neterr, 0, 1024);
     int fd = anetTcpServer(server->neterr, server->port, server->bindaddr, server->maxclients);
-
+    if (fd == -1) {
+        printf("NET Error: %s\n", server->neterr);
+        exit(1);
+    }
     printf("● create server, listening.....\n");
     
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
@@ -314,7 +360,10 @@ void processCommand(redisClient * c)
     }
     cmd->proc(c);
     c->argc = 0;
-    free(c->argv);
+    for (int i = 0; i < c->argc; i++) {
+        robjDestroy(c->argv[i]);
+    }
+    c->argv = NULL;
 }
 
 /**

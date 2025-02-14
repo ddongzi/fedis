@@ -259,3 +259,7 @@ listNode *listTail(list *list)
 {
     return list->tail;
 }
+unsigned long listSize(list *list)
+{
+    return list->len;
+}

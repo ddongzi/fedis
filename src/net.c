@@ -23,6 +23,7 @@ int anetSetReuseAddr(char *err, int fd)
     int yes = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
         anetSetError(err, "setsockopt SO_REUSEADDR: %s\n", strerror(errno));
+        printf("set reuse addr %s\n", strerror(errno));
         return NET_ERR;
     }
     return NET_OK;
@@ -47,12 +48,15 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
     hints.ai_family = AF_UNSPEC;    // IPv4 or IPv6
     hints.ai_socktype = SOCK_STREAM;    // TCP
     hints.ai_flags = AI_PASSIVE;    // 用于bind
-
+    
+    printf("bindaddr = %s, port = %s\n", bindaddr ? bindaddr : "NULL", _port);
     rv = getaddrinfo(bindaddr, _port, &hints, &servinfo);
+    printf("getaddrinfo returned %d, servinfo = %p\n", rv, (void *)servinfo);
     if (rv != 0) {
         anetSetError(err, "getaddrinfo: %s", gai_strerror(rv));
         return NET_ERR;
     }
+
     // 根据返回的地址列表，尝试创建socket
     for (p = servinfo; p != NULL; p = p->ai_next) {
         sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
@@ -61,6 +65,7 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
         }
         anetSetReuseAddr(err, sockfd);
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            printf( "TRY bind() failed%s\n", strerror(errno));
             close(sockfd);
             continue;
         }
@@ -191,6 +196,7 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void* data )
     anetFormatPeer(cfd, ip, sizeof(ip), &port);
     // 创建client实例
     redisClient* client = redisClientCreate(cfd);
+    listAddNodeTail(server->clients, listCreateNode(client));
     // 注册读事件
     aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
 }

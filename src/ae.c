@@ -160,7 +160,7 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
     }
     int op = eventLoop->events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
     if (epoll_ctl(eventLoop->apiState->epfd, op, fd, &ee) == -1) {
-        printf("epoll_ctl 操作失败: %s\n", strerror(errno));
+        printf("epoll_ctl  fd:%d, err:%s\n", fd, strerror(errno));
         return AE_ERROR;
     }
     return AE_OK;

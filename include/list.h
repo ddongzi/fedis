@@ -45,4 +45,6 @@ void listRotate(list *list);         // 将尾部节点弹出，加到头前，�
 void listDup(list *src, list *dest); // 复制链表
 void listRelease(list *list);        // 释放链表及节点
 
+unsigned long listSize(list *list); //
+
 #endif

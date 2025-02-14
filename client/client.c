@@ -78,7 +78,7 @@ int main() {
         fgets(command, BUFFER_SIZE, stdin);
         command[strcspn(command, "\n")] = 0;  // 移除换行符
         
-        if (strcmp(command, "exit") == 0) break;
+        if (strcmp(command, "bye") == 0) break;
         send_command(sock, command);
         read_response(sock);
     }

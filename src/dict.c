@@ -565,3 +565,7 @@ void dictReleaseIterator(dictIterator* iter)
 {
     free(iter);
 }
+int dictIsEmpty(dict* dict)
+{
+    return dict->ht[0].used == 0;
+}

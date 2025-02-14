@@ -38,5 +38,4 @@ int dbCheckExpire(redisDb *db, robj* key);
 
 /* 数据库信息 */
 void dbPrint(redisDb *db);
-
 #endif
