@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "redis.h"
 #include "rdb.h"
+#include <stdint.h>
 
 /**
  * @brief 对象类型、RDB操作符
@@ -8,9 +9,9 @@
  * @param [in] fp 
  * @param [in] type 
  */
-void _rdbSaveType(FILE *fp, int type)
+void _rdbSaveType(FILE *fp, unsigned char type)
 {
-    fwrite(&type, sizeof(int), 1, fp);
+    fwrite(&type, 1, 1, fp);
 }
 
 /**
@@ -22,35 +23,62 @@ void _rdbSaveType(FILE *fp, int type)
  * @param [in] fp The file pointer to write the length to.
  * @param [in] len The unsigned long value to save.
  *
- * @return void
+ * @return int
  * 
- * @note 
- *  len < 64 : 占用1字节，6位存储
- *  len < 1<<14 : 占用2字节，14位存储
- *  len : 占用5字节，#1标记，剩余存储。    
+ * @note len最长为4字节
+ *  len < 64 : 占用1字节，6位存储， 标记00xxxxxx
+ *  len < 1<<14 : 占用2字节，14位存储，标记01xxxxxx xxxxxxxx
+ *  len : 占用5字节，#1标记，剩余存储。    标记11111110 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
+ *  非法：标记11000000
  */
-void _rdbSaveLen(FILE* fp, unsigned long len)
+int _rdbSaveLen(FILE* fp, uint32_t len)
 {
     unsigned char buf[5];
     if (len < (1<<6)) { 
-        buf[0] = len & 0xFF; 
-        fwrite(buf, 1, 1, fp);
+        buf[0] = len & 0x3F; // 获取低6位 
+        return fwrite(buf, 1, 1, fp);
     } else if (len < (1<<14)) { 
-        buf[0] = (len >> 8) & 0xFF;
+        buf[0] = 0x80 |((len >> 8) & 0x3F);
         buf[1] = len & 0xFF;
-        fwrite(buf, 1, 2, fp);
+        return fwrite(buf, 1, 2, fp);
     } else { 
         buf[0] = 0XFE;
+        
         memcpy(buf + 1, &len, 4);
-        fwrite(buf, 1, 5, fp);
+        return fwrite(buf, 1, 5, fp);
     }
 }
 
 void _rdbSaveStringObject(FILE *fp, robj* obj)
 {
-    int len = sdslen(obj->ptr);
-    _rdbSaveLen(fp, len);
-    fwrite(((sds*)(obj->ptr))->buf, 1, len, fp);
+    switch (obj->encoding)
+    {
+    case REDIS_ENCODING_INT:
+        int val = (int)(obj->ptr);
+        if (val <= (1<<7)) {
+            // 8bit
+            _rdbSaveType(fp, RDB_ENC_INT8);
+            fwrite(&val, 1, 1, fp);
+        } else if (val <= (1<< 15)) {
+            // 16bit
+            _rdbSaveType(fp, RDB_ENC_INT16);
+            fwrite(&val, 1, 2, fp);
+        } else {
+            // 32bit
+            _rdbSaveType(fp, RDB_ENC_INT32);
+            fwrite(&val, 1, 4, fp);
+        }
+        break;
+    case REDIS_ENCODING_EMBSTR:
+    case REDIS_ENCODING_RAW:
+        int len = sdslen(obj->ptr);
+        _rdbSaveLen(fp, len);
+        fwrite(((sds*)(obj->ptr))->buf, 1, len, fp);
+        break;
+    default:
+        break;
+    }
+
 }
 
 void _rdbSaveObject(FILE* fp, robj *obj)
@@ -67,21 +95,29 @@ void _rdbSaveObject(FILE* fp, robj *obj)
     }
 }
 
+// 全量保存
 void rdbSave()
 {
+    printf("======RDB Save(child:%u)======\n", getpid());
+    int nwritten = 0;
+    int nread = 0;
     FILE* fp = fopen(server->rdbFileName, "w");
     if (!fp) {
         perror("rdbSave can't open file"); 
         return;
     }
-    fwrite("REDIS0001", 1, 9, fp);
+    if ((nwritten = fwrite("REDIS0001", 1, 9, fp))< 9) {
+        perror("rdbSave can't write : REDIS0001");
+        exit(1);
+        return;
+    }
 
     for (int i = 0; i < server->dbnum; i++) {
         redisDb* db = server->db + i;
         if (dictIsEmpty(db->dict)) continue;
 
-        _rdbSaveType(fp, RDB_SELECTDB);
-        _rdbSaveLen(fp, i);
+        _rdbSaveType(fp, RDB_SELECTDB); // 1字节
+        _rdbSaveStringObject(fp, shared.integers[i]); 
 
         dictIterator* di = dictGetIterator(db->dict);
         dictEntry* entry;
@@ -89,14 +125,14 @@ void rdbSave()
             robj *key = entry->key;
             robj *val = entry->v.val;
 
-            _rdbSaveType(fp, key->type);
+            _rdbSaveType(fp, val->type);
             _rdbSaveStringObject(fp, key);
             _rdbSaveObject(fp, val);
         }
         dictReleaseIterator(di);
     }
     // 3. 写入EOF
-    _rdbSaveType(fp, RDB_EOF);
+    _rdbSaveType(fp, RDB_EOF); // 1字节
 
     // 4. 校验和 TODO
     uint64_t crc = 0;
@@ -124,7 +160,10 @@ void bgsave()
 void bgSaveIfNeeded()
 {
     // 检查是否在BGSAVE
-    if (server->isBgSaving) return;
+    if (server->isBgSaving) {
+        printf("BGSAVE is running, no need....\n");
+        return;
+    }
 
     for(int i = 0; i < server->saveCondSize; i++) {
         time_t interval = time(NULL) - server->lastSave;
@@ -135,5 +174,130 @@ void bgSaveIfNeeded()
             bgsave();
             break;
         }
+    }
+}
+
+int eof(FILE* fp)
+{
+    unsigned char c;
+    fread(&c, 1, 1, fp);
+    return c == RDB_EOF; // 1字节
+}
+
+uint32_t _rdbLoadLen(FILE* fp)
+{
+    unsigned char buf[5];
+    memset(buf, 0, sizeof(buf));
+    if (fread(buf, 1, 1, fp) == 0) return 0;  // 读取失败
+
+    // 0xC0:11000000 提取高两位
+    if ((buf[0] & 0xC0) == 0x00) {  // 1 字节编码 (00xxxxxx)
+        return buf[0] & 0x3F;
+    } else if ((buf[0] & 0xC0) == 0x80) {  // 2 字节编码 (10xxxxxx xxxxxxxx)
+        if (fread(buf + 1, 1, 1, fp) == 0) return 0;
+        return ((buf[0] & 0x3F) << 8) | buf[1];
+    } else if (buf[0] == 0xFE) {  // 5 字节编码 (11111110 + 4 字节数据)
+        if (fread(buf + 1, 4, 1, fp) == 0) return 0;
+        uint32_t len;
+        memcpy(&len, buf + 1, 4);
+        return len;
+    } else {
+        return 0;  // 错误
+    }
+
+}
+
+robj* _rdbLoadStringObject(FILE* fp)
+{
+    unsigned char c;
+    fread(&c, 1, 1, fp);
+    if (c == RDB_ENC_INT8) {
+        unsigned char val;
+        char buf[12];
+        fread(&val, 1, 1, fp);
+        snprintf(buf, 11, "%d", val);
+        return robjCreateStringObject(buf);
+    } else if (c == RDB_ENC_INT16) {
+        /* code */
+        int16_t val;
+        char buf[12];
+        fread(&val, 1, 2, fp);
+        snprintf(buf, 11, "%d", val);
+        return robjCreateStringObject(buf);
+    } else if (c == RDB_ENC_INT32) {
+        /* code */
+        int val;
+        char buf[12];
+        fread(&val, 1, 4, fp);
+        snprintf(buf, 11, "%d", val);
+        return robjCreateStringObject(buf);
+    }else {
+        // RAW, EMBSTR字符串
+        fseek(fp, -1, SEEK_CUR);    // 回退一个字节，
+        uint32_t len = _rdbLoadLen(fp);
+        char * buf = malloc(len + 1);
+        fread(buf, 1, len, fp);
+        buf[len] = '\0';
+
+        robj* obj = robjCreateStringObject(buf);
+        free(buf);
+        return obj;
+    } 
+}
+
+unsigned char _rdbLoadType(FILE* fp)
+{
+    unsigned char c;
+    fread(&c, 1, 1, fp);
+    return c; // 1字节
+    
+}
+
+robj* _rdbLoadObject(FILE* fp, unsigned char type)
+{
+    robj* obj;
+    switch (type)
+    {
+    case RDB_TYPE_STRING:
+        obj = _rdbLoadStringObject(fp);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void rdbLoad()
+{
+    FILE *fp = fopen(server->rdbFileName, "r");
+    if (fp == NULL) return;
+    
+    // 1. read magic
+    char buf[9];
+    fread(buf, 1, 9, fp);
+    buf[9] = '\0';
+    if (strcmp(buf, "REDIS0001") != 0) return;
+
+    // 2. read the dbs
+    int dbid;
+    while (1) {
+        unsigned char type = _rdbLoadType(fp); // 
+        if (type == RDB_EOF) break;
+
+        if (type == RDB_SELECTDB) {
+
+            // 读取数据库num
+            robj* obj = _rdbLoadStringObject(fp);
+            dbid = (int)(obj->ptr);
+            if (dbid < 0 || dbid > server->dbnum) {
+                printf("Error loading dbid %d\n", dbid);;
+                exit(1);
+            }
+            continue;
+        }
+        // 键值对
+        robj* key = _rdbLoadStringObject(fp);
+        robj* val = _rdbLoadObject(fp, type);
+        dbAdd(server->db + dbid, key, val);
     }
 }

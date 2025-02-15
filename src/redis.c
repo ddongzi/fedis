@@ -7,6 +7,7 @@
 
 struct redisServer* server;
 
+struct sharedObjects shared;
 
 void addReply(redisClient* client, const char* fmt, ...) 
 {
@@ -224,7 +225,6 @@ void freeClient(redisClient* client)
 void closeClients()
 {
     listNode* node = listHead(server->clientsToClose);
-    printf("clientsToClose!!! , size : %d\n", listSize(server->clientsToClose));
     while (node) {
         redisClient* client = node->value;
         listDelNode(server->clientsToClose, node);
@@ -281,11 +281,31 @@ void initServerSignalHandlers()
     signal(SIGCHLD, sigChildHandler);
 }
 
+/**
+ * @brief Create a Shared Objects object
+ * 
+ */
+void createSharedObjects()
+{
+    // 1. 0-999整数
+    for (int i = 0; i < REDIS_SHAREAD_MAX_INT; i++) {
+        char buf[5];
+        snprintf(buf, 4, "%d", i);
+        buf[4] = '\0';
+        shared.integers[i] = robjCreateStringObject(buf);
+    }
+    // 2. RESP
+    shared.ok = robjCreateStringObject("+ok\r\n");
+    shared.pong = robjCreateStringObject("+pong\r\n");
+}
+
 void initServer()
 {
     initServerConfig();
     initServerSignalHandlers();
     
+    createSharedObjects();
+
     server->unixtime = time(NULL);
     server->mstime = mstime();
 
@@ -298,6 +318,9 @@ void initServer()
 
     server->rdbChildPid = -1;
     server->isBgSaving = 0;
+
+    printf("●  load rdb from %s\n", server->rdbFileName);
+    rdbLoad();
 
     server->clients = listCreate();
     server->clientsToClose = listCreate();

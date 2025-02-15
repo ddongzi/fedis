@@ -14,8 +14,18 @@
 #define REDIS_MAX_CLIENTS 10000
 
 extern struct redisServer* server;
+extern struct sharedObjects shared;
 
 struct redisCommand;
+
+
+#define REDIS_SHAREAD_MAX_INT 999
+struct sharedObjects {
+    robj *ok;
+    robj *pong;
+    robj* integers[1000];
+};
+
 
 // 服务器为客户端状态结构
 typedef struct redisClient {
@@ -67,7 +77,7 @@ struct redisServer {
 
     // 数据库
     int dbnum;  // 数据库数量
-    redisDb* db;    // 数据库
+    redisDb* db;    // 数据库数组
     dict* commands; // 命令表: 键是字符串，值是cmd结构
 
 
@@ -100,5 +110,6 @@ struct redisServer {
 
 void initServer();
 
+void selectDB(redisClient* client, int dbid);
 
 #endif

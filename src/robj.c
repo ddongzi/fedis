@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "sds.h"
 #include <errno.h>
-
+#include "redis.h"
 /* string object*/
 /**
  * @brief 根据encoding类型调用释放
@@ -35,6 +35,7 @@ robj* _createEmbeddedString(const char*s)
     unsigned long len = strlen(s);
     // TODO : error malloc , there is extra pointer area.
     robj* obj = calloc(1, sizeof(robj) + sizeof(sds) + len + 1);
+    obj->type = REDIS_STRING;
     obj->encoding = REDIS_ENCODING_EMBSTR;
     obj->ptr = (char*)obj + sizeof(robj);
     ss = obj->ptr;
@@ -48,15 +49,16 @@ robj* _createEmbeddedString(const char*s)
 robj* _createRawString(const char* s)
 {
     robj* obj = malloc(sizeof(robj));
+    obj->type = REDIS_STRING;
     obj->encoding = REDIS_ENCODING_RAW;
     obj->ptr = sdsnew(s);
     return obj;    
 }
 
-long long _string2ll(const char* s, int *succeed)
+int _string2i(const char* s, int *succeed)
 {
     char* endptr;
-    long long value;
+    int value;
     value = strtoll(s, &endptr, 10);
     if (endptr == s) {
         // we can't get a availible integer from the string.
@@ -72,9 +74,21 @@ long long _string2ll(const char* s, int *succeed)
     return value;
 }
 
-robj* _createIntString(long long value)
+/**
+ * @brief 
+ * 
+ * @param [in] value 
+ * @return robj* 
+ * @note 限制为
+ */
+robj* _createIntString(int value)
 {
+    // 
+    if (value <= REDIS_SHAREAD_MAX_INT && shared.integers[value]) {
+        return shared.integers[value];
+    }
     robj* obj = malloc(sizeof(robj) );
+    obj->type = REDIS_STRING;
     obj->encoding = REDIS_ENCODING_INT;
     obj->ptr = (void*)value;
     return obj;
@@ -116,7 +130,7 @@ void robjDestroy(robj* obj)
 robj* robjCreateStringObject(const char*s)
 {
     int succeed = 0;
-    long long value = _string2ll(s, &succeed);
+    int value = _string2i(s, &succeed);
     if (succeed) {
         return _createIntString(value);
     }
