@@ -234,3 +234,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
     sdsclear(client->replyBuf);
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
 }
+
+void netCleanup()
+{
+}

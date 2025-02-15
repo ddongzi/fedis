@@ -235,6 +235,15 @@ void closeClients()
     }
 
 }
+void prepareShutdown()
+{
+    bgSaveIfNeeded();
+
+    // TODO : 
+
+    // 4. 自动释放部分文件、网络资源
+    exit(0);
+}
 /**
  * @brief 定时任务
  * 
@@ -248,7 +257,7 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     // TODO 
     printf("● server cron.\n");
 
-    // TODO 检查SAVE条件，执行BGSAVE    
+    // 检查SAVE条件，执行BGSAVE    
     bgSaveIfNeeded();
 
     // 更新server时间
@@ -257,7 +266,12 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     // 关闭clients
     closeClients();
 
-    return 5000;
+    if (server->shutdownAsap) {
+        // 检测到需要关闭。在shutdown中exit。
+        prepareShutdown();
+    }
+
+    return 1000;
 }
 
 void sigChildHandler(int sig)
@@ -278,9 +292,25 @@ void sigChildHandler(int sig)
         }
     }
 }
+/**
+ * @brief CTRL C 处理。
+ * 
+ * @param [in] sig 
+ * @note 第一次 持久化、关闭资源
+ *  第二次 强制退出
+ */
+void sigIntHandler(int sig)
+{
+    if (server->shutdownAsap == 0) {
+        server->shutdownAsap = 1;
+    } else if (server->shutdownAsap == 1) {
+        exit(1);
+    }
+}
 void initServerSignalHandlers()
 {
     signal(SIGCHLD, sigChildHandler);
+    signal(SIGINT, sigIntHandler);
 }
 
 /**
