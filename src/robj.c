@@ -139,3 +139,21 @@ robj* robjCreateStringObject(const char*s)
     }
     return _createRawString(s);
 }
+
+void robjGetValStr(robj* obj, char* buf, int maxlen) 
+{
+    switch (obj->type)
+    {
+    case REDIS_STRING:
+        if (obj->encoding == REDIS_ENCODING_INT) {
+            snprintf(buf, maxlen, "%d", (int)(obj->ptr));
+        } else {
+            sds* s = (sds*)(obj->ptr);
+            strncpy(buf, s->buf, maxlen - 1);
+        }
+        break;
+    
+    default:
+        break;
+    }
+}

@@ -216,6 +216,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 1, fp);
         snprintf(buf, 11, "%d", val);
+        printf("Load STRING(int) %d\n", val);
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT16) {
         /* code */
@@ -223,6 +224,8 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 2, fp);
         snprintf(buf, 11, "%d", val);
+        printf("Load STRING(int) %d\n", val);
+
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT32) {
         /* code */
@@ -230,6 +233,8 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 4, fp);
         snprintf(buf, 11, "%d", val);
+        printf("Load STRING(int) %d\n", val);
+
         return robjCreateStringObject(buf);
     }else {
         // RAW, EMBSTR字符串
@@ -238,6 +243,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char * buf = malloc(len + 1);
         fread(buf, 1, len, fp);
         buf[len] = '\0';
+        printf("Load STRING() %s\n", buf);
 
         robj* obj = robjCreateStringObject(buf);
         free(buf);

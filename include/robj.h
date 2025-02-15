@@ -32,5 +32,5 @@ void robjDestroy(robj* obj);
 
 
 robj* robjCreateStringObject(const char*s);
-
+void robjGetValStr(robj* obj, char* buf, int maxlen) ;
 #endif

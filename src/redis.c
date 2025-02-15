@@ -55,8 +55,10 @@ void commandGetProc(redisClient* client)
     if (res == NULL) { 
         addReply(client, "-ERR key not found");
     } else {
-        
-        addReply(client, ((sds*)(res->ptr))->buf);
+        char* buf = calloc(1024, 1);
+        robjGetValStr(res, buf, 1024);
+        addReply(client, buf);
+        free(buf);
     }
 }
 void commandDelProc(redisClient* client)
