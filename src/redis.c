@@ -333,7 +333,6 @@ void createSharedObjects()
 
 void initServer()
 {
-    initServerConfig();
     initServerSignalHandlers();
     
     createSharedObjects();
