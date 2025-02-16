@@ -1,6 +1,0 @@
-<map id="_rdbSaveStringObject" name="_rdbSaveStringObject">
-<area shape="rect" id="node1" title=" " alt="" coords="5,56,168,83"/>
-<area shape="rect" id="node2" href="$rdb_8c.html#ac85a8f407e484291e8ff64c7bbe883a7" title="Save the length of the given unsigned long value to the RDB file." alt="" coords="219,5,325,32"/>
-<area shape="rect" id="node3" href="$rdb_8c.html#a641d081cdfb61dd56fc3445a0404275f" title="对象类型、RDB操作符" alt="" coords="216,56,328,83"/>
-<area shape="rect" id="node4" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="240,107,304,133"/>
-</map>

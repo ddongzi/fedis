@@ -1,4 +1,0 @@
-<map id="aeMain" name="aeMain">
-<area shape="rect" id="node1" title="事件循环main" alt="" coords="5,5,76,32"/>
-<area shape="rect" id="node2" href="$ae_8c.html#a1e37ecf89afde301c3ec9579677ee54e" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="124,5,256,32"/>
-</map>

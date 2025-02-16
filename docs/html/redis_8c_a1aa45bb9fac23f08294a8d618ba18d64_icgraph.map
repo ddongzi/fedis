@@ -1,7 +1,0 @@
-<map id="mstime" name="mstime">
-<area shape="rect" id="node1" title="返回当前ms级时间戳" alt="" coords="573,5,645,32"/>
-<area shape="rect" id="node2" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,32"/>
-<area shape="rect" id="node4" href="$redis_8c.html#adb37a4404c525956efa27da3a8e51ed8" title=" " alt="" coords="383,31,525,57"/>
-<area shape="rect" id="node3" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,32"/>
-<area shape="rect" id="node5" href="$redis_8c.html#af588c16d11b3c614a398d31edde3275b" title="定时任务" alt="" coords="241,31,335,57"/>
-</map>

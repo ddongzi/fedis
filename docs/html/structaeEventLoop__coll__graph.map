@@ -1,7 +1,0 @@
-<map id="aeEventLoop" name="aeEventLoop">
-<area shape="rect" id="node1" title=" " alt="" coords="184,95,291,121"/>
-<area shape="rect" id="node2" href="$structaeFileEvent.html" title=" " alt="" coords="5,5,104,32"/>
-<area shape="rect" id="node3" href="$structaeFireEvent.html" title=" " alt="" coords="128,5,227,32"/>
-<area shape="rect" id="node4" href="$structaeApiState.html" title=" " alt="" coords="251,5,344,32"/>
-<area shape="rect" id="node5" href="$structaeTimeEvent.html" title=" " alt="" coords="369,5,477,32"/>
-</map>

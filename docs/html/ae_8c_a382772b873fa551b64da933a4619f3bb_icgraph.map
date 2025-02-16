@@ -1,9 +1,0 @@
-<map id="aeCreateFileEvent" name="aeCreateFileEvent">
-<area shape="rect" id="node1" title="注册文件事件" alt="" coords="663,51,804,77"/>
-<area shape="rect" id="node2" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="255,25,392,52"/>
-<area shape="rect" id="node3" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,51,193,77"/>
-<area shape="rect" id="node5" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="475,127,593,153"/>
-<area shape="rect" id="node7" href="$net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="453,25,615,52"/>
-<area shape="rect" id="node4" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,51,60,77"/>
-<area shape="rect" id="node6" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="241,127,405,153"/>
-</map>
