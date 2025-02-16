@@ -1,0 +1,9 @@
+<map id="zskiplistNode" name="zskiplistNode">
+<area shape="rect" id="Node000001" title=" " alt="" coords="36,93,147,119"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="162,97,173,106,165,114,147,117,147,111,163,109,168,106,159,102"/>
+<area shape="rect" id="Node000003" href="$structzskiplistNode_1_1zskiplistLevel.html" title=" " alt="" coords="5,181,177,221"/>
+<area shape="poly" id="edge4_Node000003_Node000001" title=" " alt="" coords="59,128,48,142,46,149,47,156,66,180,61,183,42,158,40,149,43,139,55,125"/>
+<area shape="rect" id="Node000002" href="$structredisObject.html" title=" " alt="" coords="43,5,139,31"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="94,45,94,93,89,93,89,45"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="101,168,102,143,94,120,99,118,107,142,106,168"/>
+</map>

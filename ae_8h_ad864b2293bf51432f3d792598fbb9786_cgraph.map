@@ -1,0 +1,5 @@
+<map id="aeCreateTimeEvent" name="aeCreateTimeEvent">
+<area shape="rect" id="Node000001" title="创建一个时间事件,添加到ae" alt="" coords="5,5,156,31"/>
+<area shape="rect" id="Node000002" href="$ae_8c.html#ab2126a771f0de28c5d89a362b0d45156" title="对当前时间增加milliseconds毫秒，得到未来一个时间。" alt="" coords="204,5,391,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,15,190,15,190,21,156,21"/>
+</map>

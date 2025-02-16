@@ -1,0 +1,20 @@
+<map id="test_dictFetchValue" name="test_dictFetchValue">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,81,155,107"/>
+<area shape="rect" id="Node000002" href="$dict_8c.html#ae591a5f18d2510a6e4bd9d7f339d0f8c" title="如果key存在, 返回错误。" alt="" coords="217,7,287,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,79,208,35,211,40,112,84"/>
+<area shape="rect" id="Node000006" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="207,56,297,81"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="155,80,193,75,194,80,156,86"/>
+<area shape="rect" id="Node000007" href="$dict_8c.html#aba67c286699c348defbb5ba836d537a9" title=" " alt="" coords="349,107,467,132"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="155,97,336,111,335,116,155,102"/>
+<area shape="rect" id="Node000008" href="$dict_8c.html#a435182931ec2e9556a3787192b888a26" title="释放dict" alt="" coords="203,157,301,183"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="111,104,211,149,209,154,109,109"/>
+<area shape="rect" id="Node000003" href="$dict_8c.html#a8606f78a7204e8d57cc9d5cb943bbfca" title="只负责分配key，（如果key存在即返回. 不应该发生）。" alt="" coords="359,5,457,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="287,16,344,16,344,21,287,22"/>
+<area shape="rect" id="Node000004" href="$dict_8c.html#a8bc58d260bd7702ebb9614b0a35de7c7" title="根据key查找对应entry" alt="" coords="515,56,588,81"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="288,26,350,39,501,61,500,66,349,45,287,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="446,28,502,49,501,54,444,33"/>
+<area shape="rect" id="Node000005" href="$dict_8c.html#aeffa826ed6ca2e38394122196bbf1d98" title=" " alt="" coords="636,81,761,107"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="589,72,623,78,622,83,588,77"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="444,104,501,84,502,89,446,109"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="467,112,622,98,623,103,467,117"/>
+</map>

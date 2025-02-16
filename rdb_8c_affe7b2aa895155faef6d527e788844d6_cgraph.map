@@ -1,0 +1,27 @@
+<map id="bgSaveIfNeeded" name="bgSaveIfNeeded">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,157,135,183"/>
+<area shape="rect" id="Node000002" href="$rdb_8c.html#a61f122c883c5e963ba082bf1644a23b1" title=" " alt="" coords="183,157,252,183"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,167,169,167,169,173,135,173"/>
+<area shape="rect" id="Node000003" href="$rdb_8c.html#a553e35429dad928bba41832240b758b3" title=" " alt="" coords="300,157,375,183"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="253,167,286,167,286,173,253,173"/>
+<area shape="rect" id="Node000004" href="$rdb_8c.html#a66674bf7179b7861992351a48030e32a" title=" " alt="" coords="434,5,558,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="342,156,372,105,394,75,421,48,442,34,445,39,424,52,398,78,376,108,347,158"/>
+<area shape="rect" id="Node000005" href="$rdb_8c.html#a015da923c40f69511b15c45dcf3367d5" title=" " alt="" coords="617,56,780,81"/>
+<area shape="poly" id="edge8_Node000003_Node000005" title=" " alt="" coords="348,155,379,126,399,110,422,98,466,83,513,73,603,64,603,69,514,78,468,88,424,103,402,115,382,130,352,159"/>
+<area shape="rect" id="Node000007" href="$rdb_8c.html#a641d081cdfb61dd56fc3445a0404275f" title="对象类型、RDB操作符" alt="" coords="828,107,940,132"/>
+<area shape="poly" id="edge9_Node000003_Node000007" title=" " alt="" coords="374,155,422,143,529,129,636,121,814,116,814,121,636,126,529,135,423,149,376,160"/>
+<area shape="rect" id="Node000009" href="$dict_8c.html#ac60a4153a7f70cf17d6dad3ea486e5d7" title=" " alt="" coords="437,157,555,183"/>
+<area shape="poly" id="edge10_Node000003_Node000009" title=" " alt="" coords="375,167,424,167,424,173,375,173"/>
+<area shape="rect" id="Node000010" href="$dict_8c.html#ac8cafeb1a24a8e0e891209cb3dac9208" title=" " alt="" coords="447,207,545,232"/>
+<area shape="poly" id="edge11_Node000003_Node000010" title=" " alt="" coords="376,179,442,200,440,205,374,184"/>
+<area shape="rect" id="Node000011" href="$dict_8c.html#aeb9eb6736685bc671288691e8f951fbc" title=" " alt="" coords="447,256,545,281"/>
+<area shape="poly" id="edge12_Node000003_Node000011" title=" " alt="" coords="352,181,383,212,424,242,436,248,433,253,421,247,379,216,348,185"/>
+<area shape="rect" id="Node000012" href="$dict_8c.html#a8bfc6c2908c66772c09a1315c078bf06" title=" " alt="" coords="423,305,569,331"/>
+<area shape="poly" id="edge13_Node000003_Node000012" title=" " alt="" coords="346,182,375,235,397,266,424,292,432,297,429,301,421,296,393,269,370,238,342,184"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="548,28,635,50,633,55,547,33"/>
+<area shape="rect" id="Node000006" href="$rdb_8c.html#ac85a8f407e484291e8ff64c7bbe883a7" title="Save the length of the given unsigned long value to the RDB file." alt="" coords="831,8,937,33"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="748,53,820,34,821,40,749,59"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="747,79,824,100,823,105,745,84"/>
+<area shape="rect" id="Node000008" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="852,57,916,83"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="780,67,838,67,838,72,780,72"/>
+</map>

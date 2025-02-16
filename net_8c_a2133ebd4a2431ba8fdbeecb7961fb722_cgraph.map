@@ -1,0 +1,22 @@
+<map id="connectMaster" name="connectMaster">
+<area shape="rect" id="Node000001" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="5,104,124,129"/>
+<area shape="rect" id="Node000002" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="187,5,329,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,102,119,71,171,40,188,33,190,37,173,44,122,75,82,106"/>
+<area shape="rect" id="Node000004" href="$net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="172,55,344,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="114,101,193,81,195,86,116,107"/>
+<area shape="rect" id="Node000006" href="$net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="201,104,315,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="124,114,187,114,187,119,124,119"/>
+<area shape="rect" id="Node000007" href="$net_8c.html#a15a854d127038b664f3ad6ad21464c64" title="作为客户端，连接到Host:port" alt="" coords="195,153,321,179"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="116,127,195,147,193,152,114,132"/>
+<area shape="rect" id="Node000009" href="$redis_8c.html#ad1ecc238e2cc9d387b2d078c916a004d" title=" " alt="" coords="191,203,325,228"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="83,127,122,157,173,188,193,196,191,201,171,192,119,162,80,132"/>
+<area shape="rect" id="Node000003" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="392,5,513,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="329,15,379,15,379,21,329,21"/>
+<area shape="rect" id="Node000005" href="$net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="401,79,504,104"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="344,75,388,81,387,86,344,81"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="315,107,387,97,388,102,315,112"/>
+<area shape="rect" id="Node000008" href="$net_8c.html#af34c4f19f793583a0aa70334193573f3" title=" " alt="" coords="399,153,506,179"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="321,163,386,163,386,169,321,169"/>
+<area shape="rect" id="Node000010" href="$sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="409,203,496,228"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="325,213,395,213,395,218,325,218"/>
+</map>

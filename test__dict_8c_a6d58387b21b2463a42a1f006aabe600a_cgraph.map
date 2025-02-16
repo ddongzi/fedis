@@ -1,0 +1,16 @@
+<map id="test_dictAdd" name="test_dictAdd">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,80,108,105"/>
+<area shape="rect" id="Node000002" href="$dict_8c.html#ae591a5f18d2510a6e4bd9d7f339d0f8c" title="如果key存在, 返回错误。" alt="" coords="170,31,241,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,77,156,57,157,62,96,82"/>
+<area shape="rect" id="Node000006" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="161,80,250,105"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="108,90,147,90,147,95,108,95"/>
+<area shape="rect" id="Node000007" href="$dict_8c.html#a435182931ec2e9556a3787192b888a26" title="释放dict" alt="" coords="156,129,255,155"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="96,103,154,122,152,127,95,108"/>
+<area shape="rect" id="Node000003" href="$dict_8c.html#a8606f78a7204e8d57cc9d5cb943bbfca" title="只负责分配key，（如果key存在即返回. 不应该发生）。" alt="" coords="303,5,401,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="240,35,289,26,289,31,241,40"/>
+<area shape="rect" id="Node000004" href="$dict_8c.html#a8bc58d260bd7702ebb9614b0a35de7c7" title="根据key查找对应entry" alt="" coords="449,31,523,56"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="241,41,436,41,436,46,241,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="402,25,436,31,435,37,401,30"/>
+<area shape="rect" id="Node000005" href="$dict_8c.html#aeffa826ed6ca2e38394122196bbf1d98" title=" " alt="" coords="571,31,696,56"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="523,41,557,41,557,46,523,46"/>
+</map>

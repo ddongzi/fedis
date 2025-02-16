@@ -1,0 +1,15 @@
+<map id="client/client.c" name="client/client.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="220,5,329,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,72,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="238,33,86,79,85,73,236,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="97,79,167,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="253,33,169,75,166,70,251,28"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="191,79,262,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="269,33,244,69,240,66,265,30"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="287,79,361,104"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="285,29,310,66,306,69,281,33"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="386,79,478,104"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="301,28,395,71,393,75,299,33"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="502,79,581,104"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="318,28,489,73,488,78,317,33"/>
+</map>

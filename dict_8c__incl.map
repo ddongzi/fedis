@@ -1,0 +1,13 @@
+<map id="src/dict.c" name="src/dict.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="142,5,222,31"/>
+<area shape="rect" id="Node000002" href="$dict_8h.html" title=" " alt="" coords="153,79,211,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,31,185,65,179,65,179,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,152,76,177"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="160,106,77,148,75,143,158,102"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="100,152,171,177"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="177,106,153,142,148,139,172,103"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="195,152,262,177"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="192,103,216,139,211,142,187,106"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="287,152,357,177"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="206,102,288,143,286,148,203,106"/>
+</map>

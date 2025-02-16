@@ -1,0 +1,16 @@
+<map id="aeAddMillisecondsToNow" name="aeAddMillisecondsToNow">
+<area shape="rect" id="Node000001" title="对当前时间增加milliseconds毫秒，得到未来一个时间。" alt="" coords="620,31,807,56"/>
+<area shape="rect" id="Node000002" href="$ae_8c.html#a0ddb5289e19091c09104d7631c4f3e1d" title="创建一个时间事件,添加到ae" alt="" coords="421,5,572,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="606,33,572,29,572,24,606,28"/>
+<area shape="rect" id="Node000005" href="$ae_8c.html#a61a56385fc1ca7d73a1cf1fddeba9487" title=" " alt="" coords="422,55,571,80"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="606,58,572,62,571,56,605,53"/>
+<area shape="rect" id="Node000003" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="408,21,194,21,194,15,408,15"/>
+<area shape="rect" id="Node000004" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,31,60,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="95,33,61,40,60,35,94,27"/>
+<area shape="rect" id="Node000006" href="$ae_8c.html#a1e37ecf89afde301c3ec9579677ee54e" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="241,55,373,80"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="408,70,373,70,373,65,408,65"/>
+<area shape="rect" id="Node000007" href="$ae_8c.html#a6128cc6c85e2cdead05b253352637de3" title="事件循环main" alt="" coords="115,55,186,80"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="228,70,186,70,186,65,228,65"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="101,60,60,51,61,46,102,55"/>
+</map>

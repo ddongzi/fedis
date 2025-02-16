@@ -1,0 +1,19 @@
+<map id="aeApiAddEvent" name="aeApiAddEvent">
+<area shape="rect" id="Node000001" title="修改/添加 epoll事件" alt="" coords="852,51,973,77"/>
+<area shape="rect" id="Node000002" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="663,51,804,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="838,67,804,67,804,61,838,61"/>
+<area shape="rect" id="Node000003" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="255,26,392,51"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="696,47,658,29,614,16,550,9,485,11,424,18,374,28,373,23,423,13,484,5,550,3,615,11,660,24,699,42"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,51,193,77"/>
+<area shape="poly" id="edge7_Node000002_Node000004" title=" " alt="" coords="649,67,194,67,194,61,649,61"/>
+<area shape="rect" id="Node000006" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="475,127,593,153"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="687,84,569,130,567,125,685,79"/>
+<area shape="rect" id="Node000008" href="$net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="453,26,615,51"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="649,56,614,51,615,46,650,51"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,53,194,60,193,55,240,48"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,51,60,77"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="94,67,60,67,60,61,94,61"/>
+<area shape="rect" id="Node000007" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="241,127,405,153"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="460,143,406,143,406,137,460,137"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="439,41,392,41,392,36,439,36"/>
+</map>

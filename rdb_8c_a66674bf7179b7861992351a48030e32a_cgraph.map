@@ -1,0 +1,11 @@
+<map id="_rdbSaveObject" name="_rdbSaveObject">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,129,80"/>
+<area shape="rect" id="Node000002" href="$rdb_8c.html#a015da923c40f69511b15c45dcf3367d5" title=" " alt="" coords="177,55,340,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,65,164,65,164,70,129,70"/>
+<area shape="rect" id="Node000003" href="$rdb_8c.html#ac85a8f407e484291e8ff64c7bbe883a7" title="Save the length of the given unsigned long value to the RDB file." alt="" coords="391,5,497,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="306,52,381,32,383,37,308,57"/>
+<area shape="rect" id="Node000004" href="$rdb_8c.html#a641d081cdfb61dd56fc3445a0404275f" title="对象类型、RDB操作符" alt="" coords="388,55,500,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="340,65,374,65,374,70,340,70"/>
+<area shape="rect" id="Node000005" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="412,104,476,129"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="308,77,400,102,398,107,306,83"/>
+</map>

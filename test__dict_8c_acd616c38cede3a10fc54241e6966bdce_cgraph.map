@@ -1,0 +1,27 @@
+<map id="test_dictDictTypeNull" name="test_dictDictTypeNull">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,174,165,199"/>
+<area shape="rect" id="Node000002" href="$dict_8c.html#ae591a5f18d2510a6e4bd9d7f339d0f8c" title="如果key存在, 返回错误。" alt="" coords="230,22,301,47"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,172,145,123,212,64,229,52,232,56,215,68,149,126,100,175"/>
+<area shape="rect" id="Node000006" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="221,174,310,199"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="165,184,207,184,207,189,165,189"/>
+<area shape="rect" id="Node000007" href="$dict_8c.html#a87eacd561e8946706c8c28642e93c856" title="Deletes a key&#45;value pair from the dictionary." alt="" coords="531,123,620,148"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="146,171,213,160,378,143,517,135,517,140,379,149,214,165,147,176"/>
+<area shape="rect" id="Node000008" href="$dict_8c.html#aba67c286699c348defbb5ba836d537a9" title=" " alt="" coords="365,72,483,98"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="104,171,151,142,212,114,283,97,351,87,352,92,284,102,214,119,154,147,106,176"/>
+<area shape="rect" id="Node000009" href="$dict_8c.html#a435182931ec2e9556a3787192b888a26" title="释放dict" alt="" coords="216,223,315,248"/>
+<area shape="poly" id="edge12_Node000001_Node000009" title=" " alt="" coords="133,196,205,216,204,222,132,201"/>
+<area shape="rect" id="Node000010" href="$test__dict_8c.html#a87d69cd27755822a55b7b6b981f1c254" title=" " alt="" coords="213,272,317,298"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="108,197,215,259,225,264,223,269,212,263,106,201"/>
+<area shape="rect" id="Node000011" href="$test__dict_8c.html#aaba8d9a54e3de2980e15dcf785618491" title=" " alt="" coords="216,322,315,347"/>
+<area shape="poly" id="edge14_Node000001_Node000011" title=" " alt="" coords="99,197,147,249,179,280,215,308,222,312,219,317,212,312,176,284,143,253,95,201"/>
+<area shape="rect" id="Node000003" href="$dict_8c.html#a8606f78a7204e8d57cc9d5cb943bbfca" title="只负责分配key，（如果key存在即返回. 不应该发生）。" alt="" coords="375,23,473,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="301,32,361,32,361,38,301,37"/>
+<area shape="rect" id="Node000004" href="$dict_8c.html#a8bc58d260bd7702ebb9614b0a35de7c7" title="根据key查找对应entry" alt="" coords="539,22,612,47"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="300,21,365,8,424,3,483,8,526,16,525,22,482,13,424,8,366,13,302,26"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="474,32,524,32,524,37,474,38"/>
+<area shape="rect" id="Node000005" href="$dict_8c.html#aeffa826ed6ca2e38394122196bbf1d98" title=" " alt="" coords="668,72,793,98"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="613,43,679,65,677,70,611,49"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="614,120,677,99,679,105,616,125"/>
+<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="462,70,525,48,527,53,464,75"/>
+<area shape="poly" id="edge11_Node000008_Node000005" title=" " alt="" coords="483,82,654,82,654,88,483,88"/>
+</map>

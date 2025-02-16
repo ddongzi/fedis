@@ -1,0 +1,9 @@
+<map id="_rdbSaveStringObject" name="_rdbSaveStringObject">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,168,80"/>
+<area shape="rect" id="Node000002" href="$rdb_8c.html#ac85a8f407e484291e8ff64c7bbe883a7" title="Save the length of the given unsigned long value to the RDB file." alt="" coords="219,5,325,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,52,209,32,211,37,136,57"/>
+<area shape="rect" id="Node000003" href="$rdb_8c.html#a641d081cdfb61dd56fc3445a0404275f" title="对象类型、RDB操作符" alt="" coords="216,55,328,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="168,65,202,65,202,70,168,70"/>
+<area shape="rect" id="Node000004" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="240,104,304,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="136,77,228,102,226,107,134,83"/>
+</map>

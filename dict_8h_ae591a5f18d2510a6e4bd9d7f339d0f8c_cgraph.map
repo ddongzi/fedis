@@ -1,0 +1,10 @@
+<map id="dictAdd" name="dictAdd">
+<area shape="rect" id="Node000001" title="如果key存在, 返回错误。" alt="" coords="5,31,76,56"/>
+<area shape="rect" id="Node000002" href="$dict_8c.html#a8606f78a7204e8d57cc9d5cb943bbfca" title="只负责分配key，（如果key存在即返回. 不应该发生）。" alt="" coords="124,5,223,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="76,34,110,27,111,33,77,39"/>
+<area shape="rect" id="Node000003" href="$dict_8c.html#a8bc58d260bd7702ebb9614b0a35de7c7" title="根据key查找对应entry" alt="" coords="271,31,344,56"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="77,41,257,41,257,46,77,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="223,25,258,31,257,37,222,30"/>
+<area shape="rect" id="Node000004" href="$dict_8c.html#aeffa826ed6ca2e38394122196bbf1d98" title=" " alt="" coords="392,31,517,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="344,41,378,41,378,46,344,46"/>
+</map>

@@ -1,0 +1,22 @@
+<map id="robjDestroy" name="robjDestroy">
+<area shape="rect" id="Node000001" title="引用计数，调用对应类型释放" alt="" coords="1041,31,1140,56"/>
+<area shape="rect" id="Node000002" href="$redis_8c.html#aa60e85686e8dec0fe4e7b42d02769309" title=" " alt="" coords="881,5,967,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1027,36,967,27,968,22,1028,31"/>
+<area shape="rect" id="Node000007" href="$redis_8c.html#a436c94ccf04190185702d3661b628a4e" title="调用执行命令。已有argc,argv[]" alt="" coords="855,55,993,80"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1028,55,994,60,993,55,1027,50"/>
+<area shape="rect" id="Node000003" href="$redis_8c.html#ae2a156f9f931edffbffcf1c03588c566" title=" " alt="" coords="671,5,772,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="867,21,772,21,772,15,867,15"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html#af588c16d11b3c614a398d31edde3275b" title="定时任务" alt="" coords="263,5,357,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="657,21,357,21,357,15,657,15"/>
+<area shape="rect" id="Node000005" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,31,193,56"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="250,30,194,39,193,34,249,25"/>
+<area shape="rect" id="Node000006" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,31,60,56"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="94,46,60,46,60,41,94,41"/>
+<area shape="rect" id="Node000008" href="$redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="636,55,807,80"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="841,70,807,70,807,65,841,65"/>
+<area shape="rect" id="Node000009" href="$net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,55,588,80"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="622,70,588,70,588,65,622,65"/>
+<area shape="rect" id="Node000010" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,55,379,80"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="413,70,379,70,379,65,413,65"/>
+<area shape="poly" id="edge10_Node000010_Node000005" title=" " alt="" coords="227,58,193,52,194,47,228,52"/>
+</map>
