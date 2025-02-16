@@ -31,5 +31,9 @@ int anetNonBlock(char *err, int fd);
 int anetEnableTcpNoDelay(char *err, int fd);
 int anetKeepAlive(char *err, int fd, int interval);
 int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port);
+
+int anetTcpConnect(char* err, const char* host, int port);
+void connectMaster();
+
 #endif
 

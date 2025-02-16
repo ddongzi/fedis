@@ -4,20 +4,32 @@
 #include "rdb.h"
 #include <signal.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 
 struct redisServer* server;
 
 struct sharedObjects shared;
 
-void addReply(redisClient* client, const char* fmt, ...) 
+/**
+ * @brief 准备buf，向client写, 后续write类handler处理
+ * 
+ * @param [in] client 
+ * @param [in] obj 
+ */
+void addWrite(redisClient* client, robj* obj) 
 {
-    char buf[1024];
-    va_list ap;
-    va_start(ap, fmt);
-    vsnprintf(buf, 128, fmt, ap);
-    va_end(ap);
+    char buf[128];
+    switch (obj->type)
+    {
+    case REDIS_STRING:
+        robjGetValStr(obj, buf, sizeof(buf));
+        break;
+    
+    default:
+        break;
+    }
 
-    sdscat(client->replyBuf, buf);
+    sdscat(client->writeBuf, buf);
 }
 
 void _encodingStr(int encoding, char *buf, int maxlen) 
@@ -42,10 +54,10 @@ void commandSetProc(redisClient* client)
 {
     int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
     if (retcode == DICT_OK) {
-        addReply(client, "+OK");
+        addWrite(client, shared.ok);
         server->dirty++;
     } else {
-        addReply(client, "-ERR set error");
+        addWrite(client, shared.err);
     }
 
 }
@@ -53,11 +65,9 @@ void commandGetProc(redisClient* client)
 {
     robj* res = (robj*)dbGet(client->db, client->argv[1]);
     if (res == NULL) { 
-        addReply(client, "-ERR key not found");
+        addWrite(client, robjCreateStringObject("-ERR key not found"));
     } else {
-        char* buf = calloc(1024, 1);
-        robjGetValStr(res, buf, 1024);
-        addReply(client, buf);
+        addWrite(client, res);
         free(buf);
     }
 }
@@ -67,9 +77,9 @@ void commandDelProc(redisClient* client)
     if (retcode == DICT_OK) {
         server->dirty++;
 
-        addReply(client, "+OK");
+        addWrite(client, shared.ok);
     } else {
-        addReply(client, "-ERR key not found");
+        addWrite(client, shared.keyNotFound);
     }
 }
 void commandObjectProc(redisClient* client)
@@ -79,12 +89,13 @@ void commandObjectProc(redisClient* client)
     if (strcasecmp(((sds*)(op->ptr))->buf, "ENCODING") == 0) {
         robj* val = dbGet(client->db, key);
         if (val == NULL) {
-            addReply(client, "-ERR key not found");
+            addWrite(client, shared.keyNotFound);
         } else {
             // TODO maybe we should use the valEncode() function
             char buf[1024];
             _encodingStr(val->encoding, buf, sizeof(buf));
-            addReply(client, "+%s", buf);
+
+            addWrite(client, robjCreateStringObject(buf));
         }
     }
 }
@@ -93,7 +104,24 @@ void commandByeProc(redisClient* client)
 {
 
     listAddNodeTail(server->clientsToClose, listCreateNode(client));
-    addReply(client, "+bye");
+    addWrite(client, shared.bye);
+}
+
+void commandSlaveofProc(redisClient* client)
+{
+    sds* s = (sds*)(client->argv[1]->ptr);
+    char* host = s->buf;
+    server->role = REDIS_CLUSTER_SLAVE;
+    server->masterhost = strdup(host);
+    server->masterport = (int)(client->argv[2]->ptr);
+    addWrite(client, shared.ok);
+    connectMaster();
+}
+
+
+void commandPingProc(redisClient* client)
+{
+    addWrite(client, shared.pong);
 }
 
 redisCommand commandsTable[] = {
@@ -101,7 +129,9 @@ redisCommand commandsTable[] = {
     {"GET", commandGetProc, 2},
     {"DEL", commandDelProc, 2},
     {"OBJECT", commandObjectProc, 3},
-    {"BYE", commandByeProc, 1}
+    {"BYE", commandByeProc, 1},
+    {"SLAVEOF", commandSlaveofProc, 3},
+    {"PING", commandPingProc, 1}
 };
 
 
@@ -214,8 +244,8 @@ void freeClient(redisClient* client)
     printf("free client %d\n", client->fd);
     close(client->fd);
     // TODO 如果 query reply buf还有怎么办？
-    sdsfree(client->queryBuf);
-    sdsfree(client->replyBuf);
+    sdsfree(client->readBuf);
+    sdsfree(client->writeBuf);
     // 正常情况，每次执行完命令argv就destroy了，临时
     if (client->argv) {
         for(int i = 0; i < client->argc; i++) {
@@ -273,6 +303,15 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 
     return 1000;
 }
+/**
+ * @brief 从服务器定时
+ * 
+ * @return int 
+ */
+int replicationCron()
+{
+    // TODO:
+}
 
 void sigChildHandler(int sig)
 {
@@ -301,6 +340,7 @@ void sigChildHandler(int sig)
  */
 void sigIntHandler(int sig)
 {
+    // FIXME: 不起作用
     if (server->shutdownAsap == 0) {
         server->shutdownAsap = 1;
     } else if (server->shutdownAsap == 1) {
@@ -329,6 +369,12 @@ void createSharedObjects()
     // 2. RESP
     shared.ok = robjCreateStringObject("+ok\r\n");
     shared.pong = robjCreateStringObject("+pong\r\n");
+    shared.err = robjCreateStringObject("-err\r\n");
+    shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
+    shared.bye = robjCreateStringObject("-bye\r\n");
+    shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
+
+    shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
 }
 
 void initServer()
@@ -379,9 +425,9 @@ redisClient *redisClientCreate(int fd)
 {
     redisClient *c = malloc(sizeof(redisClient));
     c->fd = fd;
-    c->flags = 0;
-    c->queryBuf = sdsempty();
-    c->replyBuf = sdsempty();
+    c->flags = REDIS_CLIENT_NORMAL;
+    c->readBuf = sdsempty();
+    c->writeBuf = sdsempty();
     c->dbid = 0;
     c->db = &server->db[c->dbid];
     c->argc = 0;
@@ -409,7 +455,7 @@ void processCommand(redisClient * c)
     // argv[0] 一定是字符串，sds
     cmd = lookupCommand(((sds*)(c->argv[0]->ptr))->buf);
     if (cmd == NULL) {
-        addReply(c, "Invalid command");
+        addWrite(c, shared.invalidCommand);
         return;
     }
     cmd->proc(c);
@@ -430,9 +476,9 @@ void processCommand(redisClient * c)
  */
 void processClientQueryBuf(redisClient* client)
 {
-    if (client->queryBuf == NULL )  return;
+    if (client->readBuf == NULL )  return;
 
-    sds* s = (sds*)(client->queryBuf);
+    sds* s = (sds*)(client->readBuf);
     while (sdslen(s)) {
         // 预期：只有一行，一轮
         if (client->argc  == 0) {
@@ -453,13 +499,26 @@ void processClientQueryBuf(redisClient* client)
             p = strchr(s->buf, '\r');
             *p = '\0';
 
-            // TODO 如何知道要string 还是数字
+            printf("%s, argv: %s\n", __func__, s->buf);
             client->argv[client->argc - remain] = robjCreateStringObject(s->buf);
             // 处理完一行
             sdsrange(s, p - s->buf + 2, s->len - 1);
             remain--;
         }
     }
-    // sdsclear(client->queryBuf); // 不需要，过程中已经读取完了
+    // sdsclear(client->readBuf); // 不需要，过程中已经读取完了
     processCommand(client);
 }
+
+
+/* 从角色： */
+void sendPingToMaster()
+{
+    addWrite(server->master, shared.ping);
+}
+
+void sendReplconfToMaster()
+{
+
+}
+ 

@@ -3,6 +3,7 @@
 #include "sds.h"
 #include <errno.h>
 #include "redis.h"
+#include <limits.h>
 /* string object*/
 /**
  * @brief 根据encoding类型调用释放
@@ -33,7 +34,6 @@ robj* _createEmbeddedString(const char*s)
 {
     sds* ss = NULL;
     unsigned long len = strlen(s);
-    // TODO : error malloc , there is extra pointer area.
     robj* obj = calloc(1, sizeof(robj) + sizeof(sds) + len + 1);
     obj->type = REDIS_STRING;
     obj->encoding = REDIS_ENCODING_EMBSTR;
@@ -55,24 +55,34 @@ robj* _createRawString(const char* s)
     return obj;    
 }
 
-int _string2i(const char* s, int *succeed)
-{
-    char* endptr;
-    int value;
-    value = strtoll(s, &endptr, 10);
-    if (endptr == s) {
-        // we can't get a availible integer from the string.
+int _string2i(const char* s, int *succeed) {
+    if (!s || !*s) {  // 空指针或空字符串直接失败
         *succeed = 0;
         return 0;
     }
-    if (errno == ERANGE) {
-        // the string was too large to fit into a long long integer.
+
+    char *endptr;
+    errno = 0;  // 清除 errno
+    long long value = strtoll(s, &endptr, 10);
+
+    // 判断是否成功解析
+    if (*endptr != '\0' || endptr == s) {
+        // 1. 如果 `endptr == s`，表示没有解析出任何数字
+        // 2. 如果 `*endptr != '\0'`，说明解析后仍有剩余字符
         *succeed = 0;
         return 0;
     }
+
+    // 检查范围（防止 int 溢出）
+    if (errno == ERANGE || value < INT_MIN || value > INT_MAX) {
+        *succeed = 0;
+        return 0;
+    }
+
     *succeed = 1;
-    return value;
+    return (int)value;
 }
+
 
 /**
  * @brief 
@@ -132,11 +142,14 @@ robj* robjCreateStringObject(const char*s)
     int succeed = 0;
     int value = _string2i(s, &succeed);
     if (succeed) {
+        // printf("CreateStringObj , INT, %d\n", value);
         return _createIntString(value);
     }
     if (strlen(s) < 32) {
+        // printf("CreateStringObj , EMBSTR, %s\n", s);
         return _createEmbeddedString(s);
     }
+    // printf("CreateStringObj , RAW, %s\n", s);
     return _createRawString(s);
 }
 

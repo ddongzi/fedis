@@ -22,11 +22,13 @@ static int aeApiCreate(aeEventLoop* eventLoop)
         free(apiState);
         return AE_ERROR;
     }
-    apiState->events = malloc(sizeof(struct epoll_event) * eventLoop->maxsize);
+    apiState->events =calloc(eventLoop->maxsize, sizeof(struct epoll_event));
     if (apiState->events == NULL) {
         free(apiState);
         return AE_ERROR;
     }
+    // ET 模式
+
     eventLoop->apiState = apiState;
     return AE_OK;
 }
@@ -104,7 +106,7 @@ aeEventLoop *aeCreateEventLoop(int maxsize)
  * 
  * @param [in] loop 
  * @param [in] fd 
- * @param [in] mask ：[AE_READABLE, AE_WRITABLE]
+ * @param [in] mask ：[AE_READABLE, AE_WRITABLE] 只能一种
  * @param [in] proc : aeFileProc
  * @param [in] data 
  * @return int : [AE_OK, AE_ERROR]
@@ -136,7 +138,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
     return AE_OK;
 }
 /**
- * @brief 为fd注册事件
+ * @brief 修改/添加 epoll事件
  * 
  * @param [in] eventLoop 
  * @param [in] fd 

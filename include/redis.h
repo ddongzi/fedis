@@ -13,6 +13,9 @@
 #define REDIS_DEFAULT_DBNUM 16
 #define REDIS_MAX_CLIENTS 10000
 
+#define REDIS_CLUSTER_MASTER 0x01
+#define REDIS_CLUSTER_SLAVE 0x10
+
 extern struct redisServer* server;
 extern struct sharedObjects shared;
 
@@ -21,18 +24,30 @@ struct redisCommand;
 
 #define REDIS_SHAREAD_MAX_INT 999
 struct sharedObjects {
+    // RESP res
     robj *ok;
     robj *pong;
+    robj* err;
+    robj* keyNotFound;
+    robj* bye;
+    robj* invalidCommand;
+    // RESP request
+    robj* ping;
+    
     robj* integers[1000];
 };
 
 
-// 服务器为客户端状态结构
+#define REDIS_CLIENT_NORMAL 0
+#define REDIS_CLIENT_MASTER 1
+#define REDIS_CLIENT_SLAVE 2
+
+/* client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。 */
 typedef struct redisClient {
     int fd;
-    int flags;
-    sds* queryBuf;
-    sds* replyBuf;
+    int flags;  // [CLIENT_MASTER, CLIENT_SLAVE, CLIENT_NORMAL(默认普通客户端)]
+    sds* readBuf;
+    sds* writeBuf;
     int dbid;
     redisDb* db;
     int argc;   // 参数个数
@@ -54,6 +69,17 @@ extern redisCommand commandsTable[];
 struct saveparam {
     time_t seconds; // 保存条件：秒
     int changes; // 保存条件：修改数
+};
+
+
+
+enum REPL_STATE {
+    REPL_STATE_NONE,
+    REPL_STATE_SEND_PING,
+    REPL_STATE_WAIT_PONG,
+    REPL_STATE_SEND_REPLCONF,
+    REPL_STATE_WAIT_REPLCONF,
+    REPL_STATE_SYNCING
 };
 
 struct redisServer {
@@ -87,6 +113,12 @@ struct redisServer {
 
     // 分布式集群
     int clusterEnabled; // 是否开启集群
+    int role; // 角色
+    redisClient* master; // （从字段）主客户端
+    char* masterhost; // （从字段）主host
+    int masterport; // （从字段）主port
+    int replState; // （从字段）状态
+
 
     // 模块化
 
@@ -111,5 +143,8 @@ struct redisServer {
 void initServer();
 
 void selectDB(redisClient* client, int dbid);
+
+void sendPingToMaster();
+
 
 #endif

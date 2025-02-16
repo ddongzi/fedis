@@ -2,6 +2,32 @@
 #include <stdarg.h>
 #include "redis.h"
 
+static void repliReadHandler(aeEventLoop *el, int fd, void* privData);
+static void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
+
+void printAddrinfo(struct addrinfo *servinfo) {
+    struct addrinfo *p;
+    char ip[INET6_ADDRSTRLEN];
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+        int port = 0;
+        void *addr;
+        if (p->ai_family == AF_INET) {
+            // IPv4
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+            addr = &(ipv4->sin_addr);
+            port = ntohs(ipv4->sin_port);
+        } else if (p->ai_family == AF_INET6) {
+            // IPv6
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            addr = &(ipv6->sin6_addr);
+            port = ntohs(ipv6->sin6_port);
+        } else {
+            continue;
+        }
+        inet_ntop(p->ai_family, addr, ip, sizeof(ip));
+        printf("Address: %s, Port: %d\n", ip, port);
+    }
+}
 int anetSetError(char *err, const char *fmt, ...)
 {
     va_list ap;
@@ -216,7 +242,7 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
         return;
     }
     
-    sdscat(client->queryBuf, buf);
+    sdscat(client->readBuf, buf);
     processClientQueryBuf(client);
     // 注册写事件
     aeCreateFileEvent(el, fd, AE_WRITABLE, sendReplyToClient, client);
@@ -225,16 +251,155 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
 {
     redisClient *client = (redisClient*) privdata;
     int nwritten;
-    char* msg = client->replyBuf->buf;
+    char* msg = client->writeBuf->buf;
     nwritten = write(fd, msg, strlen(msg));
     if (nwritten == -1) {
         return;
     }
     printf("Send %d bytes: %s\n", nwritten, msg);
-    sdsclear(client->replyBuf);
+    sdsclear(client->writeBuf);
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
 }
 
+
+// TODO redis进程主动退出清理
 void netCleanup()
 {
+}
+
+/**
+ * @brief 作为客户端，连接到Host:port
+ * 
+ * @param [in] host 
+ * @param [in] port 
+ */
+int anetTcpConnect(char* err, const char* host, int port)
+{
+    int sockfd = -1;
+    char portStr[6];
+    struct addrinfo hints, *servinfo, *p;
+    int ret;
+
+    printf("anetconnect %s:%d\n", host, port);
+
+    snprintf(portStr, sizeof(portStr), "%d", port);
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if ((ret = getaddrinfo(host, portStr, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(ret));
+        return NET_ERR;
+    }
+    printAddrinfo(servinfo);
+    // 遍历返回的地址列表，尝试创建 socket 并连接
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+        sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (sockfd == -1) {
+            continue;  // 创建 socket 失败，尝试下一个地址
+        }
+        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            // FIXME: telnet可以，这不可以
+            perror("connect failed fd ");
+            close(sockfd);
+            continue;  // 连接失败，尝试下一个地址
+        }
+        break;  // 连接成功，退出循环
+    }
+
+    freeaddrinfo(servinfo);  // 释放 `servinfo`
+
+    if (p == NULL) {  // 遍历所有地址仍然连接失败
+        fprintf(stderr, "Failed to connect to %s:%d\n", host, port);
+        return NET_ERR;
+    }
+
+    return sockfd;  // 返回 socket 描述符
+}
+/**
+ * @brief 向master写
+ * 
+ * @param [in] el 
+ * @param [in] fd 
+ * @param [in] privData 
+ */
+void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
+{
+    char* msg = server->master->writeBuf->buf;
+    int nwritten = write(fd, msg, strlen(msg));
+    if (nwritten == -1) {
+        printf("write failed\n");
+        close(fd);
+        return;
+    }
+    // TODO write之后，转换状态
+    if (server->replState == REPL_STATE_SEND_PING && strcmp(msg, "PING"))
+
+    sdsclear(server->master->writeBuf);
+    aeDeleteFileEvent(el, fd, AE_WRITABLE);
+    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
+}
+
+void repliReadHandler(aeEventLoop *el, int fd, void* privData)
+{
+    redisClient* client = server->master;
+    char buf[1024];
+    memset(buf, 0, sizeof(buf));
+    int nread;
+    nread = read(fd, buf, sizeof(buf));
+    if (nread == -1) {
+        printf("read failed\n");
+        close(fd);
+        return;
+    }
+    if (nread == 0) {
+        printf("master disconnected\n");
+        close(fd);
+        return;
+    }
+    // TODO read之后转换状态。
+    if (server->replState == REPL_STATE_WAIT_PONG && strcmp(buf, "+PONG") == 0) {
+        // 收到PONG回复，发送REPLCONF 交换配置
+        server->replState = REPL_STATE_SEND_REPLCONF;
+        sendReplconfToMaster();
+    }
+
+
+    sdscat(client->readBuf, buf);
+    printf("read %d bytes, %s\n TODO need deal!!", nread, buf);
+    
+    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+}
+
+/**
+ * @brief 主动向master同步, 设置状态、指令
+ * 
+ */
+void syncWithMaster()
+{
+    // 1. ping
+    server->replState = REPL_STATE_SEND_PING;
+    sendPingToMaster();
+}
+
+/**
+ * @brief 连接master
+ * 
+ */
+void connectMaster()
+{
+    int fd = anetTcpConnect(server->neterr, server->masterhost, server->masterport);
+    if (fd < 0) {
+        printf("connectMaster failed: \n");
+        return;
+    }
+    // 非阻塞
+    anetNonBlock(NULL, fd);
+    anetEnableTcpNoDelay(NULL, fd);
+
+    server->master = redisClientCreate(fd);
+    server->replState = REPL_STATE_NONE;
+    syncWithMaster();
+    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+    
 }
