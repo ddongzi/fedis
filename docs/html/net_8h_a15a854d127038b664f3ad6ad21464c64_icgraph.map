@@ -1,0 +1,5 @@
+<map id="anetTcpConnect" name="anetTcpConnect">
+<area shape="rect" id="node1" title="作为客户端，连接到Host:port" alt="" coords="384,5,509,32"/>
+<area shape="rect" id="node2" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,5,336,32"/>
+<area shape="rect" id="node3" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,5,169,32"/>
+</map>

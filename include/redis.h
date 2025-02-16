@@ -31,6 +31,8 @@ struct sharedObjects {
     robj* keyNotFound;
     robj* bye;
     robj* invalidCommand;
+    robj* sync;
+
     // RESP request
     robj* ping;
     
@@ -74,12 +76,11 @@ struct saveparam {
 
 
 enum REPL_STATE {
-    REPL_STATE_NONE,
-    REPL_STATE_SEND_PING,
-    REPL_STATE_WAIT_PONG,
-    REPL_STATE_SEND_REPLCONF,
-    REPL_STATE_WAIT_REPLCONF,
-    REPL_STATE_SYNCING
+    REPL_STATE_NONE,          // 未启用复制
+    REPL_STATE_CONNECTING,    // 正在连接主服务器
+    REPL_STATE_SEND_SYNC,    // 发送SYNC请求
+    REPL_STATE_TRANSFER,      // 接收RDB文件
+    REPL_STATE_CONNECTED      // 正常复制中
 };
 
 struct redisServer {
@@ -145,6 +146,8 @@ void initServer();
 void selectDB(redisClient* client, int dbid);
 
 void sendPingToMaster();
+void sendReplconfToMaster();
+void sendSyncToMaster();
 
 
 #endif

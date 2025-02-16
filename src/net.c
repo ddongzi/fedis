@@ -1,6 +1,7 @@
 #include "net.h"
 #include <stdarg.h>
 #include "redis.h"
+#include "rdb.h"
 
 static void repliReadHandler(aeEventLoop *el, int fd, void* privData);
 static void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
@@ -325,6 +326,24 @@ int anetTcpConnect(char* err, const char* host, int port)
  */
 void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
 {
+    switch (server->replState)
+    {
+    case REPL_STATE_CONNECTING:
+        //  发送PING
+        sendPingToMaster();
+        break;
+    case REPL_STATE_SEND_SYNC:
+        //  发送SYNC
+        sendSyncToMaster();
+        break;
+    case REPL_STATE_CONNECTED:
+        // TODO 发送REPLCONF ACK
+        sendReplconfAckToMaster();
+        break;
+    default:
+        break;
+    }
+
     char* msg = server->master->writeBuf->buf;
     int nwritten = write(fd, msg, strlen(msg));
     if (nwritten == -1) {
@@ -332,8 +351,6 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
         close(fd);
         return;
     }
-    // TODO write之后，转换状态
-    if (server->replState == REPL_STATE_SEND_PING && strcmp(msg, "PING"))
 
     sdsclear(server->master->writeBuf);
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
@@ -357,33 +374,40 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
         close(fd);
         return;
     }
-    // TODO read之后转换状态。
-    if (server->replState == REPL_STATE_WAIT_PONG && strcmp(buf, "+PONG") == 0) {
-        // 收到PONG回复，发送REPLCONF 交换配置
-        server->replState = REPL_STATE_SEND_REPLCONF;
-        sendReplconfToMaster();
+    switch (server->replState) {
+        case REPL_STATE_CONNECTING:
+            if (strcmp(buf, "+PONG") == 0) {
+                // 收到PONG, 发起REPLCONF
+                sendReplconfToMaster();
+                server->replState = REPL_STATE_SEND_SYNC;
+            }
+            aeDeleteFileEvent(el, fd, AE_READABLE);
+            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+            break;
+        case REPL_STATE_SEND_SYNC:
+            if (strncmp(buf, "+FULLSYNC", 9) == 0) {
+                // 收到FULLSYNC, 后面就跟着RDB文件
+                server->replState = REPL_STATE_TRANSFER;
+            }
+
+            break;
+        case REPL_STATE_TRANSFER:
+            receiveRDBfile(buf, nread);
+            server->replState = REPL_STATE_CONNECTED;
+            break;
+        case REPL_STATE_CONNECTED:
+            // TODO  后续命令传播
+            handleCommandPropagate(buf, nread);
+            break;
+        default:
+            break;
     }
 
-
-    sdscat(client->readBuf, buf);
-    printf("read %d bytes, %s\n TODO need deal!!", nread, buf);
-    
-    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
 }
 
-/**
- * @brief 主动向master同步, 设置状态、指令
- * 
- */
-void syncWithMaster()
-{
-    // 1. ping
-    server->replState = REPL_STATE_SEND_PING;
-    sendPingToMaster();
-}
 
 /**
- * @brief 连接master
+ * @brief 收到SLAVEOF命令，开始连接master，切换到CONNECTING
  * 
  */
 void connectMaster()
@@ -398,8 +422,7 @@ void connectMaster()
     anetEnableTcpNoDelay(NULL, fd);
 
     server->master = redisClientCreate(fd);
-    server->replState = REPL_STATE_NONE;
-    syncWithMaster();
+    server->replState = REPL_STATE_CONNECTING;
     aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
     
 }

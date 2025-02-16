@@ -20,5 +20,6 @@
 
 void bgSaveIfNeeded();
 void rdbLoad();
+void receiveRDBfile(char* buf, int n);
 
 #endif

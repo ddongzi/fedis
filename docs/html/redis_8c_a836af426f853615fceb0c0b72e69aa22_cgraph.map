@@ -1,0 +1,14 @@
+<map id="createSharedObjects" name="createSharedObjects">
+<area shape="rect" id="node1" title="Create a Shared Objects object." alt="" coords="5,132,163,159"/>
+<area shape="rect" id="node2" href="$robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="211,132,381,159"/>
+<area shape="rect" id="node3" href="$robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="429,56,607,83"/>
+<area shape="rect" id="node9" href="$robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="455,107,581,133"/>
+<area shape="rect" id="node10" href="$robj_8c.html#ad9971e82bc1e3e47b0439d12a28b64ac" title=" " alt="" coords="450,157,586,184"/>
+<area shape="rect" id="node12" href="$robj_8c.html#a7eb7efd1c9c154baf0c66de98ec088be" title=" " alt="" coords="479,208,557,235"/>
+<area shape="rect" id="node4" href="$sds_8c.html#adc333244a10e3a3809e58aa089ac80d7" title=" " alt="" coords="657,56,723,83"/>
+<area shape="rect" id="node5" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="779,31,843,57"/>
+<area shape="rect" id="node8" href="$sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="773,81,849,108"/>
+<area shape="rect" id="node6" href="$sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="897,5,973,32"/>
+<area shape="rect" id="node7" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="903,56,967,83"/>
+<area shape="rect" id="node11" href="$sds_8c.html#ac5487d7ff301833902bb9a64ce95a3e0" title=" " alt="" coords="655,157,725,184"/>
+</map>

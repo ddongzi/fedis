@@ -307,3 +307,21 @@ void rdbLoad()
         dbAdd(server->db + dbid, key, val);
     }
 }
+
+/**
+ * @brief 将主的RDB文件复制为自己的RDB
+ * 
+ */
+void receiveRDBfile(char* buf, int n)
+{
+    FILE* fp = fopen(server->rdbFileName, "w");
+    if (fp == NULL) {
+        perror("saveRdbFile can't open file");
+        return;
+    }
+    fwrite(buf, 1, n, fp);
+    fclose(fp);
+    printf("Save the RDB file success\n");
+    
+    rdbLoad();
+}

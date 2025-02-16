@@ -124,6 +124,13 @@ void commandPingProc(redisClient* client)
     addWrite(client, shared.pong);
 }
 
+void commandSyncProc(redisClient* client)
+{
+
+    addWrite(client, shared.sync);
+    // 同时发送RDB
+}
+
 redisCommand commandsTable[] = {
     {"SET", commandSetProc, -3},
     {"GET", commandGetProc, 2},
@@ -131,7 +138,8 @@ redisCommand commandsTable[] = {
     {"OBJECT", commandObjectProc, 3},
     {"BYE", commandByeProc, 1},
     {"SLAVEOF", commandSlaveofProc, 3},
-    {"PING", commandPingProc, 1}
+    {"PING", commandPingProc, 1},
+    {"SYNC", commandSyncProc, 1}
 };
 
 
@@ -368,11 +376,12 @@ void createSharedObjects()
     }
     // 2. RESP
     shared.ok = robjCreateStringObject("+ok\r\n");
-    shared.pong = robjCreateStringObject("+pong\r\n");
+    shared.pong = robjCreateStringObject("+PONG\r\n");
     shared.err = robjCreateStringObject("-err\r\n");
     shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
     shared.bye = robjCreateStringObject("-bye\r\n");
     shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
+    shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
 
     shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
 }
@@ -512,13 +521,31 @@ void processClientQueryBuf(redisClient* client)
 
 
 /* 从角色： */
+
+
 void sendPingToMaster()
 {
     addWrite(server->master, shared.ping);
+    
+}
+
+void sendSyncToMaster()
+{
+    char buf[128];
+    memset(buf, 0, sizeof(buf));
+    //  SYNC
+    snprintf(buf, sizeof(buf), "*1\r\n$4\r\nSYNC\r\n");
+    addWrite(server->master, robjCreateStringObject(buf));
+
+    // 
 }
 
 void sendReplconfToMaster()
 {
-
+    char buf[128];
+    memset(buf, 0, sizeof(buf));
+    //  REPLCONF listening-port <从监听port>
+    snprintf(buf, sizeof(buf), "*3\r\n$8\r\nREPLCONF\r\n$13\r\nlistening-port\r\n$4\r\n6379\r\n");
+    addWrite(server->master, robjCreateStringObject(buf));
 }
- 
+

@@ -1,0 +1,13 @@
+<map id="anetSetError" name="anetSetError">
+<area shape="rect" id="node1" title=" " alt="" coords="725,107,828,133"/>
+<area shape="rect" id="node2" href="$net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="505,208,677,235"/>
+<area shape="rect" id="node8" href="$net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="533,107,649,133"/>
+<area shape="rect" id="node9" href="$net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="535,157,648,184"/>
+<area shape="rect" id="node10" href="$net_8c.html#af064e4d76c847c05fc82392ab9991f34" title="设置SO_REUSEADDR" alt="" coords="520,5,663,32"/>
+<area shape="rect" id="node11" href="$net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="331,56,446,83"/>
+<area shape="rect" id="node3" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="320,119,457,145"/>
+<area shape="rect" id="node6" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="329,183,448,209"/>
+<area shape="rect" id="node4" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="147,93,233,120"/>
+<area shape="rect" id="node5" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,93,60,120"/>
+<area shape="rect" id="node7" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="108,183,272,209"/>
+</map>
