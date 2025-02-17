@@ -7,7 +7,7 @@
 <area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="96,274,104,277,108,284,99,293,82,295,81,290,97,288,103,284,101,282,94,279"/>
 <area shape="rect" id="Node000004" href="$structredisDb.html" title=" " alt="" coords="367,271,439,297"/>
 <area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="411,309,447,478,442,479,406,311"/>
-<area shape="rect" id="Node000014" href="$structredisClient.html" title=" " alt="" coords="261,376,353,401"/>
+<area shape="rect" id="Node000014" href="$structredisClient.html" title="client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。" alt="" coords="261,376,353,401"/>
 <area shape="poly" id="edge19_Node000014_Node000004" title=" " alt="" coords="388,309,349,354,323,378,320,374,345,350,384,306"/>
 <area shape="rect" id="Node000005" href="$structdict.html" title=" " alt="" coords="416,181,463,207"/>
 <area shape="poly" id="edge10_Node000001_Node000005" title=" " alt="" coords="456,218,461,230,461,245,463,350,463,396,458,455,453,479,448,478,453,454,458,396,458,350,455,245,455,231,451,220"/>

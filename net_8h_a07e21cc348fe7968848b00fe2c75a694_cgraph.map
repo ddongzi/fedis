@@ -1,9 +1,20 @@
 <map id="sendReplyToClient" name="sendReplyToClient">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,148,56"/>
-<area shape="rect" id="Node000002" href="$ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="196,5,337,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,31,182,27,183,32,149,36"/>
-<area shape="rect" id="Node000004" href="$sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="229,55,305,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="149,50,215,58,214,64,148,55"/>
-<area shape="rect" id="Node000003" href="$ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="385,5,504,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="338,15,372,15,372,21,338,21"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,148,80"/>
+<area shape="rect" id="Node000002" href="$ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="564,5,705,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="132,52,196,41,386,23,550,17,550,22,386,29,196,46,133,57"/>
+<area shape="rect" id="Node000004" href="$net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="196,55,327,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="148,65,182,65,182,70,148,70"/>
+<area shape="rect" id="Node000009" href="$sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="223,104,299,129"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="126,77,211,101,209,106,124,83"/>
+<area shape="rect" id="Node000003" href="$ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="753,5,872,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="706,15,740,15,740,21,706,21"/>
+<area shape="rect" id="Node000005" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="375,104,516,129"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="310,77,384,98,383,103,309,83"/>
+<area shape="rect" id="Node000007" href="$net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="384,55,507,80"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="327,65,370,65,370,70,327,70"/>
+<area shape="rect" id="Node000006" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="574,104,695,129"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="516,114,560,114,560,119,516,119"/>
+<area shape="poly" id="edge7_Node000007_Node000002" title=" " alt="" coords="494,52,571,32,572,37,495,57"/>
+<area shape="rect" id="Node000008" href="$net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。" alt="" coords="585,55,685,80"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="507,65,571,65,571,70,507,70"/>
 </map>

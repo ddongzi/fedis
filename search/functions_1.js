@@ -1,7 +1,7 @@
 var searchData=
 [
   ['accepttcphandler_0',['accepttcphandler',['../net_8c.html#af551381b05b81b103ee2c9977dd49c34',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *data):&#160;net.c'],['../net_8h.html#a8c8e701aa41f8abc98b5ef0655d03116',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *privData):&#160;net.c']]],
-  ['addwrite_1',['addWrite',['../redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'redis.c']]],
+  ['addwrite_1',['addwrite',['../redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;redis.c'],['../redis_8h.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;redis.c']]],
   ['aeaddmillisecondstonow_2',['aeAddMillisecondsToNow',['../ae_8c.html#ab2126a771f0de28c5d89a362b0d45156',1,'ae.c']]],
   ['aeapiaddevent_3',['aeapiaddevent',['../ae_8h.html#ae1918ceab75e9ada567ef48aa2649da7',1,'aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask):&#160;ae.c'],['../ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7',1,'aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask):&#160;ae.c']]],
   ['aeapidelevent_4',['aeApiDelEvent',['../ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad',1,'ae.c']]],
@@ -18,11 +18,12 @@ var searchData=
   ['aewait_15',['aeWait',['../ae_8h.html#ae7d49b53b9294b630be34fbfeda9fb0f',1,'ae.h']]],
   ['anetenabletcpnodelay_16',['anetenabletcpnodelay',['../net_8h.html#a61e54b44fb43184ab3ae5ac58ba7f5d1',1,'anetEnableTcpNoDelay(char *err, int fd):&#160;net.c'],['../net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1',1,'anetEnableTcpNoDelay(char *err, int fd):&#160;net.c']]],
   ['anetformatpeer_17',['anetformatpeer',['../net_8h.html#a988b8b0c7f9f9ae97c80193766d2400c',1,'anetFormatPeer(int fd, char *ip, size_t ip_len, int *port):&#160;net.c'],['../net_8c.html#a988b8b0c7f9f9ae97c80193766d2400c',1,'anetFormatPeer(int fd, char *ip, size_t ip_len, int *port):&#160;net.c']]],
-  ['anetkeepalive_18',['anetkeepalive',['../net_8c.html#a4595984ff27c62c664b7b0dd801628e1',1,'anetKeepAlive(char *err, int fd, int interval):&#160;net.c'],['../net_8h.html#a4595984ff27c62c664b7b0dd801628e1',1,'anetKeepAlive(char *err, int fd, int interval):&#160;net.c']]],
-  ['anetnonblock_19',['anetnonblock',['../net_8h.html#a0ffab7741e0d2152c02a6af6f3048cae',1,'anetNonBlock(char *err, int fd):&#160;net.c'],['../net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae',1,'anetNonBlock(char *err, int fd):&#160;net.c']]],
-  ['anetseterror_20',['anetSetError',['../net_8c.html#a8a4316a91f1a791c71b6b97c083c609b',1,'net.c']]],
-  ['anetsetreuseaddr_21',['anetSetReuseAddr',['../net_8c.html#af064e4d76c847c05fc82392ab9991f34',1,'net.c']]],
-  ['anettcpconnect_22',['anettcpconnect',['../net_8h.html#a15a854d127038b664f3ad6ad21464c64',1,'anetTcpConnect(char *err, const char *host, int port):&#160;net.c'],['../net_8c.html#a15a854d127038b664f3ad6ad21464c64',1,'anetTcpConnect(char *err, const char *host, int port):&#160;net.c']]],
-  ['anettcpserver_23',['anettcpserver',['../net_8h.html#a2637a681b73d89c8b6a7b0ca95afd07c',1,'anetTcpServer(char *err, int port, char *bindaddr, int backlog):&#160;net.c'],['../net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c',1,'anetTcpServer(char *err, int port, char *bindaddr, int backlog):&#160;net.c']]],
-  ['appendserversaveparam_24',['appendServerSaveParam',['../redis_8c.html#a4229f995809e04db784e17e0d8e5821c',1,'redis.c']]]
+  ['anetiowrite_18',['anetiowrite',['../net_8h.html#ae489eda1d386253db9cfb9ab938da1b3',1,'anetIOWrite(int fd, char *buf, int len):&#160;net.c'],['../net_8c.html#ae489eda1d386253db9cfb9ab938da1b3',1,'anetIOWrite(int fd, char *buf, int len):&#160;net.c']]],
+  ['anetkeepalive_19',['anetkeepalive',['../net_8h.html#a4595984ff27c62c664b7b0dd801628e1',1,'anetKeepAlive(char *err, int fd, int interval):&#160;net.c'],['../net_8c.html#a4595984ff27c62c664b7b0dd801628e1',1,'anetKeepAlive(char *err, int fd, int interval):&#160;net.c']]],
+  ['anetnonblock_20',['anetnonblock',['../net_8h.html#a0ffab7741e0d2152c02a6af6f3048cae',1,'anetNonBlock(char *err, int fd):&#160;net.c'],['../net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae',1,'anetNonBlock(char *err, int fd):&#160;net.c']]],
+  ['anetseterror_21',['anetSetError',['../net_8c.html#a8a4316a91f1a791c71b6b97c083c609b',1,'net.c']]],
+  ['anetsetreuseaddr_22',['anetSetReuseAddr',['../net_8c.html#af064e4d76c847c05fc82392ab9991f34',1,'net.c']]],
+  ['anettcpconnect_23',['anettcpconnect',['../net_8h.html#a15a854d127038b664f3ad6ad21464c64',1,'anetTcpConnect(char *err, const char *host, int port):&#160;net.c'],['../net_8c.html#a15a854d127038b664f3ad6ad21464c64',1,'anetTcpConnect(char *err, const char *host, int port):&#160;net.c']]],
+  ['anettcpserver_24',['anettcpserver',['../net_8h.html#a2637a681b73d89c8b6a7b0ca95afd07c',1,'anetTcpServer(char *err, int port, char *bindaddr, int backlog):&#160;net.c'],['../net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c',1,'anetTcpServer(char *err, int port, char *bindaddr, int backlog):&#160;net.c']]],
+  ['appendserversaveparam_25',['appendServerSaveParam',['../redis_8c.html#a4229f995809e04db784e17e0d8e5821c',1,'redis.c']]]
 ];

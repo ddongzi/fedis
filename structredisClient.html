@@ -75,13 +75,16 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。  
+ <a href="structredisClient.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="redis_8h_source.html">redis.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for redisClient:</div>
 <div class="dyncontent">
 <div class="center"><img src="structredisClient__coll__graph.png" border="0" usemap="#aredisClient_coll__map" alt="Collaboration graph"/></div>
 <map name="aredisClient_coll__map" id="aredisClient_coll__map">
-<area shape="rect" title=" " alt="" coords="68,372,160,397"/>
+<area shape="rect" title="client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。" alt="" coords="68,372,160,397"/>
 <area shape="rect" href="structsds.html" title=" " alt="" coords="5,269,49,295"/>
 <area shape="poly" title=" " alt="" coords="34,308,41,328,52,346,67,359,84,369,81,374,64,364,48,350,36,330,29,309"/>
 <area shape="rect" href="structredisDb.html" title=" " alt="" coords="75,269,147,295"/>
@@ -115,11 +118,18 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a7775647fe53e92c637f536a2cfbb1f60" id="r_a7775647fe53e92c637f536a2cfbb1f60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structredisDb.html">redisDb</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisClient.html#a7775647fe53e92c637f536a2cfbb1f60">db</a></td></tr>
 <tr class="separator:a7775647fe53e92c637f536a2cfbb1f60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a33cb5fce559ba48490f7b67b5f7d7e" id="r_a7a33cb5fce559ba48490f7b67b5f7d7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structredisClient.html#ad73b843abd97579c3d2b367d52cd301e">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisClient.html#a7a33cb5fce559ba48490f7b67b5f7d7e">argc</a></td></tr>
+<tr class="memdesc:a7a33cb5fce559ba48490f7b67b5f7d7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">参数个数  <br /></td></tr>
 <tr class="separator:a7a33cb5fce559ba48490f7b67b5f7d7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a386c035ede60ca037d1b782bdadac641" id="r_a386c035ede60ca037d1b782bdadac641"><td class="memItemLeft" align="right" valign="top"><a class="el" href="robj_8h.html#a8c83f616794ff64f416ca3f1c378f45f">robj</a> **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisClient.html#a386c035ede60ca037d1b782bdadac641">argv</a></td></tr>
+<tr class="memdesc:a386c035ede60ca037d1b782bdadac641"><td class="mdescLeft">&#160;</td><td class="mdescRight">参数数组  <br /></td></tr>
 <tr class="separator:a386c035ede60ca037d1b782bdadac641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a146a2c863e5b4ba8b29ccd815e9c4a14" id="r_a146a2c863e5b4ba8b29ccd815e9c4a14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structredisClient.html#ad73b843abd97579c3d2b367d52cd301e">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisClient.html#a146a2c863e5b4ba8b29ccd815e9c4a14">replState</a></td></tr>
+<tr class="memdesc:a146a2c863e5b4ba8b29ccd815e9c4a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">用于主服务器维护某个从服务器同步状态。  <br /></td></tr>
+<tr class="separator:a146a2c863e5b4ba8b29ccd815e9c4a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。 </p>
+</div><h2 class="groupheader">Field Documentation</h2>
 <a id="a7a33cb5fce559ba48490f7b67b5f7d7e" name="a7a33cb5fce559ba48490f7b67b5f7d7e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7a33cb5fce559ba48490f7b67b5f7d7e">&#9670;&#160;</a></span>argc</h2>
 
@@ -131,6 +141,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>参数个数 </p>
 
 </div>
 </div>
@@ -145,6 +157,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>参数数组 </p>
 
 </div>
 </div>
@@ -215,6 +229,22 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a146a2c863e5b4ba8b29ccd815e9c4a14" name="a146a2c863e5b4ba8b29ccd815e9c4a14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a146a2c863e5b4ba8b29ccd815e9c4a14">&#9670;&#160;</a></span>replState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structredisClient.html#ad73b843abd97579c3d2b367d52cd301e">int</a> redisClient::replState</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>用于主服务器维护某个从服务器同步状态。 </p>
 
 </div>
 </div>

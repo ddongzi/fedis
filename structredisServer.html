@@ -89,7 +89,7 @@ Collaboration diagram for redisServer:</div>
 <area shape="poly" title=" " alt="" coords="96,274,104,277,108,284,99,293,82,295,81,290,97,288,103,284,101,282,94,279"/>
 <area shape="rect" href="structredisDb.html" title=" " alt="" coords="367,271,439,297"/>
 <area shape="poly" title=" " alt="" coords="411,309,447,478,442,479,406,311"/>
-<area shape="rect" href="structredisClient.html" title=" " alt="" coords="261,376,353,401"/>
+<area shape="rect" href="structredisClient.html" title="client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。" alt="" coords="261,376,353,401"/>
 <area shape="poly" title=" " alt="" coords="388,309,349,354,323,378,320,374,345,350,384,306"/>
 <area shape="rect" href="structdict.html" title=" " alt="" coords="416,181,463,207"/>
 <area shape="poly" title=" " alt="" coords="456,218,461,230,461,245,463,350,463,396,458,455,453,479,448,478,453,454,458,396,458,350,455,245,455,231,451,220"/>
@@ -163,6 +163,7 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a2f487d267bf6c548d533f7a2add7e7f5" id="r_a2f487d267bf6c548d533f7a2add7e7f5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#a2f487d267bf6c548d533f7a2add7e7f5">masterport</a></td></tr>
 <tr class="separator:a2f487d267bf6c548d533f7a2add7e7f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abeac38517583ae4eb20de5ff7013d93f" id="r_abeac38517583ae4eb20de5ff7013d93f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#abeac38517583ae4eb20de5ff7013d93f">replState</a></td></tr>
+<tr class="memdesc:abeac38517583ae4eb20de5ff7013d93f"><td class="mdescLeft">&#160;</td><td class="mdescRight">（从字段）状态: 从服务器维护自己主从复制状态。  <br /></td></tr>
 <tr class="separator:abeac38517583ae4eb20de5ff7013d93f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e6b5cbb6723ee5e2173ff513e0d1958" id="r_a3e6b5cbb6723ee5e2173ff513e0d1958"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#a3e6b5cbb6723ee5e2173ff513e0d1958">dirty</a></td></tr>
 <tr class="separator:a3e6b5cbb6723ee5e2173ff513e0d1958"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,6 +173,8 @@ Data Fields</h2></td></tr>
 <tr class="separator:a62ca2a88f6596215921f502155c92a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e0c5e159942d24d12007910ded06992" id="r_a9e0c5e159942d24d12007910ded06992"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structsaveparam.html">saveparam</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#a9e0c5e159942d24d12007910ded06992">saveParams</a></td></tr>
 <tr class="separator:a9e0c5e159942d24d12007910ded06992"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a8708b8e49469f5d6d0d3f1ad21524a" id="r_a6a8708b8e49469f5d6d0d3f1ad21524a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#a6a8708b8e49469f5d6d0d3f1ad21524a">rdbfd</a></td></tr>
+<tr class="separator:a6a8708b8e49469f5d6d0d3f1ad21524a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b074fa7c9725be76f65c2672c4eec9b" id="r_a2b074fa7c9725be76f65c2672c4eec9b"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#a2b074fa7c9725be76f65c2672c4eec9b">rdbFileName</a></td></tr>
 <tr class="separator:a2b074fa7c9725be76f65c2672c4eec9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f1600d13a85184750b3159c2c431acd" id="r_a0f1600d13a85184750b3159c2c431acd"><td class="memItemLeft" align="right" valign="top">pid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structredisServer.html#a0f1600d13a85184750b3159c2c431acd">rdbChildPid</a></td></tr>
@@ -476,6 +479,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a id="a6a8708b8e49469f5d6d0d3f1ad21524a" name="a6a8708b8e49469f5d6d0d3f1ad21524a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a8708b8e49469f5d6d0d3f1ad21524a">&#9670;&#160;</a></span>rdbfd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int redisServer::rdbfd</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2b074fa7c9725be76f65c2672c4eec9b" name="a2b074fa7c9725be76f65c2672c4eec9b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b074fa7c9725be76f65c2672c4eec9b">&#9670;&#160;</a></span>rdbFileName</h2>
 
@@ -501,6 +518,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>（从字段）状态: 从服务器维护自己主从复制状态。 </p>
 
 </div>
 </div>

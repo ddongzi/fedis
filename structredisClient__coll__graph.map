@@ -1,5 +1,5 @@
 <map id="redisClient" name="redisClient">
-<area shape="rect" id="Node000001" title=" " alt="" coords="68,372,160,397"/>
+<area shape="rect" id="Node000001" title="client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。" alt="" coords="68,372,160,397"/>
 <area shape="rect" id="Node000002" href="$structsds.html" title=" " alt="" coords="5,269,49,295"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="34,308,41,328,52,346,67,359,84,369,81,374,64,364,48,350,36,330,29,309"/>
 <area shape="rect" id="Node000003" href="$structredisDb.html" title=" " alt="" coords="75,269,147,295"/>

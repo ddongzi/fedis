@@ -13,9 +13,13 @@ var searchData=
   ['redis_5fset_10',['REDIS_SET',['../robj_8h.html#a64943c587dfc07244baf7360a0d4e7ababaca408f1dcb86fdbb805941d1e1e0bd',1,'robj.h']]],
   ['redis_5fstring_11',['REDIS_STRING',['../robj_8h.html#a64943c587dfc07244baf7360a0d4e7abab13f30d89c51226bf4b81ec5abc0cff5',1,'robj.h']]],
   ['redis_5fzset_12',['REDIS_ZSET',['../robj_8h.html#a64943c587dfc07244baf7360a0d4e7aba87e3650a411619a9027d26378490baeb',1,'robj.h']]],
-  ['repl_5fstate_5fconnected_13',['REPL_STATE_CONNECTED',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcdacce0d4d8cdd01d924ee3bb1b4abea3fc',1,'redis.h']]],
-  ['repl_5fstate_5fconnecting_14',['REPL_STATE_CONNECTING',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda1a6891318fc936f630cfe2be5274b572',1,'redis.h']]],
-  ['repl_5fstate_5fnone_15',['REPL_STATE_NONE',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda3215ce4cdbc04f54bc8af2922a9483ff',1,'redis.h']]],
-  ['repl_5fstate_5fsend_5fsync_16',['REPL_STATE_SEND_SYNC',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda7e255b43b7d125ee4662184c82961063',1,'redis.h']]],
-  ['repl_5fstate_5ftransfer_17',['REPL_STATE_TRANSFER',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcdac6bfcabb9e361b7e6bf43bd3c9301b01',1,'redis.h']]]
+  ['repl_5fstate_5fmaster_5fconnected_13',['REPL_STATE_MASTER_CONNECTED',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcdab70fe740f0210f488c388aedd71f00d4',1,'redis.h']]],
+  ['repl_5fstate_5fmaster_5fsend_5frdb_14',['REPL_STATE_MASTER_SEND_RDB',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda5f86ecc335789c37d82c9d9db9cefcb8',1,'redis.h']]],
+  ['repl_5fstate_5fmaster_5fwait_5fsend_5ffullsync_15',['REPL_STATE_MASTER_WAIT_SEND_FULLSYNC',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda0077ca7c56be2b561d57e5b147262776',1,'redis.h']]],
+  ['repl_5fstate_5fslave_5f_5fnone_16',['REPL_STATE_SLAVE__NONE',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda9f8e91e885dc74430cf19d1af7a77ff2',1,'redis.h']]],
+  ['repl_5fstate_5fslave_5fconnected_17',['REPL_STATE_SLAVE_CONNECTED',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda55b46137f8f75997cba02ec2e3289b00',1,'redis.h']]],
+  ['repl_5fstate_5fslave_5fconnecting_18',['REPL_STATE_SLAVE_CONNECTING',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda9239b6632af0cf4f135533d20229fe16',1,'redis.h']]],
+  ['repl_5fstate_5fslave_5fsend_5freplconf_19',['REPL_STATE_SLAVE_SEND_REPLCONF',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcda5210bcab4a91e3cf909c1c1587bc58a3',1,'redis.h']]],
+  ['repl_5fstate_5fslave_5fsend_5fsync_20',['REPL_STATE_SLAVE_SEND_SYNC',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcdaed2fc816313d1dfda88ba8c764e69885',1,'redis.h']]],
+  ['repl_5fstate_5fslave_5ftransfer_21',['REPL_STATE_SLAVE_TRANSFER',['../redis_8h.html#a12f1a76c8319cd9d6a89be03bf78cbcdaf08041c6046444892da3e8845b93bf90',1,'redis.h']]]
 ];
