@@ -40,20 +40,44 @@ struct sharedObjects {
 };
 
 
+
+
+
+// 主从复制状态
+enum REPL_STATE {
+    // 从服务器server.replState 字段
+    REPL_STATE_SLAVE__NONE,          // (从）未启用复制
+    REPL_STATE_SLAVE_CONNECTING,    // 正在连接主服务器
+    REPL_STATE_SLAVE_SEND_REPLCONF,   // 发送port号
+    REPL_STATE_SLAVE_SEND_SYNC,    // 发送SYNC请求
+    REPL_STATE_SLAVE_TRANSFER,      // 接收RDB文件
+    REPL_STATE_SLAVE_CONNECTED,      // 正常复制中
+    // 主服务器维护主向从的状态。
+    REPL_STATE_MASTER_WAIT_SEND_FULLSYNC,  // 等待FULLSYNC发送
+    REPL_STATE_MASTER_SEND_RDB, // 正在发送RDB
+    REPL_STATE_MASTER_CONNECTED, // 主认为此次同步完成
+
+};
+
 #define REDIS_CLIENT_NORMAL 0
 #define REDIS_CLIENT_MASTER 1
 #define REDIS_CLIENT_SLAVE 2
 
-/* client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。 */
+/**
+ * @struct redisClient
+ * @brief  client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。
+ * 
+ */
 typedef struct redisClient {
     int fd;
-    int flags;  // [CLIENT_MASTER, CLIENT_SLAVE, CLIENT_NORMAL(默认普通客户端)]
+    int flags;  ///<
     sds* readBuf;
     sds* writeBuf;
     int dbid;
     redisDb* db;
-    int argc;   // 参数个数
-    robj** argv;    // 参数数组
+    int argc;   ///< 参数个数
+    robj** argv;    ///< 参数数组
+    int replState; ///< 用于主服务器维护某个从服务器同步状态。
 } redisClient;
 redisClient *redisClientCreate(int fd);
 void processClientQueryBuf(redisClient* client);
@@ -73,15 +97,6 @@ struct saveparam {
     int changes; // 保存条件：修改数
 };
 
-
-
-enum REPL_STATE {
-    REPL_STATE_NONE,          // 未启用复制
-    REPL_STATE_CONNECTING,    // 正在连接主服务器
-    REPL_STATE_SEND_SYNC,    // 发送SYNC请求
-    REPL_STATE_TRANSFER,      // 接收RDB文件
-    REPL_STATE_CONNECTED      // 正常复制中
-};
 
 struct redisServer {
 
@@ -118,7 +133,7 @@ struct redisServer {
     redisClient* master; // （从字段）主客户端
     char* masterhost; // （从字段）主host
     int masterport; // （从字段）主port
-    int replState; // （从字段）状态
+    int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
 
 
     // 模块化
@@ -130,6 +145,7 @@ struct redisServer {
     struct saveparam* saveParams; // SAVE条件数组
     
     // RDB持久化
+    int rdbfd;  
     char* rdbFileName; //
     pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
     int isBgSaving; // 正在BGSAVE
@@ -148,6 +164,7 @@ void selectDB(redisClient* client, int dbid);
 void sendPingToMaster();
 void sendReplconfToMaster();
 void sendSyncToMaster();
+void sendReplconfAckToMaster();
 
-
+void addWrite(redisClient* client, robj* obj) ;
 #endif

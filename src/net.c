@@ -248,6 +248,38 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
     // 注册写事件
     aeCreateFileEvent(el, fd, AE_WRITABLE, sendReplyToClient, client);
 }
+/**
+ * @brief REPL_STATE_MASTER_SEND_RDB下的写事件处理
+ * 
+ * @param [in] el 
+ * @param [in] fd 
+ * @param [in] privdata 
+ */
+void sendRDBChunk(aeEventLoop *el, int fd, void *privdata )
+{
+    redisClient *client = (redisClient*) privdata;
+    char* buf = calloc(2048, 1);
+    ssize_t nread = read(server->rdbfd, buf, 2048);
+    if (nread > 0) {
+        anetIOWrite(fd, buf, nread);
+        aeDeleteFileEvent(el, fd, AE_WRITABLE);
+    }
+}
+/**
+ * @brief 主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB
+ * 
+ * @param [in] client 
+ */
+void saveRDBToSlave(redisClient* client)
+{
+    int rdbfd = open(server->rdbFileName , O_RDONLY);
+    if (rdbfd < 0) return;
+    server->rdbfd = rdbfd;
+    // 覆盖sendReplytoclient
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendRDBChunk, client);
+}
+
+
 void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
 {
     redisClient *client = (redisClient*) privdata;
@@ -259,13 +291,41 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
     }
     printf("Send %d bytes: %s\n", nwritten, msg);
     sdsclear(client->writeBuf);
-    aeDeleteFileEvent(el, fd, AE_WRITABLE);
+
+    // 状态转换
+    if (client->replState == REPL_STATE_MASTER_WAIT_SEND_FULLSYNC) {
+        client->replState = REPL_STATE_MASTER_SEND_RDB;
+        saveRDBToSlave(client);
+    } else {
+        aeDeleteFileEvent(el, fd, AE_WRITABLE);
+    }
+
+
+
 }
 
 
 // TODO redis进程主动退出清理
 void netCleanup()
 {
+}
+
+/**
+ * @brief stream fd直接发送，与 addwrite加入buf延迟发送不同。！
+ *  在发送RDB文件使用。
+ * @param [in] fd 
+ * @param [in] buf 
+ * @param [in] len 
+ * @return int 
+ */
+int anetIOWrite(int fd, char *buf, int len)
+{
+    int nwritten = send(fd, buf, len, 0);
+    if (nwritten == -1) {
+        printf("anet write error: %s\n", strerror(errno));
+        return NET_ERR;
+    }
+    return nwritten;
 }
 
 /**
@@ -300,7 +360,7 @@ int anetTcpConnect(char* err, const char* host, int port)
             continue;  // 创建 socket 失败，尝试下一个地址
         }
         if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-            // FIXME: telnet可以，这不可以
+
             perror("connect failed fd ");
             close(sockfd);
             continue;  // 连接失败，尝试下一个地址
@@ -328,76 +388,140 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
 {
     switch (server->replState)
     {
-    case REPL_STATE_CONNECTING:
-        //  发送PING
+    case REPL_STATE_SLAVE_CONNECTING:
+        // FIXME  发送PING。  connect之后没反应 
         sendPingToMaster();
         break;
-    case REPL_STATE_SEND_SYNC:
+    case REPL_STATE_SLAVE_SEND_REPLCONF:
+        sendReplconfToMaster();
+        break;
+    case REPL_STATE_SLAVE_SEND_SYNC:
         //  发送SYNC
         sendSyncToMaster();
         break;
-    case REPL_STATE_CONNECTED:
-        // TODO 发送REPLCONF ACK
-        sendReplconfAckToMaster();
+    case REPL_STATE_SLAVE_CONNECTED:
+        //  发送REPLCONF ACK
+        sendReplAckToMaster();
         break;
     default:
         break;
     }
 
     char* msg = server->master->writeBuf->buf;
+    if (sdslen(server->master->writeBuf) == 0) {
+        // 如果没有数据，不可写
+        printf("NO buffer available\n");
+        aeDeleteFileEvent(el, fd, AE_WRITABLE);
+        return;
+    }
+
     int nwritten = write(fd, msg, strlen(msg));
     if (nwritten == -1) {
         printf("write failed\n");
         close(fd);
         return;
     }
-
+    printf("OUT<<<< %s\n", msg);
     sdsclear(server->master->writeBuf);
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
-    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
 }
 
-void repliReadHandler(aeEventLoop *el, int fd, void* privData)
+
+/**
+ * @brief 命令传播：作为正常服务器处理命令
+ * 
+ */
+void handleCommandPropagate()
 {
-    redisClient* client = server->master;
+    printf("handle commandPropagate\n");
+}
+
+/**
+ * @brief read 到client.readBuf。 用于文本字符串格式
+ * @param [in] client 
+ * @param [in] len 读取长度
+ */
+void readToReadBuf(redisClient* client, int len)
+{
+    sds* readBuf = client->readBuf;
     char buf[1024];
     memset(buf, 0, sizeof(buf));
     int nread;
-    nread = read(fd, buf, sizeof(buf));
+    nread = read(client->fd, buf, len);
     if (nread == -1) {
-        printf("read failed\n");
-        close(fd);
         return;
     }
     if (nread == 0) {
-        printf("master disconnected\n");
-        close(fd);
+        // FIXME 应该标记正确清理，fd关闭,client状态也更新
+        // close(fd);
         return;
     }
+    sdscat(client->readBuf, buf);
+}
+
+/**
+ * @brief read 到分配的buf，用于二进制文件等
+ *  比如接受RDB文件
+ * @param [in] client 
+ * @param [in] buf 
+ * @param [in] size
+ */
+int readToBuf(redisClient* client, char* buf, int size)
+{
+    int nread;
+    nread = read(client->fd, buf, size);
+    if (nread == -1) {
+        return -1;
+    }
+    if (nread == 0) {
+        return 0;
+    }
+    return nread;
+}
+
+
+void repliReadHandler(aeEventLoop *el, int fd, void* privData)
+{
     switch (server->replState) {
-        case REPL_STATE_CONNECTING:
-            if (strcmp(buf, "+PONG") == 0) {
-                // 收到PONG, 发起REPLCONF
-                sendReplconfToMaster();
-                server->replState = REPL_STATE_SEND_SYNC;
+        case REPL_STATE_SLAVE_CONNECTING:
+            readToReadBuf(server->master, 5);
+            if (strncmp(server->master->readBuf->buf, "+PONG", 5) == 0) {
+                // 收到PONG, 转到REPLCONF
+                server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
             }
-            aeDeleteFileEvent(el, fd, AE_READABLE);
+            sdsclear(server->master->readBuf);
+            // aeDeleteFileEvent(el, fd, AE_READABLE); 此时没东西往里写，无需关注读
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
-        case REPL_STATE_SEND_SYNC:
-            if (strncmp(buf, "+FULLSYNC", 9) == 0) {
-                // 收到FULLSYNC, 后面就跟着RDB文件
-                server->replState = REPL_STATE_TRANSFER;
+        case REPL_STATE_SLAVE_SEND_REPLCONF:
+            readToReadBuf(server->master, 3);
+            if (strncmp(server->master->readBuf->buf, "+OK", 3) == 0) {
+                // 收到REPLCONF OK, 转到REPLCONF
+                server->replState = REPL_STATE_SLAVE_SEND_SYNC;
             }
-
+            sdsclear(server->master->readBuf);
+            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+        case REPL_STATE_SLAVE_SEND_SYNC:
+            readToReadBuf(server->master, 9);
+            if (strncmp(server->master->readBuf->buf, "+FULLSYNC", 9) == 0) {
+                // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
+                server->replState = REPL_STATE_SLAVE_TRANSFER;
+            }
             break;
-        case REPL_STATE_TRANSFER:
+        case REPL_STATE_SLAVE_TRANSFER:
+            char* buf = calloc(2048, 1);
+            int nread = readToBuf(server->master, buf, 2048);
             receiveRDBfile(buf, nread);
-            server->replState = REPL_STATE_CONNECTED;
+            rdbLoad();
+            sdsclear(server->master->readBuf);
+            server->replState = REPL_STATE_SLAVE_CONNECTED;
+            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
-        case REPL_STATE_CONNECTED:
-            // TODO  后续命令传播
-            handleCommandPropagate(buf, nread);
+        case REPL_STATE_SLAVE_CONNECTED:
+            readToReadBuf(server->master, 3);
+            if (strncmp(server->master->readBuf->buf, "+OK", 3) == 0) {
+                handleCommandPropagate();
+            }
             break;
         default:
             break;
@@ -422,7 +546,7 @@ void connectMaster()
     anetEnableTcpNoDelay(NULL, fd);
 
     server->master = redisClientCreate(fd);
-    server->replState = REPL_STATE_CONNECTING;
+    server->replState = REPL_STATE_SLAVE_CONNECTING;
     aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
-    
+    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
 }

@@ -68,7 +68,6 @@ void commandGetProc(redisClient* client)
         addWrite(client, robjCreateStringObject("-ERR key not found"));
     } else {
         addWrite(client, res);
-        free(buf);
     }
 }
 void commandDelProc(redisClient* client)
@@ -128,7 +127,18 @@ void commandSyncProc(redisClient* client)
 {
 
     addWrite(client, shared.sync);
-    // 同时发送RDB
+    client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
+}
+
+void commandReplconfProc(redisClient* client)
+{
+    //  暂不处理，不影响
+    addWrite(client, shared.ok);
+}
+void commandReplACKProc(redisClient* client)
+{
+    //  ���不处理，不影响
+    addWrite(client, shared.ok);
 }
 
 redisCommand commandsTable[] = {
@@ -139,7 +149,9 @@ redisCommand commandsTable[] = {
     {"BYE", commandByeProc, 1},
     {"SLAVEOF", commandSlaveofProc, 3},
     {"PING", commandPingProc, 1},
-    {"SYNC", commandSyncProc, 1}
+    {"REPLCONF", commandReplconfProc, 3},
+    {"SYNC", commandSyncProc, 1},
+    {"REPLACK", commandReplACKProc, 1}
 };
 
 
@@ -375,11 +387,11 @@ void createSharedObjects()
         shared.integers[i] = robjCreateStringObject(buf);
     }
     // 2. RESP
-    shared.ok = robjCreateStringObject("+ok\r\n");
+    shared.ok = robjCreateStringObject("+OK\r\n");
     shared.pong = robjCreateStringObject("+PONG\r\n");
     shared.err = robjCreateStringObject("-err\r\n");
     shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
-    shared.bye = robjCreateStringObject("-bye\r\n");
+    shared.bye = robjCreateStringObject("+bye\r\n");
     shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
     shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
 
@@ -522,6 +534,30 @@ void processClientQueryBuf(redisClient* client)
 
 /* 从角色： */
 
+char * respFormat(int argc, char** argv)
+{
+    // 计算 RESP 总长度
+    size_t total_len = 0;
+    for (int i = 0; i < argc; i++) {
+        total_len += snprintf(NULL, 0, "$%zu\r\n%s\r\n", strlen(argv[i]), argv[i]);
+    }
+    total_len += snprintf(NULL, 0, "*%d\r\n", argc);
+
+    // 分配 RESP 命令的字符串
+    char *resp_cmd = (char *)malloc(total_len + 1);
+    if (!resp_cmd) {
+        return NULL;
+    }
+
+    // 构造 RESP 字符串
+    char *ptr = resp_cmd;
+    ptr += sprintf(ptr, "*%d\r\n", argc);
+    for (int i = 0; i < argc; i++) {
+        ptr += sprintf(ptr, "$%zu\r\n%s\r\n", strlen(argv[i]), argv[i]);
+    }
+
+    return resp_cmd;
+}
 
 void sendPingToMaster()
 {
@@ -531,21 +567,28 @@ void sendPingToMaster()
 
 void sendSyncToMaster()
 {
-    char buf[128];
-    memset(buf, 0, sizeof(buf));
+    char* argv[] = {"SYNC"};
+    char* buf = respFormat(1, argv);
     //  SYNC
-    snprintf(buf, sizeof(buf), "*1\r\n$4\r\nSYNC\r\n");
     addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
 
-    // 
+}
+void sendReplAckToMaster()
+{
+    char* argv[] = {"REPLACK"};
+    char* buf = respFormat(1, argv);
+    //  REPLCONF ACK <从dbid>
+    addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
 }
 
 void sendReplconfToMaster()
 {
-    char buf[128];
-    memset(buf, 0, sizeof(buf));
     //  REPLCONF listening-port <从监听port>
-    snprintf(buf, sizeof(buf), "*3\r\n$8\r\nREPLCONF\r\n$13\r\nlistening-port\r\n$4\r\n6379\r\n");
+    char* argv[] = {"REPLCONF", "listen-port", "6666"};
+    char* buf = respFormat(3, argv);
     addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
 }
 

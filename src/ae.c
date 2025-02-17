@@ -1,3 +1,20 @@
+/**
+ * @file ae.c
+ * @author ddongzi
+ * @brief 
+ * @version 0.1
+ * @date 2025-02-17
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * @note 
+ *  1. 为什么读事件不需要删除，写事件需要删除？
+ *      读事件由对端触发，只有对端发来东西可触发。
+ *      写事件如果不删除，那么在可写状态下，一直会调用写处理函数。 所以写处理，写完就会关闭。 想写就需要显示开启
+ */
+
+
+
 #include "ae.h"
 #include <stdlib.h>
 #include <stddef.h>

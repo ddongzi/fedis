@@ -323,5 +323,5 @@ void receiveRDBfile(char* buf, int n)
     fclose(fp);
     printf("Save the RDB file success\n");
     
-    rdbLoad();
 }
+

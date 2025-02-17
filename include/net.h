@@ -31,7 +31,8 @@ int anetNonBlock(char *err, int fd);
 int anetEnableTcpNoDelay(char *err, int fd);
 int anetKeepAlive(char *err, int fd, int interval);
 int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port);
-
+// 无buf缓存延迟，直接fd发送
+int anetIOWrite(int fd, char *buf, int len);
 int anetTcpConnect(char* err, const char* host, int port);
 void connectMaster();
 
