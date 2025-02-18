@@ -321,7 +321,7 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
         prepareShutdown();
     }
 
-    return 1000;
+    return 2000;
 }
 /**
  * @brief 从服务器定时

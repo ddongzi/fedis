@@ -47,6 +47,7 @@ static int aeApiCreate(aeEventLoop* eventLoop)
     // ET 模式
 
     eventLoop->apiState = apiState;
+    printf("Create epoll instance. epfd = %d\n", apiState->epfd);
     return AE_OK;
 }
 
@@ -79,6 +80,7 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
         }
         eventLoop->fireEvents[i].fd = e->data.fd;
         eventLoop->fireEvents[i].mask = mask;
+        printf("aeapipoll fd[%d] event[%s] come.\n", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
     }
     return numevents;
 }
@@ -151,7 +153,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
     if (fd > loop->maxfd) {
         loop->maxfd = fd;
     }
-    printf("● create file event for fd[%d].\n", fd);
+    printf("● create %s event for fd %d.\n", mask == AE_WRITABLE ? "READ": "WRITE", fd);
     return AE_OK;
 }
 /**

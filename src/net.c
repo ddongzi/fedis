@@ -536,6 +536,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
  */
 void connectMaster()
 {
+    printf("Connecting Master\n");
     int fd = anetTcpConnect(server->neterr, server->masterhost, server->masterport);
     if (fd < 0) {
         printf("connectMaster failed: \n");
@@ -547,6 +548,7 @@ void connectMaster()
 
     server->master = redisClientCreate(fd);
     server->replState = REPL_STATE_SLAVE_CONNECTING;
+    // 有问题，不能同时注册？
     aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
 }
