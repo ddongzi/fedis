@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include "redis.h"
 #include "rdb.h"
+#include "log.h"
 
 static void repliReadHandler(aeEventLoop *el, int fd, void* privData);
 static void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
@@ -76,9 +77,7 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
     hints.ai_socktype = SOCK_STREAM;    // TCP
     hints.ai_flags = AI_PASSIVE;    // 用于bind
     
-    printf("bindaddr = %s, port = %s\n", bindaddr ? bindaddr : "NULL", _port);
     rv = getaddrinfo(bindaddr, _port, &hints, &servinfo);
-    printf("getaddrinfo returned %d, servinfo = %p\n", rv, (void *)servinfo);
     if (rv != 0) {
         anetSetError(err, "getaddrinfo: %s", gai_strerror(rv));
         return NET_ERR;
@@ -107,6 +106,7 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
         anetSetError(err, "listen: %s", strerror(errno));
         return NET_ERR;
     }
+    printf("listening on port: %d addr: %s ,listen-fd: %d\n", port, bindaddr, sockfd);
     return sockfd;
 }
 
@@ -224,12 +224,16 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void* data )
     // 创建client实例
     redisClient* client = redisClientCreate(cfd);
     listAddNodeTail(server->clients, listCreateNode(client));
+
+    printf("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
+
     // 注册读事件
     aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
 }
 
 void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
 {
+    LOG_INFO("reading query from client....");
     redisClient* client = (redisClient*) privData;
     char buf[1024];
     memset(buf, 0, sizeof(buf));
@@ -244,7 +248,9 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
     }
     
     sdscat(client->readBuf, buf);
+    LOG_INFO("process client query ....");
     processClientQueryBuf(client);
+    LOG_INFO("process client query done");
     // 注册写事件
     aeCreateFileEvent(el, fd, AE_WRITABLE, sendReplyToClient, client);
 }
@@ -289,7 +295,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
     if (nwritten == -1) {
         return;
     }
-    printf("Send %d bytes: %s\n", nwritten, msg);
+    LOG_INFO("reply to client %d, %s", client->fd, msg);
     sdsclear(client->writeBuf);
 
     // 状态转换
@@ -299,8 +305,6 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
     } else {
         aeDeleteFileEvent(el, fd, AE_WRITABLE);
     }
-
-
 
 }
 
@@ -536,19 +540,21 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
  */
 void connectMaster()
 {
-    printf("Connecting Master\n");
     int fd = anetTcpConnect(server->neterr, server->masterhost, server->masterport);
     if (fd < 0) {
-        printf("connectMaster failed: \n");
+        printf("connectMaster failed: %s\n", strerror(errno));
         return;
     }
     // 非阻塞
     anetNonBlock(NULL, fd);
     anetEnableTcpNoDelay(NULL, fd);
 
+    int err = 0;
+
     server->master = redisClientCreate(fd);
     server->replState = REPL_STATE_SLAVE_CONNECTING;
-    // 有问题，不能同时注册？
+    LOG_INFO("Connecting Master fd %d\n", fd);
+    // FIXME epoll 没有感知到就绪写，
     aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
 }

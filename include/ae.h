@@ -64,7 +64,7 @@ typedef struct aeEventLoop {
     int maxsize;    // 支持的最大fd-1。即events数组大小。
     aeFileEvent* events;    // 已注册事件数组。events[0]对应fd为0.
     aeFireEvent* fireEvents;    // 触发的事件队列。
-    aeApiState* apiState;   //  IO多路复用状态
+    aeApiState* apiState;   //  对应的epoll事件。 上述为封装。
     int stop;   // 事件循环停止标志
 
     aeTimeEvent* timeEventHead; // 时间事件链表头

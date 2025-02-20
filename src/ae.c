@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "log.h"
 
 /**
  * @brief 初始化apistate
@@ -60,13 +61,16 @@ static int aeApiCreate(aeEventLoop* eventLoop)
  */
 int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
 {
+    // FIXME connectmaster 添加epoll正确，但是没有触发write就绪。
     int numevents;
+    LOG_INFO("epoll wait ... time: %d ms", tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1);
     numevents = epoll_wait(eventLoop->apiState->epfd, 
         eventLoop->apiState->events, 
         eventLoop->maxsize, 
         tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1
         );
     if (numevents < 0) {
+        perror("epoll_wait error: numevents < 0");
         return numevents;
     }
     for (int i = 0; i < numevents; i++) {
@@ -78,9 +82,13 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
         if (e->events & EPOLLOUT) {
             mask |= AE_WRITABLE;
         }
+        if (e->events & EPOLLERR) {
+            printf("epoll_error on fd[%d]\n", e->data.fd);
+        }
+
         eventLoop->fireEvents[i].fd = e->data.fd;
         eventLoop->fireEvents[i].mask = mask;
-        printf("aeapipoll fd[%d] event[%s] come.\n", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
+        LOG_INFO("epoll fd[%d] event[%s] come.\n", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
     }
     return numevents;
 }
@@ -110,9 +118,19 @@ aeEventLoop *aeCreateEventLoop(int maxsize)
 {
     aeEventLoop* eventLoop;
     eventLoop = malloc(sizeof(aeEventLoop));
+    // 自维持事件
     eventLoop->maxsize = maxsize;
-    eventLoop->events = malloc(sizeof(aeFileEvent) * maxsize);
-    eventLoop->fireEvents = malloc(sizeof(aeFileEvent) * maxsize);
+    eventLoop->events = calloc(maxsize, sizeof(aeFileEvent) );
+    eventLoop->fireEvents = calloc(maxsize, sizeof(aeFileEvent));
+    for (int i = 0; i < maxsize; i++) {
+        eventLoop->events[i].data = NULL;
+        eventLoop->events[i].mask = AE_NONE;    // 初始不监听i 
+        eventLoop->events[i].rfileProc = NULL;
+        eventLoop->events[i].wfileProc = NULL;
+    }
+    memcpy(eventLoop->fireEvents, eventLoop->events, maxsize * sizeof(aeFileEvent));
+
+    // epoll事件维持
     if (aeApiCreate(eventLoop) == AE_ERROR) {
         return NULL;
     }
@@ -139,6 +157,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
     
     // IO复用监听注册
     if (aeApiAddEvent(loop, fd, mask) == AE_ERROR) {
+
         return AE_ERROR;
     }
 
@@ -153,7 +172,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
     if (fd > loop->maxfd) {
         loop->maxfd = fd;
     }
-    printf("● create %s event for fd %d.\n", mask == AE_WRITABLE ? "READ": "WRITE", fd);
+    printf("● create %s event for fd %d.\n", mask == AE_WRITABLE ? "WRITE": "READ", fd);
     return AE_OK;
 }
 /**
@@ -184,6 +203,8 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
         printf("epoll_ctl  fd:%d, err:%s\n", fd, strerror(errno));
         return AE_ERROR;
     }
+    LOG_INFO("EPOLL CTL fd:%d, OP :%s, mask:%s\n", fd, op == EPOLL_CTL_ADD ? "add" : "mod" 
+        , mask == AE_WRITABLE ? "write" : "read");
     return AE_OK;
 }
 
@@ -316,7 +337,7 @@ int aeProcessEvents(aeEventLoop* loop, int flags)
         aeFileEvent* fe = &loop->events[loop->fireEvents[i].fd];
         int mask = loop->fireEvents[i].mask;
         int fd = loop->fireEvents[i].fd;
-        printf("event come: fd %d, ready %s\n", i, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
+        LOG_INFO("event come: fd %d, ready %s\n", fd, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
         if (fe->mask & mask & AE_READABLE) {
             fe->rfileProc(loop, fd, fe->data);
         }

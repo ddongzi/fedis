@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-
+#include "log.h"
 struct redisServer* server;
 
 struct sharedObjects shared;
@@ -305,7 +305,7 @@ void prepareShutdown()
 int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
     // TODO 
-    printf("● server cron.\n");
+    LOG_INFO("● server cron.\n");
 
     // 检查SAVE条件，执行BGSAVE    
     bgSaveIfNeeded();
