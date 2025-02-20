@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['v_0',['v',['../structdictEntry.html#a22534fab6a0d39fdd7ae10c0da85d2c7',1,'dictEntry']]],
-  ['val_1',['val',['../structdictEntry.html#a30f939fb9c159fefaaec4907e582b417',1,'dictEntry']]],
-  ['valdestructor_2',['valDestructor',['../structdictType.html#a766d7afa98206eeaff5f5d793d851b08',1,'dictType']]],
-  ['valdup_3',['valDup',['../structdictType.html#a4580ca3fd240719111cfa8cb9bcbe141',1,'dictType']]],
-  ['value_4',['value',['../structlistNode.html#a772dfdd1352f9a568bb567d65cb7b92a',1,'listNode']]]
+  ['u64_0',['u64',['../structdictEntry.html#a9beddc798bf44396445dd0d3c7975e56',1,'dictEntry']]],
+  ['udata_1',['udata',['../structlog__Event.html#a63bd6c3fc18873d4291dbd851b00aca3',1,'log_Event::udata'],['../structCallback.html#a8e866a6b66ae600e71a6b280057d8541',1,'Callback::udata'],['../log_8c.html#a697ce711b67313990d351b5c95f87aed',1,'udata:&#160;log.c']]],
+  ['unixtime_2',['unixtime',['../structredisServer.html#a23a513df1ffbeb51d16a2554416f5de5',1,'redisServer']]],
+  ['used_3',['used',['../structdictHT.html#a43a8149a14e4aa408abeb84d3a9bd27f',1,'dictHT']]]
 ];

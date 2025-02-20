@@ -17,9 +17,9 @@ var searchData=
   ['aeapiaddevent_14',['aeapiaddevent',['../ae_8h.html#ae1918ceab75e9ada567ef48aa2649da7',1,'aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask):&#160;ae.c'],['../ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7',1,'aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask):&#160;ae.c']]],
   ['aeapidelevent_15',['aeApiDelEvent',['../ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad',1,'ae.c']]],
   ['aeapipoll_16',['aeapipoll',['../ae_8h.html#a05ec294eb89d30b4ba8c7b84547fe79e',1,'aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp):&#160;ae.c'],['../ae_8c.html#a05ec294eb89d30b4ba8c7b84547fe79e',1,'aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp):&#160;ae.c']]],
-  ['aeapistate_17',['aeapistate',['../ae_8h.html#a8f2ca2036411e1b83a1df6bb1f0b39ba',1,'aeApiState:&#160;ae.h'],['../structaeApiState.html',1,'aeApiState']]],
+  ['aeapistate_17',['aeapistate',['../structaeApiState.html',1,'aeApiState'],['../ae_8h.html#a8f2ca2036411e1b83a1df6bb1f0b39ba',1,'aeApiState:&#160;ae.h']]],
   ['aecreateeventloop_18',['aecreateeventloop',['../ae_8h.html#a020ff62d04ad908e680932e7bd854db6',1,'aeCreateEventLoop(int maxsize):&#160;ae.c'],['../ae_8c.html#a020ff62d04ad908e680932e7bd854db6',1,'aeCreateEventLoop(int maxsize):&#160;ae.c']]],
-  ['aecreatefileevent_19',['aecreatefileevent',['../ae_8c.html#a382772b873fa551b64da933a4619f3bb',1,'aeCreateFileEvent(aeEventLoop *loop, int fd, int mask, aeFileProc *proc, void *data):&#160;ae.c'],['../ae_8h.html#ab1be0f8fe9f0d2a4c213c9aac91a2553',1,'aeCreateFileEvent(aeEventLoop *loop, int fd, int mask, aeFileProc *proc, void *procArg):&#160;ae.c']]],
+  ['aecreatefileevent_19',['aecreatefileevent',['../ae_8h.html#ab1be0f8fe9f0d2a4c213c9aac91a2553',1,'aeCreateFileEvent(aeEventLoop *loop, int fd, int mask, aeFileProc *proc, void *procArg):&#160;ae.c'],['../ae_8c.html#a382772b873fa551b64da933a4619f3bb',1,'aeCreateFileEvent(aeEventLoop *loop, int fd, int mask, aeFileProc *proc, void *data):&#160;ae.c']]],
   ['aecreatetimeevent_20',['aecreatetimeevent',['../ae_8h.html#ad864b2293bf51432f3d792598fbb9786',1,'aeCreateTimeEvent(aeEventLoop *loop, long long when, aeTimeProc *proc, void *procArg):&#160;ae.c'],['../ae_8c.html#a0ddb5289e19091c09104d7631c4f3e1d',1,'aeCreateTimeEvent(aeEventLoop *loop, long long ms, aeTimeProc *proc, void *data):&#160;ae.c']]],
   ['aedeletefileevent_21',['aedeletefileevent',['../ae_8h.html#af0d520b4da6ba754f03ef3db5c85a75e',1,'aeDeleteFileEvent(aeEventLoop *loop, int fd, int mask):&#160;ae.c'],['../ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e',1,'aeDeleteFileEvent(aeEventLoop *loop, int fd, int mask):&#160;ae.c']]],
   ['aedeletetimeevent_22',['aeDeleteTimeEvent',['../ae_8c.html#a58ee29667a8745b430894832049cc872',1,'ae.c']]],
@@ -43,9 +43,10 @@ var searchData=
   ['anetsetreuseaddr_40',['anetSetReuseAddr',['../net_8c.html#af064e4d76c847c05fc82392ab9991f34',1,'net.c']]],
   ['anettcpconnect_41',['anettcpconnect',['../net_8h.html#a15a854d127038b664f3ad6ad21464c64',1,'anetTcpConnect(char *err, const char *host, int port):&#160;net.c'],['../net_8c.html#a15a854d127038b664f3ad6ad21464c64',1,'anetTcpConnect(char *err, const char *host, int port):&#160;net.c']]],
   ['anettcpserver_42',['anettcpserver',['../net_8h.html#a2637a681b73d89c8b6a7b0ca95afd07c',1,'anetTcpServer(char *err, int port, char *bindaddr, int backlog):&#160;net.c'],['../net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c',1,'anetTcpServer(char *err, int port, char *bindaddr, int backlog):&#160;net.c']]],
-  ['apistate_43',['apiState',['../structaeEventLoop.html#ac719a89c6f98a2d951d8f379ca0b3970',1,'aeEventLoop']]],
-  ['appendserversaveparam_44',['appendServerSaveParam',['../redis_8c.html#a4229f995809e04db784e17e0d8e5821c',1,'redis.c']]],
-  ['argc_45',['argc',['../structredisClient.html#a7a33cb5fce559ba48490f7b67b5f7d7e',1,'redisClient']]],
-  ['argv_46',['argv',['../structredisClient.html#a386c035ede60ca037d1b782bdadac641',1,'redisClient']]],
-  ['arity_47',['arity',['../structredisCommand.html#a9c21ad3c5edaf7afa62d2cc612077fda',1,'redisCommand']]]
+  ['ap_43',['ap',['../structlog__Event.html#adeb420d9154c0bff0fbdca8bb0c3a985',1,'log_Event']]],
+  ['apistate_44',['apiState',['../structaeEventLoop.html#ac719a89c6f98a2d951d8f379ca0b3970',1,'aeEventLoop']]],
+  ['appendserversaveparam_45',['appendServerSaveParam',['../redis_8c.html#a4229f995809e04db784e17e0d8e5821c',1,'redis.c']]],
+  ['argc_46',['argc',['../structredisClient.html#a7a33cb5fce559ba48490f7b67b5f7d7e',1,'redisClient']]],
+  ['argv_47',['argv',['../structredisClient.html#a386c035ede60ca037d1b782bdadac641',1,'redisClient']]],
+  ['arity_48',['arity',['../structredisCommand.html#a9c21ad3c5edaf7afa62d2cc612077fda',1,'redisCommand']]]
 ];
