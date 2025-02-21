@@ -1,28 +1,27 @@
 <map id="anetSetError" name="anetSetError">
-<area shape="rect" id="Node000001" title=" " alt="" coords="725,107,828,132"/>
-<area shape="rect" id="Node000002" href="$net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="505,205,677,231"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="754,143,720,171,679,196,650,208,648,203,676,192,716,166,750,139"/>
-<area shape="rect" id="Node000008" href="$net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="533,107,649,132"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="711,122,649,122,649,117,711,117"/>
-<area shape="rect" id="Node000009" href="$net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="535,156,648,181"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="716,138,641,158,639,153,714,133"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="725,80,828,105"/>
+<area shape="rect" id="Node000002" href="$net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="505,153,677,179"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="742,114,678,144,645,156,643,151,676,140,740,110"/>
+<area shape="rect" id="Node000008" href="$net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="533,55,649,80"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="711,86,649,78,650,73,712,81"/>
+<area shape="rect" id="Node000009" href="$net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="535,104,648,129"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="712,104,648,112,648,107,711,98"/>
 <area shape="rect" id="Node000010" href="$net_8c.html#af064e4d76c847c05fc82392ab9991f34" title="设置SO_REUSEADDR" alt="" coords="520,5,663,31"/>
-<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="747,100,714,76,676,52,632,33,634,28,679,48,717,71,750,96"/>
-<area shape="rect" id="Node000011" href="$net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="331,56,446,81"/>
-<area shape="poly" id="edge15_Node000001_Node000011" title=" " alt="" coords="718,106,677,97,554,81,446,74,447,68,554,76,678,91,720,100"/>
-<area shape="rect" id="Node000003" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="320,119,457,144"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="524,204,504,196,412,146,414,142,506,192,526,199"/>
-<area shape="rect" id="Node000006" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="329,180,448,205"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="491,208,448,203,449,197,492,203"/>
-<area shape="rect" id="Node000004" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="147,119,233,144"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="306,134,233,134,233,129,306,129"/>
-<area shape="rect" id="Node000005" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,119,60,144"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="134,134,60,134,60,129,134,129"/>
-<area shape="rect" id="Node000007" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="108,180,272,205"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="315,195,272,195,272,190,315,190"/>
-<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="520,126,458,130,457,125,519,121"/>
-<area shape="poly" id="edge10_Node000009_Node000003" title=" " alt="" coords="521,158,457,147,458,141,522,153"/>
-<area shape="poly" id="edge11_Node000009_Node000006" title=" " alt="" coords="521,180,449,188,448,183,520,174"/>
-<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="527,37,441,59,439,53,526,32"/>
-<area shape="poly" id="edge14_Node000011_Node000004" title=" " alt="" coords="336,88,232,121,230,116,334,83"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="741,76,676,44,643,33,645,28,678,40,743,71"/>
+<area shape="rect" id="Node000003" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="320,80,457,105"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="526,152,504,144,456,120,425,108,427,103,458,116,506,140,527,147"/>
+<area shape="rect" id="Node000006" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="329,129,448,155"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="491,157,448,152,449,146,492,152"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="147,56,233,81"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="306,85,233,76,234,71,307,80"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,56,60,81"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="134,71,60,71,60,66,134,66"/>
+<area shape="rect" id="Node000007" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="108,129,272,155"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="315,145,272,145,272,139,315,139"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="520,79,458,87,457,81,519,74"/>
+<area shape="poly" id="edge10_Node000009_Node000003" title=" " alt="" coords="520,111,457,103,458,98,521,106"/>
+<area shape="poly" id="edge11_Node000009_Node000006" title=" " alt="" coords="521,128,449,137,448,132,520,123"/>
+<area shape="rect" id="Node000011" href="$net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="331,19,446,44"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="506,26,446,30,446,25,506,21"/>
+<area shape="poly" id="edge14_Node000011_Node000004" title=" " alt="" coords="319,47,234,63,233,58,318,42"/>
 </map>

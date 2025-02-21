@@ -1,8 +1,7 @@
 <map id="anetTcpServer" name="anetTcpServer">
 <area shape="rect" id="Node000001" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="5,5,120,31"/>
-<area shape="rect" id="Node000002" href="$net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="359,5,461,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="120,15,345,15,345,21,120,21"/>
-<area shape="rect" id="Node000003" href="$net_8c.html#af064e4d76c847c05fc82392ab9991f34" title="设置SO_REUSEADDR" alt="" coords="168,31,311,56"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="120,24,154,28,154,34,120,29"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="311,30,345,25,346,30,311,35"/>
+<area shape="rect" id="Node000002" href="$net_8c.html#af064e4d76c847c05fc82392ab9991f34" title="设置SO_REUSEADDR" alt="" coords="168,5,311,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="120,15,154,15,154,21,120,21"/>
+<area shape="rect" id="Node000003" href="$net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="359,5,461,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="311,15,345,15,345,21,311,21"/>
 </map>

@@ -82,35 +82,45 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="db_8h_source.html">db.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sds_8h_source.html">sds.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="robj_8h_source.html">robj.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for db.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="db_8c__incl.png" border="0" usemap="#asrc_2db_8c" alt=""/></div>
 <map name="asrc_2db_8c" id="asrc_2db_8c">
-<area shape="rect" title=" " alt="" coords="279,5,351,31"/>
-<area shape="rect" href="db_8h.html" title=" " alt="" coords="227,79,277,104"/>
-<area shape="poly" title=" " alt="" coords="306,33,273,70,269,66,302,29"/>
-<area shape="rect" href="sds_8h.html" title=" " alt="" coords="279,152,335,177"/>
-<area shape="poly" title=" " alt="" coords="317,31,311,138,305,138,311,31"/>
-<area shape="rect" href="robj_8h.html" title=" " alt="" coords="359,152,417,177"/>
-<area shape="poly" title=" " alt="" coords="323,30,378,138,374,141,318,32"/>
-<area shape="rect" href="dict_8h.html" title=" " alt="" coords="145,152,204,177"/>
-<area shape="poly" title=" " alt="" coords="241,106,199,144,196,141,238,102"/>
-<area shape="rect" title=" " alt="" coords="191,225,262,251"/>
-<area shape="poly" title=" " alt="" coords="253,105,234,212,228,211,247,104"/>
-<area shape="poly" title=" " alt="" coords="263,103,292,140,287,143,259,106"/>
-<area shape="poly" title=" " alt="" coords="275,102,355,143,353,148,273,106"/>
-<area shape="rect" title=" " alt="" coords="97,225,167,251"/>
-<area shape="poly" title=" " alt="" coords="170,179,148,215,144,212,165,176"/>
-<area shape="poly" title=" " alt="" coords="185,176,212,213,208,216,181,179"/>
-<area shape="rect" title=" " alt="" coords="5,225,72,251"/>
-<area shape="poly" title=" " alt="" coords="154,180,74,221,72,217,152,175"/>
-<area shape="rect" title=" " alt="" coords="286,225,357,251"/>
-<area shape="poly" title=" " alt="" coords="199,175,286,217,284,222,197,180"/>
-<area shape="poly" title=" " alt="" coords="296,179,252,218,248,214,292,175"/>
-<area shape="poly" title=" " alt="" coords="312,177,319,211,314,212,306,178"/>
-<area shape="rect" title=" " alt="" coords="381,225,456,251"/>
-<area shape="poly" title=" " alt="" coords="326,175,390,215,387,220,323,180"/>
+<area shape="rect" title=" " alt="" coords="250,5,322,31"/>
+<area shape="rect" href="db_8h.html" title=" " alt="" coords="173,79,223,104"/>
+<area shape="poly" title=" " alt="" coords="274,33,225,72,221,68,270,29"/>
+<area shape="rect" href="sds_8h.html" title=" " alt="" coords="202,152,258,177"/>
+<area shape="poly" title=" " alt="" coords="284,32,242,140,237,138,279,30"/>
+<area shape="rect" href="robj_8h.html" title=" " alt="" coords="282,152,341,177"/>
+<area shape="poly" title=" " alt="" coords="291,31,310,138,304,139,285,32"/>
+<area shape="rect" href="log_8h.html" title=" " alt="" coords="447,79,501,104"/>
+<area shape="poly" title=" " alt="" coords="317,28,435,72,433,77,315,33"/>
+<area shape="rect" href="dict_8h.html" title=" " alt="" coords="119,152,178,177"/>
+<area shape="poly" title=" " alt="" coords="192,106,167,142,162,139,188,103"/>
+<area shape="rect" title=" " alt="" coords="5,225,76,251"/>
+<area shape="poly" title=" " alt="" coords="178,106,144,127,109,154,80,185,58,216,53,213,76,182,106,150,141,123,175,102"/>
+<area shape="poly" title=" " alt="" coords="206,103,222,139,217,141,201,105"/>
+<area shape="poly" title=" " alt="" coords="218,102,283,142,280,147,215,106"/>
+<area shape="rect" title=" " alt="" coords="100,225,171,251"/>
+<area shape="poly" title=" " alt="" coords="149,178,143,212,137,211,144,177"/>
+<area shape="poly" title=" " alt="" coords="133,180,71,220,68,215,130,175"/>
+<area shape="rect" title=" " alt="" coords="389,225,455,251"/>
+<area shape="poly" title=" " alt="" coords="179,172,191,175,376,222,375,228,189,180,177,177"/>
+<area shape="rect" title=" " alt="" coords="195,225,265,251"/>
+<area shape="poly" title=" " alt="" coords="163,175,208,214,205,218,160,179"/>
+<area shape="poly" title=" " alt="" coords="203,179,85,223,83,218,201,174"/>
+<area shape="poly" title=" " alt="" coords="233,178,233,212,227,212,227,178"/>
+<area shape="rect" title=" " alt="" coords="290,225,365,251"/>
+<area shape="poly" title=" " alt="" coords="247,175,302,215,299,219,244,180"/>
+<area shape="poly" title=" " alt="" coords="462,106,443,127,427,153,421,183,421,212,416,212,416,182,422,151,439,123,458,102"/>
+<area shape="rect" title=" " alt="" coords="437,152,511,177"/>
+<area shape="poly" title=" " alt="" coords="477,104,477,138,471,138,471,104"/>
+<area shape="rect" title=" " alt="" coords="535,152,618,177"/>
+<area shape="poly" title=" " alt="" coords="492,102,550,142,547,146,489,106"/>
+<area shape="rect" title=" " alt="" coords="642,152,706,177"/>
+<area shape="poly" title=" " alt="" coords="502,100,630,145,628,150,501,105"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -195,7 +205,7 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="448,153,511,179"/>
 <area shape="rect" href="redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="253,5,389,31"/>
 <area shape="poly" title=" " alt="" coords="466,142,440,92,421,66,398,44,379,33,381,28,402,40,425,62,444,89,471,139"/>
-<area shape="rect" href="rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title=" " alt="" coords="283,55,358,80"/>
+<area shape="rect" href="rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title="将本地.rdb加载到数据库" alt="" coords="283,55,358,80"/>
 <area shape="poly" title=" " alt="" coords="457,144,431,118,399,94,357,77,359,72,401,89,434,114,461,141"/>
 <area shape="rect" href="test__db_8c.html#a6cd635bfe74da17223d5946c73494494" title=" " alt="" coords="259,104,382,129"/>
 <area shape="poly" title=" " alt="" coords="434,154,399,143,363,132,365,127,401,138,436,149"/>

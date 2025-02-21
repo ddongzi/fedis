@@ -1,114 +1,113 @@
 <map id="main" name="main">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,804,60,829"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,905,60,931"/>
 <area shape="rect" id="Node000002" href="$ae_8c.html#a6128cc6c85e2cdead05b253352637de3" title="事件循环main" alt="" coords="136,381,207,407"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="36,803,159,419,164,421,41,804"/>
-<area shape="rect" id="Node000008" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="129,804,214,829"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="60,814,115,814,115,819,60,819"/>
-<area shape="rect" id="Node000087" href="$redis_8c.html#a26d7daef054aa5bd37f3637f011a5f5a" title="初始化服务器配置" alt="" coords="108,1205,235,1231"/>
-<area shape="poly" id="edge60_Node000001_Node000087" title=" " alt="" coords="41,829,164,1191,159,1193,36,830"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="35,904,161,419,166,421,40,906"/>
+<area shape="rect" id="Node000008" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="129,756,214,781"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="44,903,147,790,151,793,48,907"/>
+<area shape="rect" id="Node000089" href="$redis_8c.html#a26d7daef054aa5bd37f3637f011a5f5a" title="初始化服务器配置" alt="" coords="108,1153,235,1179"/>
+<area shape="poly" id="edge58_Node000001_Node000089" title=" " alt="" coords="43,930,159,1140,154,1142,39,932"/>
+<area shape="rect" id="Node000091" href="$log_8c.html#af2493e94f152a28b2ba4e3a2e2bba65d" title=" " alt="" coords="117,1203,225,1228"/>
+<area shape="poly" id="edge61_Node000001_Node000091" title=" " alt="" coords="36,931,38,978,47,1047,56,1085,69,1122,87,1158,110,1190,113,1193,109,1196,106,1193,82,1161,64,1125,51,1086,41,1048,32,979,31,931"/>
 <area shape="rect" id="Node000003" href="$ae_8c.html#a1e37ecf89afde301c3ec9579677ee54e" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="309,55,441,80"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="171,381,177,327,193,249,207,207,226,164,250,125,281,91,295,80,298,85,284,95,255,128,231,167,212,209,199,251,182,328,176,381"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="173,381,186,338,207,276,239,206,281,139,309,109,340,86,343,90,313,113,285,142,244,208,212,278,191,339,178,382"/>
 <area shape="rect" id="Node000004" href="$ae_8c.html#a05ec294eb89d30b4ba8c7b84547fe79e" title="epoll_wait, 触发事件添加到fireEvents" alt="" coords="561,5,643,31"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="434,52,546,27,548,32,435,57"/>
 <area shape="rect" id="Node000005" href="$ae_8c.html#a61a56385fc1ca7d73a1cf1fddeba9487" title=" " alt="" coords="527,55,677,80"/>
 <area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="441,65,513,65,513,70,441,70"/>
-<area shape="rect" id="Node000006" href="$ae_8c.html#ab2126a771f0de28c5d89a362b0d45156" title="对当前时间增加milliseconds毫秒，得到未来一个时间。" alt="" coords="736,105,923,131"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="661,78,759,100,758,105,659,83"/>
+<area shape="rect" id="Node000006" href="$ae_8c.html#ab2126a771f0de28c5d89a362b0d45156" title="对当前时间增加milliseconds毫秒，得到未来一个时间。" alt="" coords="736,155,923,180"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="656,77,689,89,747,117,797,145,795,150,745,121,687,94,654,83"/>
 <area shape="rect" id="Node000007" href="$ae_8c.html#a58ee29667a8745b430894832049cc872" title="从时间事件链表中删除id的时间事件" alt="" coords="754,55,905,80"/>
 <area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="677,65,740,65,740,70,677,70"/>
-<area shape="rect" id="Node000009" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="307,429,444,455"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="177,803,358,465,363,468,182,805"/>
-<area shape="rect" id="Node000010" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="759,207,900,232"/>
-<area shape="poly" id="edge30_Node000008_Node000010" title=" " alt="" coords="171,804,178,740,196,641,210,584,228,526,252,469,280,415,330,339,376,284,403,262,434,242,515,205,547,195,581,189,649,186,714,191,769,201,768,206,713,196,649,191,582,194,549,200,517,210,436,247,406,266,380,288,334,343,285,418,257,471,233,528,215,586,201,642,183,741,176,804"/>
-<area shape="rect" id="Node000046" href="$ae_8c.html#a020ff62d04ad908e680932e7bd854db6" title=" " alt="" coords="301,667,450,692"/>
-<area shape="poly" id="edge29_Node000008_Node000046" title=" " alt="" coords="179,802,219,753,248,725,281,701,294,695,297,699,284,706,252,729,223,757,183,806"/>
-<area shape="rect" id="Node000047" href="$ae_8c.html#a0ddb5289e19091c09104d7631c4f3e1d" title="创建一个时间事件,添加到ae" alt="" coords="300,105,451,131"/>
-<area shape="poly" id="edge31_Node000008_Node000047" title=" " alt="" coords="172,803,230,444,280,149,296,135,299,139,285,151,235,445,177,804"/>
-<area shape="rect" id="Node000048" href="$net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="318,716,433,741"/>
-<area shape="poly" id="edge33_Node000008_Node000048" title=" " alt="" coords="199,801,282,764,328,744,330,749,284,768,201,806"/>
-<area shape="rect" id="Node000050" href="$redis_8c.html#a836af426f853615fceb0c0b72e69aa22" title="Create a Shared Objects object." alt="" coords="751,1104,908,1129"/>
-<area shape="poly" id="edge37_Node000008_Node000050" title=" " alt="" coords="178,829,187,870,207,925,239,984,260,1010,284,1032,337,1064,395,1088,455,1106,517,1117,578,1124,636,1127,737,1124,737,1129,636,1132,577,1129,516,1123,454,1111,393,1093,335,1069,281,1036,256,1014,234,987,202,928,182,871,172,830"/>
-<area shape="rect" id="Node000051" href="$db_8c.html#a65d19f7c2ff6da6a7797ae2a50e0876a" title=" " alt="" coords="346,1155,405,1180"/>
-<area shape="poly" id="edge39_Node000008_Node000051" title=" " alt="" coords="176,829,182,884,198,966,212,1011,230,1055,254,1097,284,1133,307,1149,333,1159,332,1164,305,1154,281,1137,250,1100,226,1057,207,1012,193,967,176,885,171,830"/>
-<area shape="rect" id="Node000053" href="$redis_8c.html#a84a6c0165eaca7e2bcf400d839465ada" title=" " alt="" coords="284,779,467,804"/>
-<area shape="poly" id="edge41_Node000008_Node000053" title=" " alt="" coords="214,809,270,802,270,807,215,814"/>
-<area shape="rect" id="Node000056" href="$list_8c.html#a894604bf4bdc413505ffc4d122885aee" title=" " alt="" coords="333,828,418,853"/>
-<area shape="poly" id="edge44_Node000008_Node000056" title=" " alt="" coords="215,819,319,831,318,837,214,824"/>
-<area shape="rect" id="Node000057" href="$redis_8c.html#a1aa45bb9fac23f08294a8d618ba18d64" title="返回当前ms级时间戳" alt="" coords="793,1028,865,1053"/>
-<area shape="poly" id="edge45_Node000008_Node000057" title=" " alt="" coords="184,828,224,879,252,909,284,936,344,976,393,1003,446,1022,516,1038,587,1048,659,1051,779,1044,779,1049,659,1056,587,1053,516,1043,445,1027,391,1008,341,981,281,940,249,913,220,883,179,831"/>
-<area shape="rect" id="Node000058" href="$rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title=" " alt="" coords="338,1256,413,1281"/>
-<area shape="poly" id="edge46_Node000008_Node000058" title=" " alt="" coords="176,829,184,889,202,982,234,1089,257,1142,285,1191,312,1222,342,1246,339,1250,308,1226,280,1194,252,1144,229,1091,197,984,179,890,171,830"/>
-<area shape="rect" id="Node000068" href="$redis_8c.html#af588c16d11b3c614a398d31edde3275b" title="定时任务" alt="" coords="329,901,422,927"/>
-<area shape="poly" id="edge53_Node000008_Node000068" title=" " alt="" coords="200,827,337,893,334,898,198,832"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="379,428,395,390,423,338,463,285,487,261,515,242,571,219,632,207,691,203,745,205,745,210,691,208,632,212,573,224,517,247,491,266,467,288,428,341,400,392,384,430"/>
-<area shape="rect" id="Node000012" href="$net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="516,504,688,529"/>
-<area shape="poly" id="edge11_Node000009_Node000012" title=" " alt="" coords="412,452,517,489,544,497,543,502,515,494,411,457"/>
-<area shape="rect" id="Node000014" href="$net_8c.html#a988b8b0c7f9f9ae97c80193766d2400c" title="获取对端IP和端口" alt="" coords="539,257,665,283"/>
-<area shape="poly" id="edge13_Node000009_Node000014" title=" " alt="" coords="383,427,433,363,471,325,515,292,526,285,529,290,517,296,475,329,437,366,387,431"/>
-<area shape="rect" id="Node000015" href="$net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="544,603,660,628"/>
-<area shape="poly" id="edge14_Node000009_Node000015" title=" " alt="" coords="387,453,437,517,475,555,517,588,532,596,530,600,515,592,471,559,433,521,383,456"/>
-<area shape="rect" id="Node000016" href="$net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="545,553,659,579"/>
-<area shape="poly" id="edge16_Node000009_Node000016" title=" " alt="" coords="393,453,446,494,480,518,517,538,536,546,534,551,515,543,478,522,442,499,389,457"/>
-<area shape="rect" id="Node000017" href="$list_8c.html#aa89bc4682e3207f060ffa9f1c28db982" title=" " alt="" coords="541,307,663,332"/>
-<area shape="poly" id="edge18_Node000009_Node000017" title=" " alt="" coords="389,427,442,385,478,362,515,341,532,334,534,339,517,346,480,366,446,390,393,431"/>
-<area shape="rect" id="Node000018" href="$list_8c.html#adb40913ad10a1e95c879f226ecdb2ca5" title="创建一个自由node" alt="" coords="543,356,661,381"/>
-<area shape="poly" id="edge19_Node000009_Node000018" title=" " alt="" coords="410,427,515,390,540,383,542,388,517,395,412,432"/>
-<area shape="rect" id="Node000019" href="$net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="521,405,683,431"/>
-<area shape="poly" id="edge20_Node000009_Node000019" title=" " alt="" coords="444,432,507,425,508,431,445,437"/>
-<area shape="rect" id="Node000044" href="$redis_8c.html#ad1ecc238e2cc9d387b2d078c916a004d" title=" " alt="" coords="535,455,669,480"/>
-<area shape="poly" id="edge27_Node000009_Node000044" title=" " alt="" coords="445,447,522,456,521,461,444,452"/>
-<area shape="rect" id="Node000011" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="995,207,1117,232"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="900,217,982,217,982,222,900,222"/>
-<area shape="rect" id="Node000013" href="$net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="778,603,881,628"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="656,527,689,538,747,565,797,593,794,598,745,570,687,543,654,532"/>
-<area shape="poly" id="edge15_Node000015_Node000013" title=" " alt="" coords="660,613,764,613,764,618,660,618"/>
-<area shape="poly" id="edge17_Node000016_Node000013" title=" " alt="" coords="659,576,765,599,764,604,658,581"/>
-<area shape="poly" id="edge21_Node000019_Node000010" title=" " alt="" coords="662,403,686,391,740,329,808,242,812,245,744,333,690,395,664,408"/>
-<area shape="rect" id="Node000020" href="$redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="744,356,915,381"/>
-<area shape="poly" id="edge22_Node000019_Node000020" title=" " alt="" coords="661,403,756,382,757,387,662,408"/>
-<area shape="rect" id="Node000024" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="797,405,861,431"/>
-<area shape="poly" id="edge25_Node000019_Node000024" title=" " alt="" coords="683,415,783,415,783,421,683,421"/>
-<area shape="rect" id="Node000038" href="$net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="758,455,901,480"/>
-<area shape="poly" id="edge26_Node000019_Node000038" title=" " alt="" coords="662,428,757,449,756,454,661,433"/>
-<area shape="rect" id="Node000029" href="$robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="971,1104,1141,1129"/>
-<area shape="poly" id="edge23_Node000020_Node000029" title=" " alt="" coords="910,379,925,391,942,415,958,447,986,529,1008,628,1025,736,1047,946,1056,1090,1051,1091,1042,947,1020,737,1003,629,981,530,954,449,938,418,921,395,907,384"/>
-<area shape="rect" id="Node000030" href="$robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="1189,1104,1367,1129"/>
-<area shape="poly" id="edge24_Node000029_Node000030" title=" " alt="" coords="1142,1114,1176,1114,1176,1119,1142,1119"/>
-<area shape="rect" id="Node000045" href="$sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="786,504,873,529"/>
-<area shape="poly" id="edge28_Node000044_Node000045" title=" " alt="" coords="662,477,773,502,772,507,661,483"/>
-<area shape="poly" id="edge32_Node000047_Node000006" title=" " alt="" coords="451,115,722,115,722,121,451,121"/>
-<area shape="poly" id="edge34_Node000048_Node000013" title=" " alt="" coords="433,725,552,715,620,703,687,686,746,661,796,633,799,638,749,666,689,691,621,708,552,720,433,730"/>
-<area shape="rect" id="Node000049" href="$net_8c.html#af064e4d76c847c05fc82392ab9991f34" title="设置SO_REUSEADDR" alt="" coords="531,652,673,677"/>
-<area shape="poly" id="edge35_Node000048_Node000049" title=" " alt="" coords="422,713,467,701,544,679,545,684,469,706,424,718"/>
-<area shape="poly" id="edge36_Node000049_Node000013" title=" " alt="" coords="661,649,764,627,766,632,662,655"/>
-<area shape="poly" id="edge38_Node000050_Node000029" title=" " alt="" coords="908,1114,957,1114,957,1119,908,1119"/>
-<area shape="rect" id="Node000052" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="557,1155,647,1180"/>
-<area shape="poly" id="edge40_Node000051_Node000052" title=" " alt="" coords="405,1165,543,1165,543,1170,405,1170"/>
-<area shape="rect" id="Node000054" href="$redis_8c.html#a0bca7e53b56be0026cab9b3e3c3a618c" title=" " alt="" coords="539,753,665,779"/>
-<area shape="poly" id="edge42_Node000053_Node000054" title=" " alt="" coords="467,778,525,772,526,777,467,784"/>
-<area shape="rect" id="Node000055" href="$redis_8c.html#a43afabee594de427107db4086a489789" title="CTRL C 处理。" alt="" coords="547,803,657,828"/>
-<area shape="poly" id="edge43_Node000053_Node000055" title=" " alt="" coords="467,798,534,806,534,811,467,804"/>
-<area shape="rect" id="Node000059" href="$rdb_8c.html#a1e458c716741e44989d0e4708a6660a6" title=" " alt="" coords="541,1355,663,1380"/>
-<area shape="poly" id="edge47_Node000058_Node000059" title=" " alt="" coords="413,1272,442,1279,469,1292,485,1304,494,1317,503,1329,517,1341,529,1347,527,1352,515,1346,499,1333,490,1320,481,1308,467,1296,440,1284,412,1277"/>
-<area shape="rect" id="Node000060" href="$rdb_8c.html#a61e21cd46e948da237ebba074fe62ce1" title=" " alt="" coords="749,1255,910,1280"/>
-<area shape="poly" id="edge50_Node000058_Node000060" title=" " alt="" coords="413,1266,735,1265,735,1270,413,1271"/>
-<area shape="rect" id="Node000062" href="$rdb_8c.html#a34f1501acd8daea487302a92fb320a84" title=" " alt="" coords="547,1305,657,1331"/>
-<area shape="poly" id="edge51_Node000058_Node000062" title=" " alt="" coords="414,1274,534,1301,533,1306,413,1279"/>
-<area shape="rect" id="Node000063" href="$db_8c.html#a0668b6b189bc0afea59f9121fbc795a7" title=" " alt="" coords="571,1204,633,1229"/>
-<area shape="poly" id="edge52_Node000058_Node000063" title=" " alt="" coords="413,1258,557,1224,558,1229,414,1263"/>
-<area shape="poly" id="edge48_Node000059_Node000060" title=" " alt="" coords="654,1352,687,1341,745,1313,795,1285,797,1290,747,1318,689,1346,656,1357"/>
-<area shape="poly" id="edge49_Node000060_Node000029" title=" " alt="" coords="848,1252,1023,1135,1026,1139,851,1257"/>
-<area shape="rect" id="Node000069" href="$rdb_8c.html#affe7b2aa895155faef6d527e788844d6" title=" " alt="" coords="765,927,894,952"/>
-<area shape="poly" id="edge54_Node000068_Node000069" title=" " alt="" coords="423,921,516,935,640,941,751,940,751,945,640,946,516,941,422,926"/>
-<area shape="rect" id="Node000080" href="$redis_8c.html#ae2a156f9f931edffbffcf1c03588c566" title=" " alt="" coords="551,852,653,877"/>
-<area shape="poly" id="edge55_Node000068_Node000080" title=" " alt="" coords="422,901,537,876,538,881,423,907"/>
-<area shape="rect" id="Node000085" href="$redis_8c.html#a639dd45c9a032fe12a995af31506c068" title=" " alt="" coords="534,901,670,927"/>
-<area shape="poly" id="edge56_Node000068_Node000085" title=" " alt="" coords="423,911,520,911,520,917,423,917"/>
-<area shape="rect" id="Node000086" href="$redis_8c.html#adb37a4404c525956efa27da3a8e51ed8" title=" " alt="" coords="531,1003,673,1028"/>
-<area shape="poly" id="edge58_Node000068_Node000086" title=" " alt="" coords="402,924,517,981,553,995,551,1000,515,986,399,929"/>
-<area shape="poly" id="edge57_Node000085_Node000069" title=" " alt="" coords="670,919,751,928,751,933,670,924"/>
-<area shape="poly" id="edge59_Node000086_Node000057" title=" " alt="" coords="674,1021,780,1033,779,1038,674,1026"/>
-<area shape="poly" id="edge62_Node000087_Node000052" title=" " alt="" coords="235,1212,344,1204,468,1190,544,1177,544,1182,468,1195,344,1209,235,1217"/>
-<area shape="rect" id="Node000088" href="$redis_8c.html#a4229f995809e04db784e17e0d8e5821c" title=" " alt="" coords="283,1305,468,1331"/>
-<area shape="poly" id="edge61_Node000087_Node000088" title=" " alt="" coords="189,1229,230,1260,284,1292,302,1299,300,1304,281,1296,227,1265,186,1233"/>
+<area shape="rect" id="Node000009" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="307,977,444,1003"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="187,780,355,965,351,969,183,784"/>
+<area shape="rect" id="Node000010" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="759,1201,900,1227"/>
+<area shape="poly" id="edge29_Node000008_Node000010" title=" " alt="" coords="178,781,189,824,209,885,241,952,261,984,285,1014,308,1034,331,1048,377,1063,423,1078,446,1093,470,1115,481,1132,488,1149,491,1181,496,1210,504,1224,518,1236,550,1252,585,1262,621,1265,658,1263,729,1249,787,1229,788,1235,730,1254,659,1268,621,1270,584,1267,548,1257,514,1240,500,1227,491,1212,486,1182,482,1150,477,1134,466,1118,443,1097,421,1083,375,1068,329,1053,305,1039,281,1017,257,987,236,955,205,887,184,825,173,782"/>
+<area shape="rect" id="Node000048" href="$ae_8c.html#a020ff62d04ad908e680932e7bd854db6" title=" " alt="" coords="301,1128,450,1153"/>
+<area shape="poly" id="edge28_Node000008_Node000048" title=" " alt="" coords="176,781,180,839,195,926,209,974,228,1022,253,1067,285,1107,302,1120,299,1124,281,1111,248,1070,223,1025,204,976,190,928,175,840,170,782"/>
+<area shape="rect" id="Node000049" href="$ae_8c.html#a0ddb5289e19091c09104d7631c4f3e1d" title="创建一个时间事件,添加到ae" alt="" coords="300,204,451,229"/>
+<area shape="poly" id="edge30_Node000008_Node000049" title=" " alt="" coords="172,755,225,480,258,325,271,272,280,247,296,234,300,238,285,250,276,274,263,326,230,481,178,756"/>
+<area shape="rect" id="Node000050" href="$net_8c.html#a2637a681b73d89c8b6a7b0ca95afd07c" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="318,756,433,781"/>
+<area shape="poly" id="edge32_Node000008_Node000050" title=" " alt="" coords="214,766,304,766,304,771,214,771"/>
+<area shape="rect" id="Node000052" href="$redis_8c.html#a836af426f853615fceb0c0b72e69aa22" title="Create a Shared Objects object." alt="" coords="751,705,908,731"/>
+<area shape="poly" id="edge35_Node000008_Node000052" title=" " alt="" coords="214,755,282,742,405,729,528,721,737,715,737,721,529,726,406,734,283,747,215,761"/>
+<area shape="rect" id="Node000053" href="$db_8c.html#a65d19f7c2ff6da6a7797ae2a50e0876a" title=" " alt="" coords="346,1227,405,1252"/>
+<area shape="poly" id="edge37_Node000008_Node000053" title=" " alt="" coords="177,781,188,868,210,999,225,1067,242,1129,262,1180,285,1213,307,1228,333,1235,332,1240,305,1233,281,1217,258,1182,237,1130,220,1068,205,1000,183,869,171,782"/>
+<area shape="rect" id="Node000055" href="$redis_8c.html#a84a6c0165eaca7e2bcf400d839465ada" title=" " alt="" coords="284,153,467,179"/>
+<area shape="poly" id="edge39_Node000008_Node000055" title=" " alt="" coords="172,755,228,446,261,272,280,190,286,185,290,188,285,193,266,273,233,447,178,756"/>
+<area shape="rect" id="Node000058" href="$list_8c.html#a894604bf4bdc413505ffc4d122885aee" title=" " alt="" coords="333,1177,418,1203"/>
+<area shape="poly" id="edge42_Node000008_Node000058" title=" " alt="" coords="175,782,175,849,187,952,200,1009,220,1065,248,1118,284,1164,301,1176,320,1183,318,1188,298,1180,281,1168,243,1121,215,1068,195,1010,181,953,170,849,169,782"/>
+<area shape="rect" id="Node000059" href="$redis_8c.html#a1aa45bb9fac23f08294a8d618ba18d64" title="返回当前ms级时间戳" alt="" coords="793,280,865,305"/>
+<area shape="poly" id="edge43_Node000008_Node000059" title=" " alt="" coords="170,756,174,693,188,597,202,543,221,490,247,438,281,392,306,367,335,345,398,311,467,289,538,277,608,272,674,272,780,282,779,287,674,277,608,277,539,282,468,294,400,316,338,349,310,371,285,396,252,441,226,492,207,545,193,598,179,693,175,756"/>
+<area shape="rect" id="Node000060" href="$rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title="将本地.rdb加载到数据库" alt="" coords="338,604,413,629"/>
+<area shape="poly" id="edge44_Node000008_Node000060" title=" " alt="" coords="188,754,344,636,347,640,191,758"/>
+<area shape="rect" id="Node000070" href="$redis_8c.html#af588c16d11b3c614a398d31edde3275b" title="定时任务" alt="" coords="329,407,422,432"/>
+<area shape="poly" id="edge51_Node000008_Node000070" title=" " alt="" coords="178,754,357,443,362,445,182,757"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="397,1001,434,1030,470,1070,480,1087,485,1104,490,1134,496,1162,504,1174,518,1187,544,1203,573,1215,634,1228,696,1230,752,1226,752,1231,696,1236,633,1233,571,1220,542,1207,514,1191,500,1178,491,1164,485,1135,480,1105,475,1089,466,1073,430,1034,394,1005"/>
+<area shape="rect" id="Node000012" href="$net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="516,953,688,979"/>
+<area shape="poly" id="edge11_Node000009_Node000012" title=" " alt="" coords="444,980,502,974,503,979,445,985"/>
+<area shape="rect" id="Node000014" href="$net_8c.html#a988b8b0c7f9f9ae97c80193766d2400c" title="获取对端IP和端口" alt="" coords="539,855,665,880"/>
+<area shape="poly" id="edge13_Node000009_Node000014" title=" " alt="" coords="390,975,443,934,515,890,535,882,537,887,517,895,446,938,393,979"/>
+<area shape="rect" id="Node000015" href="$net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="544,904,660,929"/>
+<area shape="poly" id="edge14_Node000009_Node000015" title=" " alt="" coords="412,975,515,939,543,931,544,936,517,945,413,980"/>
+<area shape="rect" id="Node000016" href="$net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="545,805,659,831"/>
+<area shape="poly" id="edge16_Node000009_Node000016" title=" " alt="" coords="383,976,433,912,471,874,515,841,531,833,534,837,517,846,475,878,437,915,387,979"/>
+<area shape="rect" id="Node000017" href="$list_8c.html#aa89bc4682e3207f060ffa9f1c28db982" title=" " alt="" coords="541,1052,663,1077"/>
+<area shape="poly" id="edge18_Node000009_Node000017" title=" " alt="" coords="411,1000,517,1038,541,1046,540,1051,515,1043,409,1005"/>
+<area shape="rect" id="Node000018" href="$list_8c.html#adb40913ad10a1e95c879f226ecdb2ca5" title="创建一个自由node" alt="" coords="543,1101,661,1127"/>
+<area shape="poly" id="edge19_Node000009_Node000018" title=" " alt="" coords="393,1001,445,1043,480,1067,517,1088,533,1094,531,1099,515,1092,477,1071,442,1048,389,1005"/>
+<area shape="rect" id="Node000019" href="$net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="521,1003,683,1028"/>
+<area shape="poly" id="edge20_Node000009_Node000019" title=" " alt="" coords="445,995,508,1002,507,1007,444,1000"/>
+<area shape="rect" id="Node000046" href="$redis_8c.html#ad1ecc238e2cc9d387b2d078c916a004d" title=" " alt="" coords="535,1151,669,1176"/>
+<area shape="poly" id="edge27_Node000009_Node000046" title=" " alt="" coords="395,1001,431,1031,470,1070,484,1089,492,1106,501,1122,518,1137,527,1143,524,1147,514,1141,497,1125,488,1109,479,1092,466,1073,427,1035,391,1005"/>
+<area shape="rect" id="Node000011" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="995,1201,1117,1227"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="900,1211,982,1211,982,1217,900,1217"/>
+<area shape="rect" id="Node000013" href="$net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="778,817,881,843"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="665,951,686,940,702,925,711,911,719,894,734,877,783,847,786,851,738,881,723,897,715,913,706,929,690,944,667,956"/>
+<area shape="poly" id="edge15_Node000015_Node000013" title=" " alt="" coords="652,901,687,890,789,846,791,851,689,895,654,906"/>
+<area shape="poly" id="edge17_Node000016_Node000013" title=" " alt="" coords="659,818,764,824,764,829,659,824"/>
+<area shape="poly" id="edge21_Node000019_Node000010" title=" " alt="" coords="664,1026,690,1039,744,1101,812,1188,808,1192,740,1104,686,1043,662,1031"/>
+<area shape="rect" id="Node000020" href="$redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="744,891,915,916"/>
+<area shape="poly" id="edge22_Node000019_Node000020" title=" " alt="" coords="662,1000,687,989,701,978,710,966,720,953,734,940,774,919,777,923,738,944,724,957,715,969,705,981,689,994,664,1005"/>
+<area shape="rect" id="Node000038" href="$test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title=" " alt="" coords="787,953,872,979"/>
+<area shape="poly" id="edge24_Node000019_Node000038" title=" " alt="" coords="661,1000,773,975,774,981,662,1005"/>
+<area shape="rect" id="Node000024" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="797,1003,861,1028"/>
+<area shape="poly" id="edge25_Node000019_Node000024" title=" " alt="" coords="683,1013,783,1013,783,1018,683,1018"/>
+<area shape="rect" id="Node000040" href="$net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="758,1052,901,1077"/>
+<area shape="poly" id="edge26_Node000019_Node000040" title=" " alt="" coords="662,1025,757,1046,756,1052,661,1031"/>
+<area shape="rect" id="Node000029" href="$robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="971,705,1141,731"/>
+<area shape="poly" id="edge23_Node000020_Node000029" title=" " alt="" coords="860,888,890,873,921,853,986,794,1034,739,1038,743,990,798,924,857,893,877,862,893"/>
+<area shape="poly" id="edge31_Node000049_Node000006" title=" " alt="" coords="451,209,688,187,742,180,743,185,688,193,451,215"/>
+<area shape="rect" id="Node000051" href="$net_8c.html#af064e4d76c847c05fc82392ab9991f34" title="设置SO_REUSEADDR" alt="" coords="531,756,673,781"/>
+<area shape="poly" id="edge33_Node000050_Node000051" title=" " alt="" coords="433,766,517,766,517,771,433,771"/>
+<area shape="poly" id="edge34_Node000051_Node000013" title=" " alt="" coords="651,779,769,811,768,816,649,784"/>
+<area shape="poly" id="edge36_Node000052_Node000029" title=" " alt="" coords="908,715,957,715,957,721,908,721"/>
+<area shape="rect" id="Node000054" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="557,1303,647,1328"/>
+<area shape="poly" id="edge38_Node000053_Node000054" title=" " alt="" coords="406,1246,551,1296,550,1301,404,1251"/>
+<area shape="rect" id="Node000056" href="$redis_8c.html#a0bca7e53b56be0026cab9b3e3c3a618c" title=" " alt="" coords="539,153,665,179"/>
+<area shape="poly" id="edge40_Node000055_Node000056" title=" " alt="" coords="467,163,526,163,526,169,467,169"/>
+<area shape="rect" id="Node000057" href="$redis_8c.html#a43afabee594de427107db4086a489789" title="CTRL C 处理。" alt="" coords="547,104,657,129"/>
+<area shape="poly" id="edge41_Node000055_Node000057" title=" " alt="" coords="434,151,533,129,534,134,435,156"/>
+<area shape="rect" id="Node000061" href="$rdb_8c.html#a1e458c716741e44989d0e4708a6660a6" title=" " alt="" coords="541,604,663,629"/>
+<area shape="poly" id="edge45_Node000060_Node000061" title=" " alt="" coords="413,614,527,614,527,619,413,619"/>
+<area shape="rect" id="Node000062" href="$rdb_8c.html#a61e21cd46e948da237ebba074fe62ce1" title=" " alt="" coords="749,655,910,680"/>
+<area shape="poly" id="edge48_Node000060_Node000062" title=" " alt="" coords="414,622,516,639,630,652,735,660,735,665,629,657,516,645,413,627"/>
+<area shape="rect" id="Node000064" href="$rdb_8c.html#a34f1501acd8daea487302a92fb320a84" title=" " alt="" coords="547,505,657,531"/>
+<area shape="poly" id="edge49_Node000060_Node000064" title=" " alt="" coords="396,602,449,572,515,541,538,532,540,537,517,546,452,577,399,606"/>
+<area shape="rect" id="Node000065" href="$db_8c.html#a0668b6b189bc0afea59f9121fbc795a7" title=" " alt="" coords="571,555,633,580"/>
+<area shape="poly" id="edge50_Node000060_Node000065" title=" " alt="" coords="413,606,557,574,558,579,414,611"/>
+<area shape="poly" id="edge46_Node000061_Node000062" title=" " alt="" coords="661,627,759,649,758,654,659,632"/>
+<area shape="poly" id="edge47_Node000062_Node000029" title=" " alt="" coords="888,678,986,700,985,705,887,683"/>
+<area shape="rect" id="Node000071" href="$rdb_8c.html#affe7b2aa895155faef6d527e788844d6" title=" " alt="" coords="765,407,894,432"/>
+<area shape="poly" id="edge52_Node000070_Node000071" title=" " alt="" coords="422,406,516,391,602,386,688,391,758,401,757,407,688,397,602,392,516,397,423,412"/>
+<area shape="rect" id="Node000082" href="$redis_8c.html#ae2a156f9f931edffbffcf1c03588c566" title=" " alt="" coords="551,407,653,432"/>
+<area shape="poly" id="edge53_Node000070_Node000082" title=" " alt="" coords="423,417,537,417,537,422,423,422"/>
+<area shape="rect" id="Node000087" href="$redis_8c.html#a639dd45c9a032fe12a995af31506c068" title=" " alt="" coords="534,456,670,481"/>
+<area shape="poly" id="edge54_Node000070_Node000087" title=" " alt="" coords="423,427,530,450,529,456,422,432"/>
+<area shape="rect" id="Node000088" href="$redis_8c.html#adb37a4404c525956efa27da3a8e51ed8" title=" " alt="" coords="531,305,673,331"/>
+<area shape="poly" id="edge56_Node000070_Node000088" title=" " alt="" coords="399,404,515,348,551,333,553,338,517,352,402,409"/>
+<area shape="poly" id="edge55_Node000087_Node000071" title=" " alt="" coords="661,453,756,432,757,438,662,459"/>
+<area shape="poly" id="edge57_Node000088_Node000059" title=" " alt="" coords="674,307,779,295,780,301,674,313"/>
+<area shape="poly" id="edge60_Node000089_Node000054" title=" " alt="" coords="215,1177,236,1189,253,1209,260,1228,268,1246,284,1262,331,1280,399,1294,544,1309,543,1314,399,1299,329,1285,281,1267,263,1249,255,1230,248,1212,233,1193,213,1181"/>
+<area shape="rect" id="Node000090" href="$redis_8c.html#a4229f995809e04db784e17e0d8e5821c" title=" " alt="" coords="283,1328,468,1353"/>
+<area shape="poly" id="edge59_Node000089_Node000090" title=" " alt="" coords="218,1177,236,1189,249,1205,256,1220,261,1250,266,1279,273,1293,284,1307,304,1320,301,1325,281,1311,268,1296,261,1280,256,1251,251,1222,244,1208,233,1193,215,1181"/>
 </map>

@@ -1,6 +1,6 @@
 <map id="_rdbLoadType" name="_rdbLoadType">
 <area shape="rect" id="Node000001" title=" " alt="" coords="364,5,475,31"/>
-<area shape="rect" id="Node000002" href="$rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title=" " alt="" coords="241,5,316,31"/>
+<area shape="rect" id="Node000002" href="$rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title="将本地.rdb加载到数据库" alt="" coords="241,5,316,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="350,21,316,21,316,15,350,15"/>
 <area shape="rect" id="Node000003" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>

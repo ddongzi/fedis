@@ -109,29 +109,30 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="ae_8h__dep__incl.png" border="0" usemap="#ainclude_2ae_8hdep" alt=""/></div>
 <map name="ainclude_2ae_8hdep" id="ainclude_2ae_8hdep">
-<area shape="rect" title=" " alt="" coords="315,5,416,31"/>
-<area shape="rect" href="net_8h.html" title=" " alt="" coords="221,79,328,104"/>
-<area shape="poly" title=" " alt="" coords="341,41,291,81,288,76,338,37"/>
-<area shape="rect" href="redis_8h.html" title=" " alt="" coords="307,152,424,177"/>
-<area shape="poly" title=" " alt="" coords="368,45,368,152,363,152,363,45"/>
-<area shape="rect" href="ae_8c.html" title=" " alt="" coords="403,79,475,104"/>
-<area shape="poly" title=" " alt="" coords="389,38,429,77,425,80,385,42"/>
-<area shape="poly" title=" " alt="" coords="302,110,352,150,349,154,299,115"/>
+<area shape="rect" title=" " alt="" coords="471,5,572,31"/>
+<area shape="rect" href="net_8h.html" title=" " alt="" coords="377,79,484,104"/>
+<area shape="poly" title=" " alt="" coords="497,41,447,81,444,76,494,37"/>
+<area shape="rect" href="redis_8h.html" title=" " alt="" coords="417,152,535,177"/>
+<area shape="poly" title=" " alt="" coords="517,45,499,105,482,153,477,151,493,103,512,43"/>
+<area shape="rect" href="ae_8c.html" title=" " alt="" coords="812,225,884,251"/>
+<area shape="poly" title=" " alt="" coords="551,36,832,223,829,227,548,40"/>
+<area shape="poly" title=" " alt="" coords="448,114,471,150,466,153,443,117"/>
 <area shape="rect" href="net_8c.html" title=" " alt="" coords="5,225,83,251"/>
-<area shape="poly" title=" " alt="" coords="246,114,64,227,61,223,243,109"/>
+<area shape="poly" title=" " alt="" coords="388,111,76,228,74,223,386,106"/>
 <area shape="rect" href="skiplist_8h.html" title=" " alt="" coords="107,225,239,251"/>
-<area shape="poly" title=" " alt="" coords="322,185,206,228,204,223,321,180"/>
+<area shape="poly" title=" " alt="" coords="415,183,223,228,222,223,414,178"/>
+<area shape="poly" title=" " alt="" coords="549,176,801,223,812,225,811,231,799,228,548,181"/>
 <area shape="rect" href="main_8c.html" title=" " alt="" coords="263,225,353,251"/>
-<area shape="poly" title=" " alt="" coords="350,190,319,227,315,224,345,186"/>
-<area shape="poly" title=" " alt="" coords="300,183,95,228,83,231,82,225,94,223,299,178"/>
+<area shape="poly" title=" " alt="" coords="438,185,337,228,334,223,435,180"/>
+<area shape="poly" title=" " alt="" coords="404,178,261,200,95,228,83,230,82,225,94,223,260,194,403,173"/>
 <area shape="rect" href="notify_8c.html" title=" " alt="" coords="377,225,468,251"/>
-<area shape="poly" title=" " alt="" coords="385,186,415,224,411,227,381,190"/>
+<area shape="poly" title=" " alt="" coords="461,190,433,227,429,224,457,187"/>
 <area shape="rect" href="rdb_8c.html" title=" " alt="" coords="492,225,569,251"/>
-<area shape="poly" title=" " alt="" coords="405,180,505,223,503,228,403,185"/>
+<area shape="poly" title=" " alt="" coords="495,187,524,224,520,227,491,190"/>
 <area shape="rect" href="redis_8c.html" title=" " alt="" coords="593,225,681,251"/>
-<area shape="poly" title=" " alt="" coords="423,178,594,223,593,228,421,183"/>
+<area shape="poly" title=" " alt="" coords="515,180,612,223,610,228,513,185"/>
 <area shape="rect" href="robj_8c.html" title=" " alt="" coords="706,225,787,251"/>
-<area shape="poly" title=" " alt="" coords="438,176,694,223,706,225,705,230,693,228,437,181"/>
+<area shape="poly" title=" " alt="" coords="533,178,707,223,705,229,532,183"/>
 </map>
 </div>
 </div>
@@ -551,11 +552,12 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">eventLoop</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">tvp</td><td>等待秒数 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tvp</td><td>timeout=0 : 立即返回，返回当前可就绪的， timeout=-1:一直等待 </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int numevents </dd></dl>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
