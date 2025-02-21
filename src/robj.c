@@ -142,14 +142,14 @@ robj* robjCreateStringObject(const char*s)
     int succeed = 0;
     int value = _string2i(s, &succeed);
     if (succeed) {
-        // printf("CreateStringObj , INT, %d\n", value);
+        // log_debug("CreateStringObj , INT, %d\n", value);
         return _createIntString(value);
     }
     if (strlen(s) < 32) {
-        // printf("CreateStringObj , EMBSTR, %s\n", s);
+        // log_debug("CreateStringObj , EMBSTR, %s\n", s);
         return _createEmbeddedString(s);
     }
-    // printf("CreateStringObj , RAW, %s\n", s);
+    // log_debug("CreateStringObj , RAW, %s\n", s);
     return _createRawString(s);
 }
 

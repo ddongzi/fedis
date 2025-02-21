@@ -6,6 +6,8 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include "log.h"
+#include <string.h>
+
 struct redisServer* server;
 
 struct sharedObjects shared;
@@ -215,7 +217,7 @@ void appendServerSaveParam(time_t sec, int changes)
  */
 void initServerConfig()
 {
-    server = malloc(sizeof(struct redisServer));
+    server = calloc(1,sizeof(struct redisServer));
     server->port = REDIS_SERVERPORT;
     server->dbnum = REDIS_DEFAULT_DBNUM;
     server->saveCondSize = 0;
@@ -239,7 +241,7 @@ void initServerConfig()
 
     server->commands = dictCreate(&commandDictType, NULL);
 
-    printf("√ init server config.\n");
+    log_debug("√ init server config.\n");
 }
 
 
@@ -261,7 +263,7 @@ void updateServerTime()
 }
 void freeClient(redisClient* client)
 {
-    printf("free client %d\n", client->fd);
+    log_debug("free client %d\n", client->fd);
     close(client->fd);
     // TODO 如果 query reply buf还有怎么办？
     sdsfree(client->readBuf);
@@ -305,7 +307,7 @@ void prepareShutdown()
 int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
     // TODO 
-    LOG_INFO("● server cron.\n");
+    log_debug("server cron.");
 
     // 检查SAVE条件，执行BGSAVE    
     bgSaveIfNeeded();
@@ -321,7 +323,7 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
         prepareShutdown();
     }
 
-    return 2000;
+    return 3000;
 }
 /**
  * @brief 从服务器定时
@@ -343,7 +345,7 @@ void sigChildHandler(int sig)
             // 检查退出状态
             if (WIFEXITED(stat) && WEXITSTATUS(stat) == 0) {
                 server->lastSave = server->unixtime;
-                printf("server know %d finished\n", pid);
+                log_debug("server know %d finished\n", pid);
             }
             server->rdbChildPid = -1;
             server->dirty = 0;
@@ -417,7 +419,7 @@ void initServer()
     server->rdbChildPid = -1;
     server->isBgSaving = 0;
 
-    printf("●  load rdb from %s\n", server->rdbFileName);
+    log_debug("●  load rdb from %s\n", server->rdbFileName);
     rdbLoad();
 
     server->clients = listCreate();
@@ -426,20 +428,21 @@ void initServer()
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->neterr = calloc(1024, sizeof(char));
     memset(server->neterr, 0, 1024);
+    server->bindaddr = NULL;
     int fd = anetTcpServer(server->neterr, server->port, server->bindaddr, server->maxclients);
     if (fd == -1) {
-        printf("NET Error: %s\n", server->neterr);
+        log_debug("NET Error: %s\n", server->neterr);
         exit(1);
     }
-    printf("● create server, listening.....\n");
+    log_debug("● create server, listening.....\n");
     
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
-    printf("● create file event for ACCEPT, listening.....\n");
+    log_debug("● create file event for ACCEPT, listening.....\n");
     // 注册定时任务
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
-    printf("● create time event for serverCron\n");
+    log_debug("● create time event for serverCron\n");
 
-    printf("√ init server .\n");
+    log_debug("√ init server .\n");
 }
 
 redisClient *redisClientCreate(int fd)
@@ -520,7 +523,7 @@ void processClientQueryBuf(redisClient* client)
             p = strchr(s->buf, '\r');
             *p = '\0';
 
-            printf("%s, argv: %s\n", __func__, s->buf);
+            // log_debug("%s, argv: %s\n", __func__, s->buf);
             client->argv[client->argc - remain] = robjCreateStringObject(s->buf);
             // 处理完一行
             sdsrange(s, p - s->buf + 2, s->len - 1);
@@ -533,6 +536,71 @@ void processClientQueryBuf(redisClient* client)
 
 
 /* 从角色： */
+
+char* respParse(const char* resp) {
+    if (!resp) return NULL;
+    
+    char type = resp[0];
+    const char* data = resp + 1;
+    char* result = NULL;
+    
+    switch (type) {
+        case '+':  // Simple Strings
+        case '-':  // Errors
+            result = strdup(data);
+            result[strcspn(result, "\r\n")] = 0; // 去掉结尾的 \r\n
+            break;
+        case ':':  // Integers
+            asprintf(&result, "%ld", strtol(data, NULL, 10));
+            break;
+        case '$': { // Bulk Strings
+            int len = strtol(data, NULL, 10);
+            if (len == -1) {
+                result = strdup("(nil)");
+            } else {
+                const char* str = strchr(data, '\n');
+                if (str) {
+                    result = strndup(str + 1, len);
+                }
+            }
+            break;
+        }
+        case '*': { // Arrays
+            int count = strtol(data, NULL, 10);
+            if (count == -1) {
+                result = strdup("(empty array)");
+            } else {
+                result = malloc(1024);  // 假设最大长度不会超
+                result[0] = '\0';
+                const char* ptr = strchr(data, '\n') + 1;
+                for (int i = 0; i < count; i++) {
+                    char* elem = respParse(ptr);
+                    strcat(result, elem);
+                    strcat(result, " ");
+                    free(elem);
+                    
+                    // 移动 ptr 指向下一个 RESP 片段
+                    if (*ptr == '+' || *ptr == '-' || *ptr == ':') {
+                        ptr = strchr(ptr, '\n') + 1;
+                    } else if (*ptr == '$') {
+                        int blen = strtol(ptr + 1, NULL, 10);
+                        if (blen != -1) {
+                            ptr = strchr(ptr, '\n') + 1 + blen + 2;
+                        } else {
+                            ptr = strchr(ptr, '\n') + 1;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        default:
+            result = strdup("(unknown)");
+            break;
+    }
+    return result;
+}
+
 
 char * respFormat(int argc, char** argv)
 {

@@ -27,7 +27,7 @@ void printAddrinfo(struct addrinfo *servinfo) {
             continue;
         }
         inet_ntop(p->ai_family, addr, ip, sizeof(ip));
-        printf("Address: %s, Port: %d\n", ip, port);
+        log_debug("Address: %s, Port: %d\n", ip, port);
     }
 }
 int anetSetError(char *err, const char *fmt, ...)
@@ -51,7 +51,7 @@ int anetSetReuseAddr(char *err, int fd)
     int yes = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
         anetSetError(err, "setsockopt SO_REUSEADDR: %s\n", strerror(errno));
-        printf("set reuse addr %s\n", strerror(errno));
+        log_debug("set reuse addr %s\n", strerror(errno));
         return NET_ERR;
     }
     return NET_OK;
@@ -79,7 +79,7 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
     
     rv = getaddrinfo(bindaddr, _port, &hints, &servinfo);
     if (rv != 0) {
-        anetSetError(err, "getaddrinfo: %s", gai_strerror(rv));
+        log_error("get addrinfo failed, %s", gai_strerror(rv));
         return NET_ERR;
     }
 
@@ -91,22 +91,22 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
         }
         anetSetReuseAddr(err, sockfd);
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-            printf( "TRY bind() failed%s\n", strerror(errno));
+            log_debug( "TRY bind() failed%s\n", strerror(errno));
             close(sockfd);
             continue;
         }
         break;
     }
     if (p == NULL) {
-        anetSetError(err, "can't bind");
+        log_error("can't bind");
         return NET_ERR;
     }
     freeaddrinfo(servinfo);
     if (listen(sockfd, backlog) == -1) {
-        anetSetError(err, "listen: %s", strerror(errno));
+        log_error("listen: %s", strerror(errno));
         return NET_ERR;
     }
-    printf("listening on port: %d addr: %s ,listen-fd: %d\n", port, bindaddr, sockfd);
+    log_debug("listening on port: %d addr: %s ,listen-fd: %d\n", port, bindaddr, sockfd);
     return sockfd;
 }
 
@@ -225,7 +225,7 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void* data )
     redisClient* client = redisClientCreate(cfd);
     listAddNodeTail(server->clients, listCreateNode(client));
 
-    printf("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
+    log_debug("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
 
     // 注册读事件
     aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
@@ -233,7 +233,6 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void* data )
 
 void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
 {
-    LOG_INFO("reading query from client....");
     redisClient* client = (redisClient*) privData;
     char buf[1024];
     memset(buf, 0, sizeof(buf));
@@ -246,11 +245,10 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
         close(fd);
         return;
     }
+    log_debug("deal query from client, %s", respParse(buf));
     
     sdscat(client->readBuf, buf);
-    LOG_INFO("process client query ....");
     processClientQueryBuf(client);
-    LOG_INFO("process client query done");
     // 注册写事件
     aeCreateFileEvent(el, fd, AE_WRITABLE, sendReplyToClient, client);
 }
@@ -295,7 +293,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
     if (nwritten == -1) {
         return;
     }
-    LOG_INFO("reply to client %d, %s", client->fd, msg);
+    log_debug("reply to client %d, %s", client->fd, msg);
     sdsclear(client->writeBuf);
 
     // 状态转换
@@ -326,7 +324,7 @@ int anetIOWrite(int fd, char *buf, int len)
 {
     int nwritten = send(fd, buf, len, 0);
     if (nwritten == -1) {
-        printf("anet write error: %s\n", strerror(errno));
+        log_debug("anet write error: %s\n", strerror(errno));
         return NET_ERR;
     }
     return nwritten;
@@ -345,7 +343,7 @@ int anetTcpConnect(char* err, const char* host, int port)
     struct addrinfo hints, *servinfo, *p;
     int ret;
 
-    printf("anetconnect %s:%d\n", host, port);
+    log_debug("anetconnect %s:%d\n", host, port);
 
     snprintf(portStr, sizeof(portStr), "%d", port);
     memset(&hints, 0, sizeof(hints));
@@ -393,19 +391,22 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     switch (server->replState)
     {
     case REPL_STATE_SLAVE_CONNECTING:
-        // FIXME  发送PING。  connect之后没反应 
         sendPingToMaster();
+        log_debug("send ping to master");
         break;
     case REPL_STATE_SLAVE_SEND_REPLCONF:
         sendReplconfToMaster();
+        log_debug("send replconf to master");
         break;
     case REPL_STATE_SLAVE_SEND_SYNC:
         //  发送SYNC
         sendSyncToMaster();
+        log_debug("send sync to master");
         break;
     case REPL_STATE_SLAVE_CONNECTED:
         //  发送REPLCONF ACK
         sendReplAckToMaster();
+        log_debug("send REPLACK to master");
         break;
     default:
         break;
@@ -414,18 +415,17 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     char* msg = server->master->writeBuf->buf;
     if (sdslen(server->master->writeBuf) == 0) {
         // 如果没有数据，不可写
-        printf("NO buffer available\n");
+        log_debug("NO buffer available\n");
         aeDeleteFileEvent(el, fd, AE_WRITABLE);
         return;
     }
 
     int nwritten = write(fd, msg, strlen(msg));
     if (nwritten == -1) {
-        printf("write failed\n");
+        log_debug("write failed\n");
         close(fd);
         return;
     }
-    printf("OUT<<<< %s\n", msg);
     sdsclear(server->master->writeBuf);
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
 }
@@ -437,7 +437,7 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
  */
 void handleCommandPropagate()
 {
-    printf("handle commandPropagate\n");
+    log_debug("handle commandPropagate\n");
 }
 
 /**
@@ -451,7 +451,9 @@ void readToReadBuf(redisClient* client, int len)
     char buf[1024];
     memset(buf, 0, sizeof(buf));
     int nread;
+    // 是RESP格式，+，-，*..
     nread = read(client->fd, buf, len);
+    log_debug("read %s", buf);
     if (nread == -1) {
         return;
     }
@@ -492,6 +494,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             if (strncmp(server->master->readBuf->buf, "+PONG", 5) == 0) {
                 // 收到PONG, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
+                log_debug("receive PONG");
             }
             sdsclear(server->master->readBuf);
             // aeDeleteFileEvent(el, fd, AE_READABLE); 此时没东西往里写，无需关注读
@@ -502,21 +505,27 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             if (strncmp(server->master->readBuf->buf, "+OK", 3) == 0) {
                 // 收到REPLCONF OK, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_SYNC;
+                log_debug("receive REPLCONF OK");
             }
             sdsclear(server->master->readBuf);
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
         case REPL_STATE_SLAVE_SEND_SYNC:
             readToReadBuf(server->master, 9);
+            // FIXME: 比较有问题
             if (strncmp(server->master->readBuf->buf, "+FULLSYNC", 9) == 0) {
                 // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
                 server->replState = REPL_STATE_SLAVE_TRANSFER;
+                log_debug("receive FULLSYNC");
             }
             break;
         case REPL_STATE_SLAVE_TRANSFER:
+            log_debug("start transfer ...");
             char* buf = calloc(2048, 1);
             int nread = readToBuf(server->master, buf, 2048);
             receiveRDBfile(buf, nread);
+            log_debug("transfer finished.");
             rdbLoad();
+            log_debug("rdbload finished.");
             sdsclear(server->master->readBuf);
             server->replState = REPL_STATE_SLAVE_CONNECTED;
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
@@ -524,6 +533,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
         case REPL_STATE_SLAVE_CONNECTED:
             readToReadBuf(server->master, 3);
             if (strncmp(server->master->readBuf->buf, "+OK", 3) == 0) {
+                log_debug("replication connection established.");
                 handleCommandPropagate();
             }
             break;
@@ -542,7 +552,7 @@ void connectMaster()
 {
     int fd = anetTcpConnect(server->neterr, server->masterhost, server->masterport);
     if (fd < 0) {
-        printf("connectMaster failed: %s\n", strerror(errno));
+        log_debug("connectMaster failed: %s\n", strerror(errno));
         return;
     }
     // 非阻塞
@@ -553,8 +563,8 @@ void connectMaster()
 
     server->master = redisClientCreate(fd);
     server->replState = REPL_STATE_SLAVE_CONNECTING;
-    LOG_INFO("Connecting Master fd %d\n", fd);
-    // FIXME epoll 没有感知到就绪写，
-    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+    log_debug("Connecting Master fd %d\n", fd);
+    // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
+    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
 }

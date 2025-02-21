@@ -22,7 +22,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "log.h"
-
+#include <poll.h>
+#include "redis.h"
 /**
  * @brief 初始化apistate
  * 
@@ -48,27 +49,68 @@ static int aeApiCreate(aeEventLoop* eventLoop)
     // ET 模式
 
     eventLoop->apiState = apiState;
-    printf("Create epoll instance. epfd = %d\n", apiState->epfd);
+    log_debug("Create epoll instance. epfd = %d\n", apiState->epfd);
     return AE_OK;
+}
+
+/**
+ * @brief 调试epoll, 手动检查fd事件
+ * 
+ * @param [in] fd 
+ */
+void checkFdStatus(int fd)
+{
+    struct pollfd pfd;
+    pfd.fd = fd;
+    pfd.events = POLLOUT;
+    
+    int ret = poll(&pfd, 1, 1000); // 最多等待 5s
+    if (ret > 0 && (pfd.revents & POLLOUT)) {
+        // 确保连接真的成功
+        int err = 0;
+        socklen_t errlen = sizeof(err);
+        getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &errlen);
+        if (err == 0) {
+            log_debug("Connection established!\n");
+        } else {
+            log_debug("Connection error: %s\n", strerror(err));
+        }
+    } else if (ret == 0) {
+        log_debug("Connection timeout\n");
+    } else {
+        perror("poll error");
+    }
+    
+
 }
 
 /**
  * @brief epoll_wait, 触发事件添加到fireEvents
  * 
  * @param [in] eventLoop 
- * @param [in] tvp 等待秒数
+ * @param [in] tvp timeout=0 : 立即返回，返回当前可就绪的， timeout=-1:一直等待
  * @return int numevents
+ * @note 
  */
 int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
 {
-    // FIXME connectmaster 添加epoll正确，但是没有触发write就绪。
     int numevents;
-    LOG_INFO("epoll wait ... time: %d ms", tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1);
+    // log_debug("epoll wait ... time: %d ms", tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1);
+    
+    // if (server->replState == REPL_STATE_SLAVE__NONE) {
+    //     log_debug("checking master fd !!");
+    //     checkFdStatus(server->master->fd);
+    // }
+
     numevents = epoll_wait(eventLoop->apiState->epfd, 
         eventLoop->apiState->events, 
         eventLoop->maxsize, 
-        tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1
+        tvp ? (tvp->tv_sec * 1000 + (tvp->tv_usec + 999)/1000): -1
         );
+
+    if (numevents > 0) {
+        log_debug("%d events received.", numevents);
+    }
     if (numevents < 0) {
         perror("epoll_wait error: numevents < 0");
         return numevents;
@@ -83,12 +125,12 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
             mask |= AE_WRITABLE;
         }
         if (e->events & EPOLLERR) {
-            printf("epoll_error on fd[%d]\n", e->data.fd);
+            log_debug("epoll_error on fd[%d]\n", e->data.fd);
         }
 
         eventLoop->fireEvents[i].fd = e->data.fd;
         eventLoop->fireEvents[i].mask = mask;
-        LOG_INFO("epoll fd[%d] event[%s] come.\n", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
+        log_debug("epoll fd[%d] event[%s] come.\n", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
     }
     return numevents;
 }
@@ -172,7 +214,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
     if (fd > loop->maxfd) {
         loop->maxfd = fd;
     }
-    printf("● create %s event for fd %d.\n", mask == AE_WRITABLE ? "WRITE": "READ", fd);
+    log_debug("● create %s event for fd %d.\n", mask == AE_WRITABLE ? "WRITE": "READ", fd);
     return AE_OK;
 }
 /**
@@ -200,10 +242,10 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
     }
     int op = eventLoop->events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
     if (epoll_ctl(eventLoop->apiState->epfd, op, fd, &ee) == -1) {
-        printf("epoll_ctl  fd:%d, err:%s\n", fd, strerror(errno));
+        log_debug("epoll_ctl  fd:%d, err:%s\n", fd, strerror(errno));
         return AE_ERROR;
     }
-    LOG_INFO("EPOLL CTL fd:%d, OP :%s, mask:%s\n", fd, op == EPOLL_CTL_ADD ? "add" : "mod" 
+    log_debug("EPOLL CTL fd:%d, OP :%s, mask:%s\n", fd, op == EPOLL_CTL_ADD ? "add" : "mod" 
         , mask == AE_WRITABLE ? "write" : "read");
     return AE_OK;
 }
@@ -211,8 +253,8 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
 /**
  * @brief 
  * 
- * @param [in] seconds 
- * @param [in] milliseconds 
+ * @param [out] seconds 
+ * @param [out] milliseconds 
  * @return int 
  */
 static int aeGetTime(long long* seconds, long long* milliseconds)
@@ -311,7 +353,7 @@ int aeProcessEvents(aeEventLoop* loop, int flags)
 {
 
     int numevents;
-    struct timeval tv, *tvp;
+    struct timeval tv, *tvp, now;
 
     aeTimeEvent* shortest = NULL;
 
@@ -319,31 +361,37 @@ int aeProcessEvents(aeEventLoop* loop, int flags)
         shortest = aeSearchNearestTimer(loop);
     }
     if (shortest) {
-        long long now = time(NULL);
         tvp = &tv;
-        tvp->tv_sec = shortest->when - now;
-        tvp->tv_usec = 0;
-        if (tvp->tv_sec < 0) {
-            tvp->tv_sec = 0;
-        }
+        long long nowSec, nowMs;
+        aeGetTime(&nowSec, &nowMs);
+        long long when_ms = shortest->when * 1000;
+        long delay_ms = when_ms - (nowSec*1000 + nowMs);
+        if (delay_ms < 0) delay_ms = 0;
+        // log_debug("delay_ms %u, when_ms,%u, now_ms %u", delay_ms, when_ms, nowSec*1000 + nowMs);
+        tvp->tv_sec = delay_ms / 1000;
+        tvp->tv_usec = (delay_ms % 1000) * 1000;
+        
     } else {
         tvp = NULL; // 没有时间任务，文件事件可以一直等待。
     }
 
+    // log_debug("API POLL timeout %u ms", tvp->tv_sec * 1000 + tvp->tv_usec/1000);
 
     // 文件事件: 至多等到下一个定时任务
+    // FIXME while运行很快，很可能在ms级别之下，运行了很多次timeOut 0 .(忙查询)
     numevents = aeApiPoll(loop, tvp);
     for (int i = 0; i < numevents; i++) {
         aeFileEvent* fe = &loop->events[loop->fireEvents[i].fd];
         int mask = loop->fireEvents[i].mask;
         int fd = loop->fireEvents[i].fd;
-        LOG_INFO("event come: fd %d, ready %s\n", fd, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
-        if (fe->mask & mask & AE_READABLE) {
+        log_debug("event come: fd %d, ready %s\n", fd, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
+        if ((fe->mask & AE_READABLE) && (mask & AE_READABLE)) {
             fe->rfileProc(loop, fd, fe->data);
         }
-        if (fe->mask & mask & AE_WRITABLE) {
+        if ((fe->mask & AE_WRITABLE) && (mask & AE_WRITABLE)) {
             fe->wfileProc(loop, fd, fe->data);
         }
+        
     }
 
     // 时间事件

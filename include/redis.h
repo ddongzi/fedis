@@ -46,7 +46,7 @@ struct sharedObjects {
 // 主从复制状态
 enum REPL_STATE {
     // 从服务器server.replState 字段
-    REPL_STATE_SLAVE__NONE,          // (从）未启用复制
+    REPL_STATE_SLAVE_NONE,          // (从）未启用复制
     REPL_STATE_SLAVE_CONNECTING,    // 正在连接主服务器
     REPL_STATE_SLAVE_SEND_REPLCONF,   // 发送port号
     REPL_STATE_SLAVE_SEND_SYNC,    // 发送SYNC请求
@@ -91,6 +91,7 @@ typedef struct redisCommand {
 } redisCommand;
 
 extern redisCommand commandsTable[];
+char* respParse(const char* resp);
 
 struct saveparam {
     time_t seconds; // 保存条件：秒

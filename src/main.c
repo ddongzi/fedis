@@ -1,8 +1,11 @@
 #include "redis.h"
-
-
+#include "log.h"
 int main(int argc, char **argv)
 {
+
+    log_set_level(LOG_DEBUG);
+    log_debug("hello log.");
+
     initServerConfig();
 
     for (int i = 0; i < argc; i++)
@@ -15,6 +18,7 @@ int main(int argc, char **argv)
     
     initServer();
     aeMain(server->eventLoop);
+
 
     return 0;
 }

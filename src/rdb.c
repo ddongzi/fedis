@@ -2,7 +2,7 @@
 #include "redis.h"
 #include "rdb.h"
 #include <stdint.h>
-
+#include "log.h"
 /**
  * @brief 对象类型、RDB操作符
  * 
@@ -98,7 +98,7 @@ void _rdbSaveObject(FILE* fp, robj *obj)
 // 全量保存
 void rdbSave()
 {
-    printf("======RDB Save(child:%u)======\n", getpid());
+    log_debug("======RDB Save(child:%u)======\n", getpid());
     int nwritten = 0;
     int nread = 0;
     FILE* fp = fopen(server->rdbFileName, "w");
@@ -139,7 +139,7 @@ void rdbSave()
     fwrite(&crc, sizeof(uint64_t), 1, fp);
 
     fclose(fp);
-    printf("Save the RDB file success\n");
+    log_debug("Save the RDB file success\n");
 }
 
 void bgsave()
@@ -150,7 +150,7 @@ void bgsave()
         rdbSave();
         exit(0);
     } else if (pid < 0) {
-        printf("Error: fork failed");
+        log_debug("Error: fork failed");
     }
     // 父亲进程continue
     server->rdbChildPid = pid;
@@ -161,7 +161,7 @@ void bgSaveIfNeeded()
 {
     // 检查是否在BGSAVE
     if (server->isBgSaving) {
-        printf("BGSAVE is running, no need....\n");
+        log_debug("BGSAVE is running, no need....\n");
         return;
     }
 
@@ -170,7 +170,7 @@ void bgSaveIfNeeded()
         if (interval >= server->saveParams[i].seconds && 
             server->dirty >= server->saveParams[i].changes
         ) {
-            printf("CHECK BGSAVE OK, %d, %d\n", interval, server->dirty);
+            log_debug("CHECK BGSAVE OK, %d, %d\n", interval, server->dirty);
             bgsave();
             break;
         }
@@ -216,7 +216,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 1, fp);
         snprintf(buf, 11, "%d", val);
-        printf("Load STRING(int) %d\n", val);
+        log_debug("Load STRING(int) %d\n", val);
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT16) {
         /* code */
@@ -224,7 +224,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 2, fp);
         snprintf(buf, 11, "%d", val);
-        printf("Load STRING(int) %d\n", val);
+        log_debug("Load STRING(int) %d\n", val);
 
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT32) {
@@ -233,7 +233,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 4, fp);
         snprintf(buf, 11, "%d", val);
-        printf("Load STRING(int) %d\n", val);
+        log_debug("Load STRING(int) %d\n", val);
 
         return robjCreateStringObject(buf);
     }else {
@@ -243,7 +243,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char * buf = malloc(len + 1);
         fread(buf, 1, len, fp);
         buf[len] = '\0';
-        printf("Load STRING() %s\n", buf);
+        log_debug("Load STRING() %s\n", buf);
 
         robj* obj = robjCreateStringObject(buf);
         free(buf);
@@ -273,6 +273,10 @@ robj* _rdbLoadObject(FILE* fp, unsigned char type)
     }
 }
 
+/**
+ * @brief 将本地.rdb加载到数据库
+ * 
+ */
 void rdbLoad()
 {
     FILE *fp = fopen(server->rdbFileName, "r");
@@ -296,7 +300,7 @@ void rdbLoad()
             robj* obj = _rdbLoadStringObject(fp);
             dbid = (int)(obj->ptr);
             if (dbid < 0 || dbid > server->dbnum) {
-                printf("Error loading dbid %d\n", dbid);;
+                log_debug("Error loading dbid %d\n", dbid);;
                 exit(1);
             }
             continue;
@@ -321,7 +325,7 @@ void receiveRDBfile(char* buf, int n)
     }
     fwrite(buf, 1, n, fp);
     fclose(fp);
-    printf("Save the RDB file success\n");
+    log_debug("Save the RDB file success\n");
     
 }
 

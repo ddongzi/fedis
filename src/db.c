@@ -1,6 +1,7 @@
 #include  "db.h"
 #include "sds.h"
 #include "robj.h"
+#include "log.h"
 
 static unsigned long dbDictKeyHash(const void *key) {
     unsigned long hash = 5381;
@@ -98,7 +99,7 @@ void dbPrint(redisDb* db)
     dictIterator* di = dictGetIterator(db->dict);
     dictEntry* entry;
     while ((entry = dictIterNext(di))!= NULL) {
-        printf("key: %s, val: %p\n", (char*)entry->key, entry->v.val);
+        log_debug("key: %s, val: %p\n", (char*)entry->key, entry->v.val);
     }
     dictReleaseIterator(di);
 }

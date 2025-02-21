@@ -1,5 +1,5 @@
 #include "dict.h"
-
+#include "log.h"
 // ------------static-------------------//
 
 /**
@@ -103,13 +103,13 @@ static void _dictRehashStep(dict *dict)
     }
     if (dict->rehashidx == dict->ht[0].size) {
         // 找不到非空桶， 说明rehash完了。  按理来说，不会走到这里！！！
-        printf("Unexpected !!!!! size %d, rehashidx %d\n", dict->ht[0].size, dict->rehashidx);
+        // printf("Unexpected !!!!! size %d, rehashidx %d\n", dict->ht[0].size, dict->rehashidx);
     }
 
     // 迁移rehashidx桶的第一个entry，
     dictEntry *entry = dict->ht[0].table[dict->rehashidx];
     if (dict->ht[0].table == NULL) {
-        printf("Unexpected table !!!!!!!!");
+        // printf("Unexpected table !!!!!!!!");
     }
     dict->ht[0].table[dict->rehashidx] = entry->next;
 
@@ -122,7 +122,7 @@ static void _dictRehashStep(dict *dict)
     dict->ht[0].used--;
     dict->ht[1].used++;
 
-    printf("rehash : %s [%u]->[%u].  0used %d,   0size %d,     1used %d   1size %d\n", 
+    log_debug("rehash : %s [%u]->[%u].  0used %d,   0size %d,     1used %d   1size %d\n", 
         (char*)entry->key ,dict->rehashidx, idx,
         dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size  // 注意，dict->ht[0]和dict->ht[1]是交换的，所以需要反转一下
     );
@@ -135,8 +135,8 @@ static void _dictRehashStep(dict *dict)
         dict->ht[0] = dict->ht[1];
         _dictReset(&dict->ht[1]);
         dict->rehashidx = -1;
-        printf("rehash 完成\n");
-        printf("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d\n",
+        log_debug("rehash 完成\n");
+        log_debug("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d\n",
             dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size
         );
         return;
@@ -196,15 +196,15 @@ static int dictExpandIfNeed(dict *dict)
     // 就扩容
     if (dict->ht[0].used == dict->ht[0].size)
     {
-        // printf("开始扩容\n");
+        // log_debug("开始扩容\n");
         return dictExpand(dict, _nextpower(dict->ht[0].used * 2));
     }
 
     // 小于0.1缩容
-    printf("Ratio : used %d, size %d\n", dict->ht[0].used, dict->ht[0].size);
+    log_debug("Ratio : used %d, size %d\n", dict->ht[0].used, dict->ht[0].size);
     if ((double)dict->ht[0].used / (double)dict->ht[0].size < DICT_LOAD_RATIO)
     {
-        printf("开始缩容\n");
+        log_debug("开始缩容\n");
         // 如果缩容后小于最小size就不缩
         if (_nextpower(dict->ht[0].used) > DICT_INITIAL_SIZE)
         {
