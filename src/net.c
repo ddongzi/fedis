@@ -248,7 +248,9 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
     log_debug("deal query from client, %s", respParse(buf));
     
     sdscat(client->readBuf, buf);
+    log_debug(" processing query from client, %s", buf);
     processClientQueryBuf(client);
+    log_debug(" processed query from client");
     // 注册写事件
     aeCreateFileEvent(el, fd, AE_WRITABLE, sendReplyToClient, client);
 }
@@ -379,6 +381,7 @@ int anetTcpConnect(char* err, const char* host, int port)
 
     return sockfd;  // 返回 socket 描述符
 }
+// TODO drawio 图
 /**
  * @brief 向master写
  * 
@@ -509,9 +512,11 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             }
             sdsclear(server->master->readBuf);
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+            break;
         case REPL_STATE_SLAVE_SEND_SYNC:
             readToReadBuf(server->master, 9);
             // FIXME: 比较有问题
+            log_debug("debug,  In send sync, received 9 bytes. %s", server->master->readBuf->buf);
             if (strncmp(server->master->readBuf->buf, "+FULLSYNC", 9) == 0) {
                 // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
                 server->replState = REPL_STATE_SLAVE_TRANSFER;

@@ -523,7 +523,7 @@ void processClientQueryBuf(redisClient* client)
             p = strchr(s->buf, '\r');
             *p = '\0';
 
-            // log_debug("%s, argv: %s\n", __func__, s->buf);
+            log_debug("%s, argv: %s\n", __func__, s->buf);
             client->argv[client->argc - remain] = robjCreateStringObject(s->buf);
             // 处理完一行
             sdsrange(s, p - s->buf + 2, s->len - 1);
