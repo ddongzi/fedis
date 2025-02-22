@@ -68,6 +68,28 @@ void sdsclear(sds* ss)
     memset(ss->buf, 0, ss->len);
     ss->len = 0;
 }
+
+void sdscatlen(sds* dest, const char* buf, int n)
+{
+    if (buf == NULL) return;
+    int len = sdslen(dest);
+    int newlen = len + n;
+    int newbuflen;
+    if (n > sdsavail(dest)) {
+        // 需要扩展
+        newbuflen = newlen < 1024 ? newlen * 2 + 1 : newlen + 1024 + 1;
+        dest->buf = realloc(dest->buf, newbuflen);
+        dest->free = newbuflen - newlen - 1;
+        dest->len = newlen;
+        // 分配后填充0
+        memset(dest->buf + len, 0, newbuflen - len);
+        memcpy(dest->buf + len, buf, n);
+    } else {
+        memcpy(dest->buf + len, buf, n);
+        dest->len = newlen;
+    }
+}
+
 void sdscat(sds* dest, const char* s)
 {
     if (s == NULL) return;

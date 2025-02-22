@@ -23,6 +23,9 @@ int sdsavail(const sds* ss);
 sds* sdsdump(const sds* ss);
 // 情况sds字符串内容
 void sdsclear(sds* ss);
+// 将buf追加到后面， 不一定是字符串
+void sdscatlen(sds* dest, const char* buf, int n);
+
 // 将C字符串拼接到SDS末尾
 void sdscat(sds* dest, const char* s);
 // 将sds字符串拼接到sds末尾

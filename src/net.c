@@ -443,29 +443,102 @@ void handleCommandPropagate()
     log_debug("handle commandPropagate\n");
 }
 
+
+// 判断是否为完整的 RESP 消息，返回完整消息的长度，-1 表示不完整
+static ssize_t getRespLength(const char* buf, size_t len) {
+    if (len < 2) return -1; // 至少需要 \r\n
+
+    char type = buf[0];
+    size_t i;
+
+    switch (type) {
+        case '+': // 简单字符串
+        case '-': // 错误
+        case ':': // 整数
+            for (i = 1; i < len - 1; i++) {
+                if (buf[i] == '\r' && buf[i + 1] == '\n') {
+                    return i + 2; // 包括 \r\n
+                }
+            }
+            return -1;
+
+        case '$': // 批量字符串
+            if (len < 3) return -1;
+            for (i = 1; i < len - 1; i++) {
+                if (buf[i] == '\r' && buf[i + 1] == '\n') {
+                    char len_buf[32];
+                    size_t prefix_len = i + 2;
+                    strncpy(len_buf, buf + 1, i - 1);
+                    len_buf[i - 1] = '\0';
+                    int data_len = atoi(len_buf);
+                    if (data_len < 0) return prefix_len; // $-1\r\n 表示空
+                    if (len < prefix_len + data_len + 2) return -1;
+                    if (buf[prefix_len + data_len] == '\r' && buf[prefix_len + data_len + 1] == '\n') {
+                        return prefix_len + data_len + 2;
+                    }
+                    return -1;
+                }
+            }
+            return -1;
+
+        case '*': // 数组
+            if (len < 3) return -1;
+            for (i = 1; i < len - 1; i++) {
+                if (buf[i] == '\r' && buf[i + 1] == '\n') {
+                    char len_buf[32];
+                    size_t prefix_len = i + 2;
+                    strncpy(len_buf, buf + 1, i - 1);
+                    len_buf[i - 1] = '\0';
+                    int num_elements = atoi(len_buf);
+                    if (num_elements <= 0) return prefix_len; // *0\r\n 或 *-1\r\n
+                    size_t offset = prefix_len;
+                    for (int j = 0; j < num_elements; j++) {
+                        if (offset >= len) return -1;
+                        ssize_t elem_len = getRespLength(buf + offset, len - offset);
+                        if (elem_len == -1) return -1;
+                        offset += elem_len;
+                    }
+                    return offset;
+                }
+            }
+            return -1;
+
+        default:
+            return -1; // 未知类型
+    }
+}
+
 /**
- * @brief read 到client.readBuf。 用于文本字符串格式
+ * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
  * @param [in] client 
- * @param [in] len 读取长度
+ * @return resp长度。 通过这个标记 后面怎么处理readbuf
  */
-void readToReadBuf(redisClient* client, int len)
-{
-    sds* readBuf = client->readBuf;
-    char buf[1024];
-    memset(buf, 0, sizeof(buf));
-    int nread;
-    // 是RESP格式，+，-，*..
-    nread = read(client->fd, buf, len);
-    log_debug("read %s", buf);
-    if (nread == -1) {
-        return;
+int readToReadBuf(redisClient* client) {
+    char temp_buf[1024]; // 临时缓冲区
+    ssize_t n;
+
+    // 清空 readBuf，准备接收新的 RESP
+    sdsclear(client->readBuf);
+
+    // FIXME 可以封装
+    n = read(client->fd, temp_buf, sizeof(temp_buf));
+    if (n <= 0) {
+        if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+            return; // 非阻塞模式暂无数据
+        }
+        return; // 读取结束或错误
     }
-    if (nread == 0) {
-        // FIXME 应该标记正确清理，fd关闭,client状态也更新
-        // close(fd);
-        return;
-    }
-    sdscat(client->readBuf, buf);
+
+    // 将读取的数据追加到 readBuf
+    // TODO 需要测试
+    client->readBuf = sdscatlen(client->readBuf, temp_buf, n);
+
+    // 检查是否包含一个完整的 RESP
+    // TODO 需要测试！
+    ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
+
+    // TODO 返回值
+    return resp_len;
 }
 
 /**
@@ -493,8 +566,8 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
 {
     switch (server->replState) {
         case REPL_STATE_SLAVE_CONNECTING:
-            readToReadBuf(server->master, 5);
-            if (strncmp(server->master->readBuf->buf, "+PONG", 5) == 0) {
+            readToReadBuf(server->master, 4);
+            if (strstr(server->master->readBuf->buf, "PONG", 5) != NULL) {
                 // 收到PONG, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
                 log_debug("receive PONG");
@@ -505,6 +578,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             break;
         case REPL_STATE_SLAVE_SEND_REPLCONF:
             readToReadBuf(server->master, 3);
+            // FIXME: 比较有问题 没有读到OK, 相关readtoreadbuf都要重新设置
             if (strncmp(server->master->readBuf->buf, "+OK", 3) == 0) {
                 // 收到REPLCONF OK, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_SYNC;
@@ -515,7 +589,6 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             break;
         case REPL_STATE_SLAVE_SEND_SYNC:
             readToReadBuf(server->master, 9);
-            // FIXME: 比较有问题
             log_debug("debug,  In send sync, received 9 bytes. %s", server->master->readBuf->buf);
             if (strncmp(server->master->readBuf->buf, "+FULLSYNC", 9) == 0) {
                 // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读

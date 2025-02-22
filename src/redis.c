@@ -141,6 +141,7 @@ void commandReplACKProc(redisClient* client)
 {
     //  ���不处理，不影响
     addWrite(client, shared.ok);
+    client->replState = REPL_STATE_SLAVE_CONNECTED;
 }
 
 redisCommand commandsTable[] = {
