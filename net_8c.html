@@ -213,9 +213,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a2488a8d8c669244d969dfc95efade9cc" id="r_a2488a8d8c669244d969dfc95efade9cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a2488a8d8c669244d969dfc95efade9cc">handleCommandPropagate</a> ()</td></tr>
 <tr class="memdesc:a2488a8d8c669244d969dfc95efade9cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">命令传播：作为正常服务器处理命令  <br /></td></tr>
 <tr class="separator:a2488a8d8c669244d969dfc95efade9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f55d7eb1086fc69597a8f4955a3edf4" id="r_a9f55d7eb1086fc69597a8f4955a3edf4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a9f55d7eb1086fc69597a8f4955a3edf4">readToReadBuf</a> (<a class="el" href="structredisClient.html">redisClient</a> *client, int len)</td></tr>
-<tr class="memdesc:a9f55d7eb1086fc69597a8f4955a3edf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">read 到client.readBuf。 用于文本字符串格式  <br /></td></tr>
-<tr class="separator:a9f55d7eb1086fc69597a8f4955a3edf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25b3eb800a047663de289571211e677b" id="r_a25b3eb800a047663de289571211e677b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a25b3eb800a047663de289571211e677b">readToReadBuf</a> (<a class="el" href="structredisClient.html">redisClient</a> *client)</td></tr>
+<tr class="memdesc:a25b3eb800a047663de289571211e677b"><td class="mdescLeft">&#160;</td><td class="mdescRight">read接口， 读取到client-&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。  <br /></td></tr>
+<tr class="separator:a25b3eb800a047663de289571211e677b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b30e205baee7afc703ed92ddf785f47" id="r_a5b30e205baee7afc703ed92ddf785f47"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a5b30e205baee7afc703ed92ddf785f47">readToBuf</a> (<a class="el" href="structredisClient.html">redisClient</a> *client, char *buf, int size)</td></tr>
 <tr class="memdesc:a5b30e205baee7afc703ed92ddf785f47"><td class="mdescLeft">&#160;</td><td class="mdescRight">read 到分配的buf，用于二进制文件等 比如接受RDB文件  <br /></td></tr>
 <tr class="separator:a5b30e205baee7afc703ed92ddf785f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1243,52 +1243,45 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a9f55d7eb1086fc69597a8f4955a3edf4" name="a9f55d7eb1086fc69597a8f4955a3edf4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f55d7eb1086fc69597a8f4955a3edf4">&#9670;&#160;</a></span>readToReadBuf()</h2>
+<a id="a25b3eb800a047663de289571211e677b" name="a25b3eb800a047663de289571211e677b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25b3eb800a047663de289571211e677b">&#9670;&#160;</a></span>readToReadBuf()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void readToReadBuf </td>
+          <td class="memname">int readToReadBuf </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structredisClient.html">redisClient</a> *&#160;</td>
-          <td class="paramname"><em>client</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>client</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>read 到client.readBuf。 用于文本字符串格式 </p>
+<p>read接口， 读取到client-&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。 </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">client</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">len</td><td>读取长度 </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>resp长度。 通过这个标记 后面怎么处理readbuf </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="net_8c_a9f55d7eb1086fc69597a8f4955a3edf4_cgraph.png" border="0" usemap="#anet_8c_a9f55d7eb1086fc69597a8f4955a3edf4_cgraph" alt=""/></div>
-<map name="anet_8c_a9f55d7eb1086fc69597a8f4955a3edf4_cgraph" id="anet_8c_a9f55d7eb1086fc69597a8f4955a3edf4_cgraph">
-<area shape="rect" title="read 到client.readBuf。 用于文本字符串格式" alt="" coords="5,31,125,56"/>
-<area shape="rect" href="sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="173,31,237,56"/>
-<area shape="poly" title=" " alt="" coords="126,41,159,41,159,46,126,46"/>
-<area shape="rect" href="sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="285,5,361,31"/>
-<area shape="poly" title=" " alt="" coords="237,34,271,26,272,32,238,39"/>
-<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="291,55,355,80"/>
-<area shape="poly" title=" " alt="" coords="238,47,278,55,277,61,237,52"/>
+<div class="center"><img src="net_8c_a25b3eb800a047663de289571211e677b_cgraph.png" border="0" usemap="#anet_8c_a25b3eb800a047663de289571211e677b_cgraph" alt=""/></div>
+<map name="anet_8c_a25b3eb800a047663de289571211e677b_cgraph" id="anet_8c_a25b3eb800a047663de289571211e677b_cgraph">
+<area shape="rect" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="5,56,125,81"/>
+<area shape="rect" href="sds_8c.html#a8658173ce436490570dc542671804d53" title=" " alt="" coords="173,5,257,31"/>
+<area shape="poly" title=" " alt="" coords="103,53,163,33,165,38,105,58"/>
+<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="311,55,375,80"/>
+<area shape="poly" title=" " alt="" coords="125,66,297,65,298,70,125,71"/>
+<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="177,107,253,132"/>
+<area shape="poly" title=" " alt="" coords="105,79,165,100,163,105,103,84"/>
+<area shape="rect" href="sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="305,5,381,31"/>
+<area shape="poly" title=" " alt="" coords="257,15,292,15,292,21,257,21"/>
+<area shape="poly" title=" " alt="" coords="250,28,300,48,298,53,248,33"/>
 </map>
 </div>
 

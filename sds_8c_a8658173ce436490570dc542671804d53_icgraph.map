@@ -1,0 +1,5 @@
+<map id="sdscatlen" name="sdscatlen">
+<area shape="rect" id="Node000001" title=" " alt="" coords="173,5,257,31"/>
+<area shape="rect" id="Node000002" href="$net_8c.html#a25b3eb800a047663de289571211e677b" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="5,5,125,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="159,21,126,21,126,15,159,15"/>
+</map>

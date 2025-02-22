@@ -5,7 +5,7 @@ var searchData=
   ['read_5fresponse_2',['read_response',['../client_8c.html#a3e21080e75a55fae7351b61e3b9d4faa',1,'client.c']]],
   ['readqueryfromclient_3',['readqueryfromclient',['../net_8h.html#a94f1cc1f9e6d67c080bfa3e0b67b0417',1,'readQueryFromClient(aeEventLoop *el, int fd, void *privData):&#160;net.c'],['../net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417',1,'readQueryFromClient(aeEventLoop *el, int fd, void *privData):&#160;net.c']]],
   ['readtobuf_4',['readToBuf',['../net_8c.html#a5b30e205baee7afc703ed92ddf785f47',1,'net.c']]],
-  ['readtoreadbuf_5',['readToReadBuf',['../net_8c.html#a9f55d7eb1086fc69597a8f4955a3edf4',1,'net.c']]],
+  ['readtoreadbuf_5',['readToReadBuf',['../net_8c.html#a25b3eb800a047663de289571211e677b',1,'net.c']]],
   ['receiverdbfile_6',['receiverdbfile',['../rdb_8h.html#a7963649cd6a7bea26109233c8afc1af8',1,'receiveRDBfile(char *buf, int n):&#160;rdb.c'],['../rdb_8c.html#a7963649cd6a7bea26109233c8afc1af8',1,'receiveRDBfile(char *buf, int n):&#160;rdb.c']]],
   ['redisclientcreate_7',['redisclientcreate',['../redis_8h.html#ad1ecc238e2cc9d387b2d078c916a004d',1,'redisClientCreate(int fd):&#160;redis.c'],['../redis_8c.html#ad1ecc238e2cc9d387b2d078c916a004d',1,'redisClientCreate(int fd):&#160;redis.c']]],
   ['replicationcron_8',['replicationCron',['../redis_8c.html#a6a8f0c7c17dd679e233e37d6771ebc00',1,'redis.c']]],

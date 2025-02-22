@@ -1,0 +1,12 @@
+<map id="readToReadBuf" name="readToReadBuf">
+<area shape="rect" id="Node000001" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="5,56,125,81"/>
+<area shape="rect" id="Node000002" href="$sds_8c.html#a8658173ce436490570dc542671804d53" title=" " alt="" coords="173,5,257,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,53,163,33,165,38,105,58"/>
+<area shape="rect" id="Node000004" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="311,55,375,80"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="125,66,297,65,298,70,125,71"/>
+<area shape="rect" id="Node000005" href="$sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="177,107,253,132"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="105,79,165,100,163,105,103,84"/>
+<area shape="rect" id="Node000003" href="$sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="305,5,381,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="257,15,292,15,292,21,257,21"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="250,28,300,48,298,53,248,33"/>
+</map>

@@ -23,7 +23,7 @@ var searchData=
   ['readbuf_20',['readBuf',['../structredisClient.html#a8f7885a521be2a96714c828d7f7f0c43',1,'redisClient']]],
   ['readqueryfromclient_21',['readqueryfromclient',['../net_8h.html#a94f1cc1f9e6d67c080bfa3e0b67b0417',1,'readQueryFromClient(aeEventLoop *el, int fd, void *privData):&#160;net.c'],['../net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417',1,'readQueryFromClient(aeEventLoop *el, int fd, void *privData):&#160;net.c']]],
   ['readtobuf_22',['readToBuf',['../net_8c.html#a5b30e205baee7afc703ed92ddf785f47',1,'net.c']]],
-  ['readtoreadbuf_23',['readToReadBuf',['../net_8c.html#a9f55d7eb1086fc69597a8f4955a3edf4',1,'net.c']]],
+  ['readtoreadbuf_23',['readToReadBuf',['../net_8c.html#a25b3eb800a047663de289571211e677b',1,'net.c']]],
   ['receiverdbfile_24',['receiverdbfile',['../rdb_8h.html#a7963649cd6a7bea26109233c8afc1af8',1,'receiveRDBfile(char *buf, int n):&#160;rdb.c'],['../rdb_8c.html#a7963649cd6a7bea26109233c8afc1af8',1,'receiveRDBfile(char *buf, int n):&#160;rdb.c']]],
   ['redis_2ec_25',['redis.c',['../redis_8c.html',1,'']]],
   ['redis_2eh_26',['redis.h',['../redis_8h.html',1,'']]],
