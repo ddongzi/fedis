@@ -68,7 +68,7 @@
 <area shape="poly" id="edge21_Node000019_Node000010" title=" " alt="" coords="664,1026,690,1039,744,1101,812,1188,808,1192,740,1104,686,1043,662,1031"/>
 <area shape="rect" id="Node000020" href="$redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="744,891,915,916"/>
 <area shape="poly" id="edge22_Node000019_Node000020" title=" " alt="" coords="662,1000,687,989,701,978,710,966,720,953,734,940,774,919,777,923,738,944,724,957,715,969,705,981,689,994,664,1005"/>
-<area shape="rect" id="Node000038" href="$test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title=" " alt="" coords="787,953,872,979"/>
+<area shape="rect" id="Node000038" href="$test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="787,953,872,979"/>
 <area shape="poly" id="edge24_Node000019_Node000038" title=" " alt="" coords="661,1000,773,975,774,981,662,1005"/>
 <area shape="rect" id="Node000024" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="797,1003,861,1028"/>
 <area shape="poly" id="edge25_Node000019_Node000024" title=" " alt="" coords="683,1013,783,1013,783,1018,683,1018"/>

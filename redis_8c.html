@@ -255,6 +255,7 @@ Functions</h2></td></tr>
  <br /></td></tr>
 <tr class="separator:a1792fc8a1ef7c60a0989c3476f5f79a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06edf3ed445d768a53750d1098f26ddf" id="r_a06edf3ed445d768a53750d1098f26ddf"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf">respParse</a> (const char *resp)</td></tr>
+<tr class="memdesc:a06edf3ed445d768a53750d1098f26ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">resp格式内容转为字符串空格分割。 常用于打印RESP  <br /></td></tr>
 <tr class="separator:a06edf3ed445d768a53750d1098f26ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54e3ebdc4964a91a4f5735fa8af19138" id="r_a54e3ebdc4964a91a4f5735fa8af19138"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="redis_8c.html#a54e3ebdc4964a91a4f5735fa8af19138">respFormat</a> (int argc, char **argv)</td></tr>
 <tr class="separator:a54e3ebdc4964a91a4f5735fa8af19138"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1144,7 +1145,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="521,452,554,433,571,411,577,388,584,365,602,341,609,336,612,341,606,345,589,367,582,390,576,414,558,437,523,457"/>
 <area shape="rect" href="redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="604,504,775,529"/>
 <area shape="poly" title=" " alt="" coords="522,477,617,498,616,504,521,483"/>
-<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title=" " alt="" coords="647,356,732,381"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="647,356,732,381"/>
 <area shape="poly" title=" " alt="" coords="511,452,555,433,569,423,578,412,588,401,603,390,632,378,634,383,605,395,591,405,582,416,572,426,557,438,513,457"/>
 <area shape="rect" href="sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="657,405,721,431"/>
 <area shape="poly" title=" " alt="" coords="521,452,643,425,644,430,522,457"/>
@@ -1726,25 +1727,34 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>resp格式内容转为字符串空格分割。 常用于打印RESP </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">resp</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>char* </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="redis_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph.png" border="0" usemap="#aredis_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph" alt=""/></div>
 <map name="aredis_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph" id="aredis_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph">
-<area shape="rect" title=" " alt="" coords="769,31,855,56"/>
-<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title=" " alt="" coords="636,31,721,56"/>
+<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="769,31,855,56"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="636,31,721,56"/>
 <area shape="poly" title=" " alt="" coords="756,46,722,46,722,41,756,41"/>
 <area shape="poly" title=" " alt="" coords="701,19,694,12,679,9,665,11,658,16,656,22,660,29,656,32,651,22,654,13,663,6,679,4,697,7,705,16"/>
-<area shape="rect" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="480,5,535,31"/>
-<area shape="poly" title=" " alt="" coords="622,38,534,25,535,19,623,32"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,55,588,80"/>
-<area shape="poly" title=" " alt="" coords="623,54,588,59,588,53,622,49"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,55,379,80"/>
-<area shape="poly" title=" " alt="" coords="413,70,379,70,379,65,413,65"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,55,193,80"/>
-<area shape="poly" title=" " alt="" coords="228,70,193,70,193,65,228,65"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,55,60,80"/>
-<area shape="poly" title=" " alt="" coords="94,70,60,70,60,65,94,65"/>
+<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
+<area shape="poly" title=" " alt="" coords="622,38,588,33,588,27,623,32"/>
+<area shape="rect" href="test__resp_8c.html#af6472bd8b3f8c226b67c00245e7e3e66" title=" " alt="" coords="450,55,565,80"/>
+<area shape="poly" title=" " alt="" coords="623,54,566,62,565,57,622,49"/>
+<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
+<area shape="poly" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
+<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
+<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
+<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
 </map>
 </div>
 
