@@ -56,8 +56,10 @@ sds* sdsdump(const sds* ss)
 {
     if (ss == NULL) return NULL;
     sds* res = malloc(sizeof(ss));
-    res->buf = malloc(ss->len + ss->free + 1);
-    memcpy(res, ss, sizeof(sds));
+    res->buf = calloc(ss->len + ss->free + 1, sizeof(char));
+    // 显示复制
+    res->len = ss->len;
+    res->free = ss->free;
     memcpy(res->buf,  ss->buf, ss->len + ss->free + 1);
     return res; 
 }
@@ -71,6 +73,7 @@ void sdsclear(sds* ss)
 
 void sdscatlen(sds* dest, const char* buf, int n)
 {
+    if (dest == NULL) return;
     if (buf == NULL) return;
     int len = sdslen(dest);
     int newlen = len + n;

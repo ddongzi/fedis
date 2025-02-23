@@ -315,8 +315,7 @@ void netCleanup()
 }
 
 /**
- * @brief stream fd直接发送，与 addwrite加入buf延迟发送不同。！
- *  在发送RDB文件使用。
+ * @brief 向fd write写入len长度的buf， 于addwrite不同。
  * @param [in] fd 
  * @param [in] buf 
  * @param [in] len 
@@ -444,7 +443,13 @@ void handleCommandPropagate()
 }
 
 
-// 判断是否为完整的 RESP 消息，返回完整消息的长度，-1 表示不完整
+/**
+ * @brief 获取buf内RESP的长度， buf以RESP开头
+ * 
+ * @param [in] buf 
+ * @param [in] len buf长度
+ * @return ssize_t 
+ */
 static ssize_t getRespLength(const char* buf, size_t len) {
     if (len < 2) return -1; // 至少需要 \r\n
 
@@ -508,6 +513,7 @@ static ssize_t getRespLength(const char* buf, size_t len) {
     }
 }
 
+
 /**
  * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
  * @param [in] client 
@@ -520,17 +526,15 @@ int readToReadBuf(redisClient* client) {
     // 清空 readBuf，准备接收新的 RESP
     sdsclear(client->readBuf);
 
-    // FIXME 可以封装
     n = read(client->fd, temp_buf, sizeof(temp_buf));
     if (n <= 0) {
         if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-            return; // 非阻塞模式暂无数据
+            return -1; // 非阻塞模式暂无数据
         }
-        return; // 读取结束或错误
+        return -1; // 读取结束或错误
     }
 
     // 将读取的数据追加到 readBuf
-    // TODO 需要测试
     client->readBuf = sdscatlen(client->readBuf, temp_buf, n);
 
     // 检查是否包含一个完整的 RESP
@@ -561,7 +565,7 @@ int readToBuf(redisClient* client, char* buf, int size)
     return nread;
 }
 
-
+// TODO 要详细化交互协议步骤， 来看readtoreadbuf咋实现
 void repliReadHandler(aeEventLoop *el, int fd, void* privData)
 {
     switch (server->replState) {
@@ -588,6 +592,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
         case REPL_STATE_SLAVE_SEND_SYNC:
+        // +FULLRESYNC <repl-id> <offset>\r\n$<length>\r\n<RDB binary data>
             readToReadBuf(server->master, 9);
             log_debug("debug,  In send sync, received 9 bytes. %s", server->master->readBuf->buf);
             if (strncmp(server->master->readBuf->buf, "+FULLSYNC", 9) == 0) {

@@ -333,11 +333,37 @@ void test_sdscmp() {
     sdsfree(str2);
 
     // NULL 输入
-    assert(sdscmp(NULL, NULL) == 0);
-    assert(sdscmp(sdsnew("hello"), NULL) != 0);
-    assert(sdscmp(NULL, sdsnew("hello")) != 0);
+    assert(sdscmp(NULL, NULL) == -1);
+    assert(sdscmp(sdsnew("hello"), NULL) == -1);
+    assert(sdscmp(NULL, sdsnew("hello")) == -1);
 
     printf("sdscmp tests passed!\n\n");
+}
+
+void test_sdscatlen()
+{
+    printf("Testing sdscatlen...\n");
+
+    // 非字符串
+    char buf[] = {' ', 'w', 'o', 'r', 'l', 'd'};
+
+    sds* str = sdsnew("hello");
+    sdscatlen(str, buf, 6);
+    assert(sdslen(str) == 11);
+    assert(strcmp(str->buf, "hello world") == 0);
+    sdsfree(str);
+
+    // 空字符串
+    str = sdsnew("");
+    sdscatlen(str, buf, 6);
+    assert(sdslen(str) == 6);
+    assert(strcmp(str->buf, " world") == 0);
+    sdsfree(str);
+
+    // NULL 输入
+    sdscatlen(NULL, buf, 6);
+
+    printf("sdscatlen tests passed!\n\n");
 }
 
 int main() {
@@ -355,7 +381,7 @@ int main() {
     test_sdsrange();
     test_sdstrim();
     test_sdscmp();
-
+    test_sdscatlen();
     printf("All tests passed!\n");
     return 0;
 }
