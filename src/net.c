@@ -451,7 +451,7 @@ void handleCommandPropagate()
  * @return ssize_t 
  */
 static ssize_t getRespLength(const char* buf, size_t len) {
-    if (len < 2) return -1; // 至少需要 \r\n
+    if (len < 2) return -1;
 
     char type = buf[0];
     size_t i;
@@ -462,45 +462,49 @@ static ssize_t getRespLength(const char* buf, size_t len) {
         case ':': // 整数
             for (i = 1; i < len - 1; i++) {
                 if (buf[i] == '\r' && buf[i + 1] == '\n') {
-                    return i + 2; // 包括 \r\n
+                    return i + 2;
                 }
             }
             return -1;
 
-        case '$': // 批量字符串
+        case '$': // 批量字符串， $10\r\nfoofoofoob\r\n
             if (len < 3) return -1;
             for (i = 1; i < len - 1; i++) {
+                // 遍历找到第一个\r\n， 即length，然后根据i+length计算完整长度 
                 if (buf[i] == '\r' && buf[i + 1] == '\n') {
                     char len_buf[32];
                     size_t prefix_len = i + 2;
                     strncpy(len_buf, buf + 1, i - 1);
                     len_buf[i - 1] = '\0';
                     int data_len = atoi(len_buf);
-                    if (data_len < 0) return prefix_len; // $-1\r\n 表示空
-                    if (len < prefix_len + data_len + 2) return -1;
+                    if (data_len <= 0) return prefix_len;    // $-1\r\n 返回5
+                    if (len < prefix_len + data_len + 2) return -1; // 参数len太小了，不完整，返回-1
                     if (buf[prefix_len + data_len] == '\r' && buf[prefix_len + data_len + 1] == '\n') {
                         return prefix_len + data_len + 2;
                     }
                     return -1;
                 }
             }
+            printf("找不到\r\n ");
             return -1;
 
-        case '*': // 数组
+        case '*': // 数组 *2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n
             if (len < 3) return -1;
             for (i = 1; i < len - 1; i++) {
+                // 遍历找到第一个\r\n, 即数组大小，
                 if (buf[i] == '\r' && buf[i + 1] == '\n') {
                     char len_buf[32];
                     size_t prefix_len = i + 2;
                     strncpy(len_buf, buf + 1, i - 1);
                     len_buf[i - 1] = '\0';
                     int num_elements = atoi(len_buf);
-                    if (num_elements <= 0) return prefix_len; // *0\r\n 或 *-1\r\n
+                    if (num_elements <= 0) return prefix_len; // *-1\r\n 返回5，前缀长度
                     size_t offset = prefix_len;
                     for (int j = 0; j < num_elements; j++) {
-                        if (offset >= len) return -1;
+                        if (offset >= len) return -1;   // 如果大于buf的len，不完整
                         ssize_t elem_len = getRespLength(buf + offset, len - offset);
-                        if (elem_len == -1) return -1;
+                        printf(" elem_len %u\n", elem_len);
+                        if (elem_len == -1) return -1;  // 获取数组各元素
                         offset += elem_len;
                     }
                     return offset;
@@ -509,9 +513,11 @@ static ssize_t getRespLength(const char* buf, size_t len) {
             return -1;
 
         default:
-            return -1; // 未知类型
+            printf("unexpected\n");
+            return -1;
     }
 }
+
 
 
 /**
@@ -540,6 +546,8 @@ int readToReadBuf(redisClient* client) {
     // 检查是否包含一个完整的 RESP
     // TODO 需要测试！
     ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
+
+    // TODO 为了解决RDB读取问题，需要逐字读取，cat到readbuf,检查buf是否满足RESP， $<length>\r\n<RDB binary data>
 
     // TODO 返回值
     return resp_len;

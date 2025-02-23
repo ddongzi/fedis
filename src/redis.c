@@ -538,6 +538,12 @@ void processClientQueryBuf(redisClient* client)
 
 /* 从角色： */
 
+/**
+ * @brief resp格式内容转为字符串空格分割。 常用于打印RESP
+ * 
+ * @param [in] resp 
+ * @return char* 
+ */
 char* respParse(const char* resp) {
     if (!resp) return NULL;
     
@@ -552,6 +558,7 @@ char* respParse(const char* resp) {
             result[strcspn(result, "\r\n")] = 0; // 去掉结尾的 \r\n
             break;
         case ':':  // Integers
+        //  linux
             asprintf(&result, "%ld", strtol(data, NULL, 10));
             break;
         case '$': { // Bulk Strings
