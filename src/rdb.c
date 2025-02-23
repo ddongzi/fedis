@@ -3,6 +3,7 @@
 #include "rdb.h"
 #include <stdint.h>
 #include "log.h"
+#include <sys/stat.h>
 /**
  * @brief 对象类型、RDB操作符
  * 
@@ -329,3 +330,12 @@ void receiveRDBfile(char* buf, int n)
     
 }
 
+void getRdbLength(long long* length)
+{
+    struct stat st;
+    if (stat(server->rdbFileName, &st) == 0) {
+        *length = st.st_size;
+    } else {
+        *length = 0;
+    }
+}

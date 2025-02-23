@@ -61,6 +61,7 @@ void commandSetProc(redisClient* client)
     } else {
         addWrite(client, shared.err);
     }
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 
 }
 void commandGetProc(redisClient* client)
@@ -71,6 +72,7 @@ void commandGetProc(redisClient* client)
     } else {
         addWrite(client, res);
     }
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 void commandDelProc(redisClient* client)
 {
@@ -82,6 +84,7 @@ void commandDelProc(redisClient* client)
     } else {
         addWrite(client, shared.keyNotFound);
     }
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 void commandObjectProc(redisClient* client)
 {
@@ -99,6 +102,8 @@ void commandObjectProc(redisClient* client)
             addWrite(client, robjCreateStringObject(buf));
         }
     }
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+
 }
 
 void commandByeProc(redisClient* client)
@@ -106,6 +111,8 @@ void commandByeProc(redisClient* client)
 
     listAddNodeTail(server->clientsToClose, listCreateNode(client));
     addWrite(client, shared.bye);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+
 }
 
 void commandSlaveofProc(redisClient* client)
@@ -117,31 +124,35 @@ void commandSlaveofProc(redisClient* client)
     server->masterport = (int)(client->argv[2]->ptr);
     addWrite(client, shared.ok);
     connectMaster();
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
 
 void commandPingProc(redisClient* client)
 {
+    client->replState = REPL_STATE_MASTER_WAIT_PING;
     addWrite(client, shared.pong);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
 void commandSyncProc(redisClient* client)
 {
-
-    addWrite(client, shared.sync);
     client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
+    addWrite(client, shared.sync);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
 void commandReplconfProc(redisClient* client)
 {
     //  暂不处理，不影响
     addWrite(client, shared.ok);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 void commandReplACKProc(redisClient* client)
 {
     //  ���不处理，不影响
     addWrite(client, shared.ok);
-    client->replState = REPL_STATE_SLAVE_CONNECTED;
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
 redisCommand commandsTable[] = {

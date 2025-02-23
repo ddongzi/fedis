@@ -53,6 +53,8 @@ enum REPL_STATE {
     REPL_STATE_SLAVE_TRANSFER,      // 接收RDB文件
     REPL_STATE_SLAVE_CONNECTED,      // 正常复制中
     // 主服务器维护主向从的状态。
+    REPL_STATE_MASTER_NONE,     //
+    REPL_STATE_MASTER_WAIT_PING,    // 正在等待PING
     REPL_STATE_MASTER_WAIT_SEND_FULLSYNC,  // 等待FULLSYNC发送
     REPL_STATE_MASTER_SEND_RDB, // 正在发送RDB
     REPL_STATE_MASTER_CONNECTED, // 主认为此次同步完成
@@ -78,6 +80,7 @@ typedef struct redisClient {
     int argc;   ///< 参数个数
     robj** argv;    ///< 参数数组
     int replState; ///< 用于主服务器维护某个从服务器同步状态。
+    
 } redisClient;
 redisClient *redisClientCreate(int fd);
 void processClientQueryBuf(redisClient* client);
