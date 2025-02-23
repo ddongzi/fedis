@@ -82,7 +82,7 @@
 <area shape="rect" id="Node000036" href="$net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="875,259,998,285"/>
 <area shape="poly" id="edge43_Node000035_Node000036" title=" " alt="" coords="780,269,861,269,861,275,780,275"/>
 <area shape="poly" id="edge44_Node000036_Node000033" title=" " alt="" coords="990,282,1079,304,1078,309,989,287"/>
-<area shape="rect" id="Node000037" href="$net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。" alt="" coords="1094,259,1194,285"/>
+<area shape="rect" id="Node000037" href="$net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="1094,259,1194,285"/>
 <area shape="poly" id="edge45_Node000036_Node000037" title=" " alt="" coords="998,269,1080,269,1080,275,998,275"/>
 <area shape="rect" id="Node000039" href="$sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="453,683,539,709"/>
 <area shape="poly" id="edge48_Node000038_Node000039" title=" " alt="" coords="290,558,339,612,373,643,412,670,441,682,439,687,409,674,370,647,335,616,286,561"/>

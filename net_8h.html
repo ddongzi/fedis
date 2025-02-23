@@ -194,7 +194,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a988b8b0c7f9f9ae97c80193766d2400c"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取对端IP和端口  <br /></td></tr>
 <tr class="separator:a988b8b0c7f9f9ae97c80193766d2400c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae489eda1d386253db9cfb9ab938da1b3" id="r_ae489eda1d386253db9cfb9ab938da1b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8h.html#ae489eda1d386253db9cfb9ab938da1b3">anetIOWrite</a> (int fd, char *buf, int len)</td></tr>
-<tr class="memdesc:ae489eda1d386253db9cfb9ab938da1b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。  <br /></td></tr>
+<tr class="memdesc:ae489eda1d386253db9cfb9ab938da1b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">向fd write写入len长度的buf， 于addwrite不同。  <br /></td></tr>
 <tr class="separator:ae489eda1d386253db9cfb9ab938da1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15a854d127038b664f3ad6ad21464c64" id="r_a15a854d127038b664f3ad6ad21464c64"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8h.html#a15a854d127038b664f3ad6ad21464c64">anetTcpConnect</a> (char *err, const char *host, int port)</td></tr>
 <tr class="memdesc:a15a854d127038b664f3ad6ad21464c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">作为客户端，连接到Host:port  <br /></td></tr>
@@ -362,7 +362,7 @@ Here is the call graph for this function:</div>
 <area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="875,259,998,285"/>
 <area shape="poly" title=" " alt="" coords="780,269,861,269,861,275,780,275"/>
 <area shape="poly" title=" " alt="" coords="990,282,1079,304,1078,309,989,287"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。" alt="" coords="1094,259,1194,285"/>
+<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="1094,259,1194,285"/>
 <area shape="poly" title=" " alt="" coords="998,269,1080,269,1080,275,998,275"/>
 <area shape="rect" href="sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="453,683,539,709"/>
 <area shape="poly" title=" " alt="" coords="290,558,339,612,373,643,412,670,441,682,439,687,409,674,370,647,335,616,286,561"/>
@@ -537,7 +537,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。 </p>
+<p>向fd write写入len长度的buf， 于addwrite不同。 </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">fd</td><td></td></tr>
@@ -552,7 +552,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8h_ae489eda1d386253db9cfb9ab938da1b3_icgraph.png" border="0" usemap="#anet_8h_ae489eda1d386253db9cfb9ab938da1b3_icgraph" alt=""/></div>
 <map name="anet_8h_ae489eda1d386253db9cfb9ab938da1b3_icgraph" id="anet_8h_ae489eda1d386253db9cfb9ab938da1b3_icgraph">
-<area shape="rect" title="stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。" alt="" coords="1176,5,1276,31"/>
+<area shape="rect" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="1176,5,1276,31"/>
 <area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="1005,5,1128,31"/>
 <area shape="poly" title=" " alt="" coords="1163,21,1128,21,1128,15,1163,15"/>
 <area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="827,5,957,31"/>
@@ -991,7 +991,7 @@ Here is the call graph for this function:</div>
 <area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="679,107,802,132"/>
 <area shape="poly" title=" " alt="" coords="584,117,665,117,665,122,584,122"/>
 <area shape="poly" title=" " alt="" coords="793,104,882,82,883,87,794,109"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。" alt="" coords="898,107,998,132"/>
+<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="898,107,998,132"/>
 <area shape="poly" title=" " alt="" coords="802,117,884,117,884,122,802,122"/>
 </map>
 </div>
@@ -1064,7 +1064,7 @@ Here is the call graph for this function:</div>
 <area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="574,104,695,129"/>
 <area shape="poly" title=" " alt="" coords="516,114,560,114,560,119,516,119"/>
 <area shape="poly" title=" " alt="" coords="494,52,571,32,572,37,495,57"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="stream fd直接发送，与 addwrite加入buf延迟发送不同。！ 在发送RDB文件使用。" alt="" coords="585,55,685,80"/>
+<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="585,55,685,80"/>
 <area shape="poly" title=" " alt="" coords="507,65,571,65,571,70,507,70"/>
 </map>
 </div>
