@@ -2,67 +2,88 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/**
+ * 将 RESP 格式转为普通字符串，去掉标识符号，添加空格
+ * @param resp RESP 格式的输入
+ * @return 转换后的字符串，需手动释放
+ */
 char* respParse(const char* resp) {
-    if (!resp) return NULL;
-    
-    char type = resp[0];
-    const char* data = resp + 1;
-    char* result = NULL;
-    
-    switch (type) {
-        case '+':  // Simple Strings
-        case '-':  // Errors
-            result = strdup(data);
-            result[strcspn(result, "\r\n")] = 0; // 去掉结尾的 \r\n
-            break;
-        case ':':  // Integers
-            asprintf(&result, "%ld", strtol(data, NULL, 10));
-            break;
-        case '$': { // Bulk Strings
-            int len = strtol(data, NULL, 10);
-            if (len == -1) {
-                result = strdup("(nil)");
-            } else {
-                const char* str = strchr(data, '\n');
-                if (str) {
-                    result = strndup(str + 1, len);
-                }
-            }
-            break;
-        }
-        case '*': { // Arrays
-            int count = strtol(data, NULL, 10);
-            if (count == -1) {
-                result = strdup("(empty array)");
-            } else {
-                result = malloc(1024);  // 假设最大长度不会超
-                result[0] = '\0';
-                const char* ptr = strchr(data, '\n') + 1;
-                for (int i = 0; i < count; i++) {
-                    char* elem = respParse(ptr);
-                    strcat(result, elem);
-                    strcat(result, " ");
-                    free(elem);
-                    
-                    // 移动 ptr 指向下一个 RESP 片段
-                    if (*ptr == '+' || *ptr == '-' || *ptr == ':') {
-                        ptr = strchr(ptr, '\n') + 1;
-                    } else if (*ptr == '$') {
-                        int blen = strtol(ptr + 1, NULL, 10);
-                        if (blen != -1) {
-                            ptr = strchr(ptr, '\n') + 1 + blen + 2;
-                        } else {
-                            ptr = strchr(ptr, '\n') + 1;
-                        }
+    if (!resp || *resp == '\0') return strdup("");
+
+    char* result = malloc(1024); // 初始缓冲区，动态调整
+    if (!result) return NULL;
+    size_t pos = 0;
+    size_t capacity = 1024;
+    *result = '\0';
+
+    const char* p = resp;
+    int first_item = 1; // 标记是否是第一个元素，避免多余空格
+
+    while (*p) {
+        switch (*p) {
+            case '+': // 简单字符串
+            case '-': // 错误（这里简单处理，与 + 一致）
+                p++; // 跳过标识
+                while (*p && !(*p == '\r' && *(p + 1) == '\n')) {
+                    if (pos + 1 >= capacity) {
+                        capacity *= 2;
+                        result = realloc(result, capacity);
+                        if (!result) return NULL;
                     }
+                    result[pos++] = *p++;
                 }
-            }
-            break;
+                p += 2; // 跳过 \r\n
+                break;
+
+            case '$': // 批量字符串
+                p++; // 跳过 $
+                int len = atoi(p);
+                if (len < 0) { // $-1 表示 null
+                    p = strchr(p, '\n') + 1; // 跳到 \r\n 后
+                    continue;
+                }
+                while (*p != '\r') p++; // 跳过长度部分
+                p += 2; // 跳过 \r\n
+                if (!first_item) {
+                    if (pos + 1 >= capacity) {
+                        capacity *= 2;
+                        result = realloc(result, capacity);
+                    }
+                    result[pos++] = ' '; // 添加空格
+                }
+                for (int i = 0; i < len; i++) {
+                    if (pos + 1 >= capacity) {
+                        capacity *= 2;
+                        result = realloc(result, capacity);
+                    }
+                    result[pos++] = *p++;
+                }
+                p += 2; // 跳过 \r\n
+                first_item = 0;
+                break;
+
+            case '*': // 数组
+                p++; // 跳过 *
+                int num = atoi(p);
+                if (num <= 0) { // *0 或 *-1
+                    p = strchr(p, '\n') + 1;
+                    continue;
+                }
+                while (*p != '\r') p++; // 跳过数量
+                p += 2; // 跳过 \r\n
+                break; // 递归处理数组中的元素
+
+            default:
+                p++; // 跳过未知字符
+                break;
         }
-        default:
-            result = strdup("(unknown)");
-            break;
     }
+
+    result[pos] = '\0';
     return result;
 }
 
@@ -148,6 +169,7 @@ void testRespLength(const char* test_name, const char* buf, size_t len, ssize_t 
 
 int main_testRespLength() {
     // 测试用例
+    testRespLength("Simple String Complete FULLSYNC", "+FULLSYNC\r\n", 11, 11);
     testRespLength("Simple String Complete", "+OK\r\n", 5, 5);
     testRespLength("Simple String Incomplete", "+OK", 3, -1);
     testRespLength("Error Complete", "-ERR\r\n", 6, 6);
@@ -163,28 +185,43 @@ int main_testRespLength() {
     testRespLength("Invalid Type", "xABC\r\n", 6, -1);
     testRespLength("Too Short", "+", 1, -1);
     testRespLength("RDB Length", "$10\r\n1234567890", 15, -1);
+    testRespLength("RESP fullsyc", "+FULLSYNC\r\n", 11, 11);
 
     return 0;
 }
-void testRespParse()
-{
-    const char* examples[] = {
-        "+OK\r\n",
-        "-Error message\r\n",
-        ":1000\r\n",
-        "$6\r\nfoobar\r\n",
-        "*-1\r\n",
-        "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"
-    };
+
+void testRespParse(const char* test_name, const char* input, const char* expected) {
+    char* result = respParse(input);
+    printf("Test: %s\n", test_name);
+    printf("Input:  '%s'\n", input);
+    printf("Expect: '%s'\n", expected);
+    printf("Result: '%s'\n", result ? result : "(null)");
+    int pass = result && strcmp(result, expected) == 0;
+    printf("Status: %s\n\n", pass ? "PASS" : "FAIL");
+    free(result);
+}
+
+int main_testRespParse() {
+    // 测试用例
+    printf("\n=========TEST test_testRespParse ======\n");
+    testRespParse("Simple String", "+OK\r\n", "OK");
+    testRespParse("Error", "-ERR invalid\r\n", "ERR invalid");
+    testRespParse("Bulk String", "$3\r\nfoo\r\n", "foo");
+    testRespParse("Empty Bulk String", "$0\r\n\r\n", "");
+    testRespParse("Null Bulk String", "$-1\r\n", "");
+    testRespParse("Array Two Elements", "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n", "foo bar");
+    testRespParse("Array One Element", "*1\r\n$3\r\nfoo\r\n", "foo");
+    testRespParse("Empty Array", "*0\r\n", "");
+    testRespParse("Null Array", "*-1\r\n", "");
+    testRespParse("Nested Array", "*2\r\n*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$3\r\nbaz\r\n", "foo bar baz");
+    testRespParse("Empty Input", "", "");
     
-    for (int i = 0; i < 6; i++) {
-        char* parsed = respParse(examples[i]);
-        printf("Parsed: %s\n", parsed);
-        free(parsed);
-    }
+    testRespParse("$<length>\r\n", "$28\r\n", "28");
+    return 0;
 }
 
 int main() {
     main_testRespLength();
+    main_testRespParse();
     return 0;
 }

@@ -3,7 +3,7 @@
 #include "redis.h"
 #include "rdb.h"
 #include "log.h"
-
+#include "io.h"
 static void repliReadHandler(aeEventLoop *el, int fd, void* privData);
 static void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
 
@@ -276,7 +276,7 @@ void saveRDBToSlave(redisClient* client)
     sprintf(length_buf, "$%lu\r\n", rdb_len);
     size_t length_len = strlen(length_buf);
     write(client->fd, length_buf, length_len);
-
+    log_debug("send RDB length: %s", length_buf);
     // 直接发送 RDB 数据
     char buf[1024];
     size_t nread;
@@ -285,6 +285,7 @@ void saveRDBToSlave(redisClient* client)
             log_debug("Failed to send RDB to client %d: %s", client->fd, strerror(errno));
             break;
         }
+        printBuf("RDB sending", buf, nread);
     }
     fclose(fp);
 
@@ -550,20 +551,24 @@ void readToReadBuf(redisClient* client) {
 
     sdsclear(client->readBuf);
 
+    printf("\n to read buf\n");
     while (1) {
         n = read(client->fd, temp_buf, sizeof(temp_buf));
         if (n <= 0) {
+            log_debug("read failed or finished");
             if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
             return;
         }
         sdscatlen(client->readBuf, temp_buf, n);
 
-        ssize_t resp_len = getRespLength(client->readBuf, sdslen(client->readBuf));
+        ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
         if (resp_len != -1) {
             // 读到一个RESP协议
+            printf("get resp return");
             break;
         }
     }
+    printf("\nread buf finished,  %s\n", client->readBuf->buf);
 }
 
 /**
@@ -586,7 +591,6 @@ int readToBuf(redisClient* client, char* buf, int size)
     return nread;
 }
 
-// TODO 要详细化交互协议步骤， 来看readtoreadbuf咋实现
 void repliReadHandler(aeEventLoop *el, int fd, void* privData)
 {
     switch (server->replState) {
@@ -611,8 +615,9 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
         case REPL_STATE_SLAVE_SEND_SYNC:
-        // +FULLRESYNC\r\n$<length>\r\n<RDB binary data>
-            readToReadBuf(server->master);
+            // +FULLSYNC\r\n$<length>\r\n<RDB binary data>
+            readToReadBuf(server->master); // 应该只读取到fullsync部分
+            printBuf("+FULLSYNC", server->master->readBuf->buf, sdslen(server->master->readBuf));
             if (strstr(server->master->readBuf->buf, "+FULLSYNC") != NULL) {
                 // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
                 server->replState = REPL_STATE_SLAVE_TRANSFER;
@@ -621,8 +626,14 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             sdsclear(server->master->readBuf);
             break;
         case REPL_STATE_SLAVE_TRANSFER:
+            //  $<length>\r\n<RDB DATA> 因为解析不到一个RESP协议，就一直读
             readToReadBuf(server->master);
-            int len = atoi(respParse(server->master->readBuf));
+            printBuf("$<length>", server->master->readBuf->buf, sdslen(server->master->readBuf));
+            int len = 0;
+            if (sscanf(server->master->readBuf->buf, "$%d\r\n", &len)!= 1) {
+                log_error("sscanf failed");
+                exit(1);
+            }
             log_debug("start transfer ..., len %u", len);
             char* buf = calloc(len, 1);
             int nread = readToBuf(server->master, buf, len);

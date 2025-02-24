@@ -378,7 +378,7 @@ int aeProcessEvents(aeEventLoop* loop, int flags)
     // log_debug("API POLL timeout %u ms", tvp->tv_sec * 1000 + tvp->tv_usec/1000);
 
     // 文件事件: 至多等到下一个定时任务
-    // FIXME while运行很快，很可能在ms级别之下，运行了很多次timeOut 0 .(忙查询)
+    // TODO while运行很快，很可能在ms级别之下，运行了很多次timeOut 0 .(忙查询)
     numevents = aeApiPoll(loop, tvp);
     for (int i = 0; i < numevents; i++) {
         aeFileEvent* fe = &loop->events[loop->fireEvents[i].fd];

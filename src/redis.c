@@ -318,7 +318,6 @@ void prepareShutdown()
  */
 int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
-    // TODO 
     log_debug("server cron.");
 
     // 检查SAVE条件，执行BGSAVE    
@@ -374,7 +373,7 @@ void sigChildHandler(int sig)
  */
 void sigIntHandler(int sig)
 {
-    // FIXME: 不起作用
+    // TODO: 效果不一致？
     if (server->shutdownAsap == 0) {
         server->shutdownAsap = 1;
     } else if (server->shutdownAsap == 1) {
@@ -550,7 +549,7 @@ void processClientQueryBuf(redisClient* client)
 /* 从角色： */
 
 /**
- * @brief resp格式内容转为字符串空格分割。 常用于打印RESP
+ * @brief resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格
  * 
  * @param [in] resp 
  * @return char* 
