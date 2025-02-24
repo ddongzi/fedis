@@ -1,13 +1,30 @@
 <map id="commandReplACKProc" name="commandReplACKProc">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,176,56"/>
-<area shape="rect" id="Node000002" href="$redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31" title="准备buf，向client写, 后续write类handler处理" alt="" coords="224,31,305,56"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,41,210,41,210,46,176,46"/>
-<area shape="rect" id="Node000003" href="$robj_8c.html#a2a81c902fe7a60308da1f60b0675eebe" title=" " alt="" coords="353,5,461,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="305,34,339,27,340,33,306,39"/>
-<area shape="rect" id="Node000004" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="375,55,439,80"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="306,47,362,57,361,62,305,53"/>
-<area shape="rect" id="Node000005" href="$sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="509,29,585,55"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="439,59,495,49,496,54,440,64"/>
-<area shape="rect" id="Node000006" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="515,79,579,104"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="440,70,502,81,501,86,439,75"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,104,176,129"/>
+<area shape="rect" id="Node000002" href="$redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31" title="准备buf，向client写, 后续write类handler处理" alt="" coords="255,55,336,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="143,101,240,78,242,83,145,107"/>
+<area shape="rect" id="Node000007" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="225,104,366,129"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="176,114,211,114,211,119,176,119"/>
+<area shape="rect" id="Node000009" href="$net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="224,205,367,231"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="119,127,258,197,255,201,116,132"/>
+<area shape="rect" id="Node000003" href="$robj_8c.html#a2a81c902fe7a60308da1f60b0675eebe" title=" " alt="" coords="431,5,539,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="336,54,422,32,423,37,337,59"/>
+<area shape="rect" id="Node000004" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="453,55,517,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="336,65,439,65,439,70,336,70"/>
+<area shape="rect" id="Node000005" href="$sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="625,55,701,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="518,65,612,65,612,70,518,70"/>
+<area shape="rect" id="Node000006" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="631,129,695,155"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="519,76,557,90,625,121,623,126,555,95,517,80"/>
+<area shape="rect" id="Node000008" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="425,104,546,129"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="366,114,411,114,411,119,366,119"/>
+<area shape="poly" id="edge14_Node000009_Node000006" title=" " alt="" coords="357,203,617,149,618,154,358,208"/>
+<area shape="rect" id="Node000010" href="$ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="415,205,556,231"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="367,215,401,215,401,221,367,221"/>
+<area shape="rect" id="Node000012" href="$net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="420,255,551,280"/>
+<area shape="poly" id="edge11_Node000009_Node000012" title=" " alt="" coords="346,228,423,248,421,254,344,233"/>
+<area shape="rect" id="Node000014" href="$sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="447,304,523,329"/>
+<area shape="poly" id="edge13_Node000009_Node000014" title=" " alt="" coords="315,229,360,259,416,290,435,299,433,303,413,295,357,263,312,233"/>
+<area shape="rect" id="Node000011" href="$ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="604,205,723,231"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="556,215,590,215,590,221,556,221"/>
+<area shape="rect" id="Node000013" href="$io_8c.html#ac541b19430641726f2737b355cc26277" title=" " alt="" coords="626,255,701,280"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="551,265,612,265,612,270,551,270"/>
 </map>

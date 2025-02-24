@@ -1,15 +1,17 @@
 <map id="src/net.c" name="src/net.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1595,5,1673,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1627,5,1705,31"/>
 <area shape="rect" id="Node000002" href="$net_8h.html" title=" " alt="" coords="909,152,964,177"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1596,30,978,158,977,152,1595,25"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1628,30,978,158,977,153,1627,24"/>
 <area shape="rect" id="Node000019" title=" " alt="" coords="1750,152,1825,177"/>
-<area shape="poly" id="edge20_Node000001_Node000019" title=" " alt="" coords="1648,29,1767,141,1763,144,1645,33"/>
+<area shape="poly" id="edge20_Node000001_Node000019" title=" " alt="" coords="1675,29,1698,63,1728,102,1766,141,1762,144,1724,106,1694,66,1671,32"/>
 <area shape="rect" id="Node000020" href="$redis_8h.html" title=" " alt="" coords="294,79,361,104"/>
-<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="1595,24,375,90,375,85,1595,19"/>
+<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="1627,24,375,90,374,85,1627,19"/>
 <area shape="rect" id="Node000028" href="$rdb_8h.html" title=" " alt="" coords="1737,79,1792,104"/>
-<area shape="poly" id="edge41_Node000001_Node000028" title=" " alt="" coords="1656,28,1733,70,1730,74,1654,33"/>
+<area shape="poly" id="edge41_Node000001_Node000028" title=" " alt="" coords="1683,29,1739,68,1736,73,1680,33"/>
 <area shape="rect" id="Node000029" href="$log_8h.html" title=" " alt="" coords="1607,79,1661,104"/>
-<area shape="poly" id="edge42_Node000001_Node000029" title=" " alt="" coords="1637,31,1637,65,1631,65,1631,31"/>
+<area shape="poly" id="edge42_Node000001_Node000029" title=" " alt="" coords="1663,32,1647,67,1642,65,1658,30"/>
+<area shape="rect" id="Node000031" href="$io_8h.html" title=" " alt="" coords="1816,79,1863,104"/>
+<area shape="poly" id="edge47_Node000001_Node000031" title=" " alt="" coords="1695,28,1805,73,1803,78,1693,33"/>
 <area shape="rect" id="Node000003" href="$ae_8h.html" title=" " alt="" coords="470,225,521,251"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="909,171,754,190,647,206,535,228,534,223,646,201,753,185,909,166"/>
 <area shape="rect" id="Node000007" title=" " alt="" coords="1031,299,1099,324"/>

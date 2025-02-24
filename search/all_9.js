@@ -1,8 +1,13 @@
 var searchData=
 [
-  ['key_0',['key',['../structdictEntry.html#a1cc436243330e4ac0a1d7d07e5a16ce0',1,'dictEntry']]],
-  ['keycompare_1',['keycompare',['../structdictType.html#abc4e87fe80173aa50732c049d3be96b5',1,'dictType::keyCompare'],['../test__dict_8c.html#a87d69cd27755822a55b7b6b981f1c254',1,'keyCompare():&#160;test_dict.c']]],
-  ['keydestructor_2',['keydestructor',['../structdictType.html#a448ee05f531f872a05a2cdafccb5ecc4',1,'dictType::keyDestructor'],['../test__dict_8c.html#a031f104ffd4da52b25467ef319ddc954',1,'keyDestructor():&#160;test_dict.c']]],
-  ['keydup_3',['keydup',['../structdictType.html#a026d4535a7b11b1bcd466b2afb3d77a8',1,'dictType::keyDup'],['../test__dict_8c.html#a5699c4344fffc059a97a34bc92024da5',1,'keyDup():&#160;test_dict.c']]],
-  ['keynotfound_4',['keyNotFound',['../structsharedObjects.html#a0bbc5afd1e321b1c8e7bf63311dd0bf0',1,'sharedObjects']]]
+  ['id_0',['id',['../structaeTimeEvent.html#a24ed4bf76ef40a2c735e9f9cccb45de4',1,'aeTimeEvent::id'],['../structredisDb.html#a0c85effb7de0bae1dd2df7c28b4184cd',1,'redisDb::id']]],
+  ['index_1',['index',['../structdictIterator.html#a3e0798e8d5e0906fbd6181a2588b3e98',1,'dictIterator']]],
+  ['initserver_2',['initserver',['../redis_8h.html#a29060721f5ddfa26790f0778bde74ff2',1,'initServer():&#160;redis.c'],['../redis_8c.html#a29060721f5ddfa26790f0778bde74ff2',1,'initServer():&#160;redis.c']]],
+  ['initserverconfig_3',['initServerConfig',['../redis_8c.html#a26d7daef054aa5bd37f3637f011a5f5a',1,'redis.c']]],
+  ['initserversignalhandlers_4',['initServerSignalHandlers',['../redis_8c.html#a84a6c0165eaca7e2bcf400d839465ada',1,'redis.c']]],
+  ['integers_5',['integers',['../structsharedObjects.html#a4e6d12d005669ca2e4c04e9bd8d53d4b',1,'sharedObjects']]],
+  ['invalidcommand_6',['invalidCommand',['../structsharedObjects.html#a39de9904623d2c1fb43ba8dab1cff38b',1,'sharedObjects']]],
+  ['io_2ec_7',['io.c',['../io_8c.html',1,'']]],
+  ['io_2eh_8',['io.h',['../io_8h.html',1,'']]],
+  ['isbgsaving_9',['isBgSaving',['../structredisServer.html#ace11c91f475076d1e817a1c5d40e1e04',1,'redisServer']]]
 ];

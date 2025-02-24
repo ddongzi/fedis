@@ -99,14 +99,16 @@ Include dependency graph for test_resp.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a06edf3ed445d768a53750d1098f26ddf" id="r_a06edf3ed445d768a53750d1098f26ddf"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf">respParse</a> (const char *resp)</td></tr>
-<tr class="memdesc:a06edf3ed445d768a53750d1098f26ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">resp格式内容转为字符串空格分割。 常用于打印RESP  <br /></td></tr>
+<tr class="memdesc:a06edf3ed445d768a53750d1098f26ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格  <br /></td></tr>
 <tr class="separator:a06edf3ed445d768a53750d1098f26ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a979c5fcc0ad2c5d31d9d260eb86c49d7" id="r_a979c5fcc0ad2c5d31d9d260eb86c49d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#a979c5fcc0ad2c5d31d9d260eb86c49d7">testRespLength</a> (const char *test_name, const char *buf, size_t len, ssize_t expected)</td></tr>
 <tr class="separator:a979c5fcc0ad2c5d31d9d260eb86c49d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7417aacf0adb272e7e522260b0d3f30b" id="r_a7417aacf0adb272e7e522260b0d3f30b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#a7417aacf0adb272e7e522260b0d3f30b">main_testRespLength</a> ()</td></tr>
 <tr class="separator:a7417aacf0adb272e7e522260b0d3f30b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6472bd8b3f8c226b67c00245e7e3e66" id="r_af6472bd8b3f8c226b67c00245e7e3e66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#af6472bd8b3f8c226b67c00245e7e3e66">testRespParse</a> ()</td></tr>
-<tr class="separator:af6472bd8b3f8c226b67c00245e7e3e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c1b917423c7ba47546044b0c9065048" id="r_a0c1b917423c7ba47546044b0c9065048"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#a0c1b917423c7ba47546044b0c9065048">testRespParse</a> (const char *test_name, const char *input, const char *expected)</td></tr>
+<tr class="separator:a0c1b917423c7ba47546044b0c9065048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa591d164a0385b9b4228b24d5255946e" id="r_aa591d164a0385b9b4228b24d5255946e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#aa591d164a0385b9b4228b24d5255946e">main_testRespParse</a> ()</td></tr>
+<tr class="separator:aa591d164a0385b9b4228b24d5255946e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4" id="r_ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
 <tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -130,11 +132,19 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="test__resp_8c_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph.png" border="0" usemap="#atest__resp_8c_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph" alt=""/></div>
 <map name="atest__resp_8c_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph" id="atest__resp_8c_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,60,31"/>
+<area shape="rect" title=" " alt="" coords="5,31,60,56"/>
 <area shape="rect" href="test__resp_8c.html#a7417aacf0adb272e7e522260b0d3f30b" title=" " alt="" coords="108,5,271,31"/>
-<area shape="poly" title=" " alt="" coords="60,15,94,15,94,21,60,21"/>
+<area shape="poly" title=" " alt="" coords="60,36,97,30,98,36,61,42"/>
+<area shape="rect" href="test__resp_8c.html#aa591d164a0385b9b4228b24d5255946e" title=" " alt="" coords="112,55,267,80"/>
+<area shape="poly" title=" " alt="" coords="61,45,99,51,98,56,60,50"/>
 <area shape="rect" href="test__resp_8c.html#a979c5fcc0ad2c5d31d9d260eb86c49d7" title=" " alt="" coords="319,5,441,31"/>
 <area shape="poly" title=" " alt="" coords="271,15,305,15,305,21,271,21"/>
+<area shape="rect" href="test__resp_8c.html#a0c1b917423c7ba47546044b0c9065048" title=" " alt="" coords="323,55,437,80"/>
+<area shape="poly" title=" " alt="" coords="267,65,309,65,309,70,267,70"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="489,55,575,80"/>
+<area shape="poly" title=" " alt="" coords="437,65,476,65,476,70,437,70"/>
+<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="623,55,708,80"/>
+<area shape="poly" title=" " alt="" coords="575,65,609,65,609,70,575,70"/>
 </map>
 </div>
 
@@ -177,6 +187,47 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="aa591d164a0385b9b4228b24d5255946e" name="aa591d164a0385b9b4228b24d5255946e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa591d164a0385b9b4228b24d5255946e">&#9670;&#160;</a></span>main_testRespParse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int main_testRespParse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="test__resp_8c_aa591d164a0385b9b4228b24d5255946e_cgraph.png" border="0" usemap="#atest__resp_8c_aa591d164a0385b9b4228b24d5255946e_cgraph" alt=""/></div>
+<map name="atest__resp_8c_aa591d164a0385b9b4228b24d5255946e_cgraph" id="atest__resp_8c_aa591d164a0385b9b4228b24d5255946e_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,160,31"/>
+<area shape="rect" href="test__resp_8c.html#a0c1b917423c7ba47546044b0c9065048" title=" " alt="" coords="208,5,323,31"/>
+<area shape="poly" title=" " alt="" coords="160,15,194,15,194,21,160,21"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="371,5,456,31"/>
+<area shape="poly" title=" " alt="" coords="323,15,357,15,357,21,323,21"/>
+<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="504,5,589,31"/>
+<area shape="poly" title=" " alt="" coords="456,15,490,15,490,21,456,21"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="test__resp_8c_aa591d164a0385b9b4228b24d5255946e_icgraph.png" border="0" usemap="#atest__resp_8c_aa591d164a0385b9b4228b24d5255946e_icgraph" alt=""/></div>
+<map name="atest__resp_8c_aa591d164a0385b9b4228b24d5255946e_icgraph" id="atest__resp_8c_aa591d164a0385b9b4228b24d5255946e_icgraph">
+<area shape="rect" title=" " alt="" coords="108,5,263,31"/>
+<area shape="rect" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a06edf3ed445d768a53750d1098f26ddf" name="a06edf3ed445d768a53750d1098f26ddf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a06edf3ed445d768a53750d1098f26ddf">&#9670;&#160;</a></span>respParse()</h2>
 
@@ -193,21 +244,21 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>resp格式内容转为字符串空格分割。 常用于打印RESP </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格 </p>
+<p>将 RESP 格式转为普通字符串，去掉标识符号，添加空格 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">resp</td><td></td></tr>
+    <tr><td class="paramname">resp</td><td>RESP 格式的输入 </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>char* </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>转换后的字符串，需手动释放 </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="test__resp_8c_a06edf3ed445d768a53750d1098f26ddf_cgraph.png" border="0" usemap="#atest__resp_8c_a06edf3ed445d768a53750d1098f26ddf_cgraph" alt=""/></div>
 <map name="atest__resp_8c_a06edf3ed445d768a53750d1098f26ddf_cgraph" id="atest__resp_8c_a06edf3ed445d768a53750d1098f26ddf_cgraph">
-<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="5,5,91,31"/>
-<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="139,5,224,31"/>
+<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="5,5,91,31"/>
+<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="139,5,224,31"/>
 <area shape="poly" title=" " alt="" coords="91,15,125,15,125,21,91,21"/>
 </map>
 </div>
@@ -216,18 +267,21 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="test__resp_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph.png" border="0" usemap="#atest__resp_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph" alt=""/></div>
 <map name="atest__resp_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph" id="atest__resp_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph">
-<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="636,31,721,56"/>
-<area shape="poly" title=" " alt="" coords="709,20,700,12,679,9,661,11,651,16,649,22,655,29,650,32,644,22,647,13,659,6,679,4,702,7,712,16"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
-<area shape="poly" title=" " alt="" coords="622,38,588,33,588,27,623,32"/>
-<area shape="rect" href="test__resp_8c.html#af6472bd8b3f8c226b67c00245e7e3e66" title=" " alt="" coords="450,55,565,80"/>
-<area shape="poly" title=" " alt="" coords="623,54,566,62,565,57,622,49"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
-<area shape="poly" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
+<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="653,31,739,56"/>
+<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="444,5,605,31"/>
+<area shape="poly" title=" " alt="" coords="639,38,605,33,606,27,640,32"/>
+<area shape="rect" href="test__resp_8c.html#a0c1b917423c7ba47546044b0c9065048" title=" " alt="" coords="467,55,582,80"/>
+<area shape="poly" title=" " alt="" coords="640,54,583,62,582,57,639,49"/>
+<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="250,5,387,31"/>
+<area shape="poly" title=" " alt="" coords="430,21,388,21,388,15,430,15"/>
 <area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
+<area shape="poly" title=" " alt="" coords="236,21,194,21,194,15,236,15"/>
 <area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
 <area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" href="test__resp_8c.html#aa591d164a0385b9b4228b24d5255946e" title=" " alt="" coords="241,55,396,80"/>
+<area shape="poly" title=" " alt="" coords="453,70,396,70,396,65,453,65"/>
+<area shape="rect" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="123,55,178,80"/>
+<area shape="poly" title=" " alt="" coords="227,70,178,70,178,65,227,65"/>
 </map>
 </div>
 
@@ -285,8 +339,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="af6472bd8b3f8c226b67c00245e7e3e66" name="af6472bd8b3f8c226b67c00245e7e3e66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af6472bd8b3f8c226b67c00245e7e3e66">&#9670;&#160;</a></span>testRespParse()</h2>
+<a id="a0c1b917423c7ba47546044b0c9065048" name="a0c1b917423c7ba47546044b0c9065048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c1b917423c7ba47546044b0c9065048">&#9670;&#160;</a></span>testRespParse()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -294,21 +348,50 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void testRespParse </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>test_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>expected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="test__resp_8c_af6472bd8b3f8c226b67c00245e7e3e66_cgraph.png" border="0" usemap="#atest__resp_8c_af6472bd8b3f8c226b67c00245e7e3e66_cgraph" alt=""/></div>
-<map name="atest__resp_8c_af6472bd8b3f8c226b67c00245e7e3e66_cgraph" id="atest__resp_8c_af6472bd8b3f8c226b67c00245e7e3e66_cgraph">
+<div class="center"><img src="test__resp_8c_a0c1b917423c7ba47546044b0c9065048_cgraph.png" border="0" usemap="#atest__resp_8c_a0c1b917423c7ba47546044b0c9065048_cgraph" alt=""/></div>
+<map name="atest__resp_8c_a0c1b917423c7ba47546044b0c9065048_cgraph" id="atest__resp_8c_a0c1b917423c7ba47546044b0c9065048_cgraph">
 <area shape="rect" title=" " alt="" coords="5,5,120,31"/>
-<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="168,5,253,31"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="168,5,253,31"/>
 <area shape="poly" title=" " alt="" coords="120,15,154,15,154,21,120,21"/>
-<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="301,5,387,31"/>
+<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="301,5,387,31"/>
 <area shape="poly" title=" " alt="" coords="253,15,287,15,287,21,253,21"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="test__resp_8c_a0c1b917423c7ba47546044b0c9065048_icgraph.png" border="0" usemap="#atest__resp_8c_a0c1b917423c7ba47546044b0c9065048_icgraph" alt=""/></div>
+<map name="atest__resp_8c_a0c1b917423c7ba47546044b0c9065048_icgraph" id="atest__resp_8c_a0c1b917423c7ba47546044b0c9065048_icgraph">
+<area shape="rect" title=" " alt="" coords="311,5,425,31"/>
+<area shape="rect" href="test__resp_8c.html#aa591d164a0385b9b4228b24d5255946e" title=" " alt="" coords="108,5,263,31"/>
+<area shape="poly" title=" " alt="" coords="297,21,263,21,263,15,297,15"/>
+<area shape="rect" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
 </map>
 </div>
 

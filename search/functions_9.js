@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['keycompare_0',['keyCompare',['../test__dict_8c.html#a87d69cd27755822a55b7b6b981f1c254',1,'test_dict.c']]],
-  ['keydestructor_1',['keyDestructor',['../test__dict_8c.html#a031f104ffd4da52b25467ef319ddc954',1,'test_dict.c']]],
-  ['keydup_2',['keyDup',['../test__dict_8c.html#a5699c4344fffc059a97a34bc92024da5',1,'test_dict.c']]]
+  ['initserver_0',['initserver',['../redis_8h.html#a29060721f5ddfa26790f0778bde74ff2',1,'initServer():&#160;redis.c'],['../redis_8c.html#a29060721f5ddfa26790f0778bde74ff2',1,'initServer():&#160;redis.c']]],
+  ['initserverconfig_1',['initServerConfig',['../redis_8c.html#a26d7daef054aa5bd37f3637f011a5f5a',1,'redis.c']]],
+  ['initserversignalhandlers_2',['initServerSignalHandlers',['../redis_8c.html#a84a6c0165eaca7e2bcf400d839465ada',1,'redis.c']]]
 ];

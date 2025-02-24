@@ -1,15 +1,5 @@
 <map id="saveRDBToSlave" name="saveRDBToSlave">
-<area shape="rect" id="Node000001" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,31,136,56"/>
-<area shape="rect" id="Node000002" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="184,5,325,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,32,170,27,171,32,137,37"/>
-<area shape="rect" id="Node000004" href="$net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="193,55,316,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="137,49,180,55,179,60,136,55"/>
-<area shape="rect" id="Node000003" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="383,5,505,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="326,15,369,15,369,21,326,21"/>
-<area shape="rect" id="Node000005" href="$ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="373,55,515,80"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="316,65,359,65,359,70,316,70"/>
-<area shape="rect" id="Node000007" href="$net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="394,104,494,129"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="305,77,382,98,380,103,303,83"/>
-<area shape="rect" id="Node000006" href="$ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="563,55,681,80"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="515,65,549,65,549,70,515,70"/>
+<area shape="rect" id="Node000001" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,5,136,31"/>
+<area shape="rect" id="Node000002" href="$io_8c.html#ac541b19430641726f2737b355cc26277" title=" " alt="" coords="184,5,259,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,15,170,15,170,21,136,21"/>
 </map>

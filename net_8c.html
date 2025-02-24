@@ -83,22 +83,25 @@ $(function() {
 <code>#include &quot;<a class="el" href="redis_8h_source.html">redis.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="rdb_8h_source.html">rdb.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="io_8h_source.html">io.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for net.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c__incl.png" border="0" usemap="#asrc_2net_8c" alt=""/></div>
 <map name="asrc_2net_8c" id="asrc_2net_8c">
-<area shape="rect" title=" " alt="" coords="1595,5,1673,31"/>
+<area shape="rect" title=" " alt="" coords="1627,5,1705,31"/>
 <area shape="rect" href="net_8h.html" title=" " alt="" coords="909,152,964,177"/>
-<area shape="poly" title=" " alt="" coords="1596,30,978,158,977,152,1595,25"/>
+<area shape="poly" title=" " alt="" coords="1628,30,978,158,977,153,1627,24"/>
 <area shape="rect" title=" " alt="" coords="1750,152,1825,177"/>
-<area shape="poly" title=" " alt="" coords="1648,29,1767,141,1763,144,1645,33"/>
+<area shape="poly" title=" " alt="" coords="1675,29,1698,63,1728,102,1766,141,1762,144,1724,106,1694,66,1671,32"/>
 <area shape="rect" href="redis_8h.html" title=" " alt="" coords="294,79,361,104"/>
-<area shape="poly" title=" " alt="" coords="1595,24,375,90,375,85,1595,19"/>
+<area shape="poly" title=" " alt="" coords="1627,24,375,90,374,85,1627,19"/>
 <area shape="rect" href="rdb_8h.html" title=" " alt="" coords="1737,79,1792,104"/>
-<area shape="poly" title=" " alt="" coords="1656,28,1733,70,1730,74,1654,33"/>
+<area shape="poly" title=" " alt="" coords="1683,29,1739,68,1736,73,1680,33"/>
 <area shape="rect" href="log_8h.html" title=" " alt="" coords="1607,79,1661,104"/>
-<area shape="poly" title=" " alt="" coords="1637,31,1637,65,1631,65,1631,31"/>
+<area shape="poly" title=" " alt="" coords="1663,32,1647,67,1642,65,1658,30"/>
+<area shape="rect" href="io_8h.html" title=" " alt="" coords="1816,79,1863,104"/>
+<area shape="poly" title=" " alt="" coords="1695,28,1805,73,1803,78,1693,33"/>
 <area shape="rect" href="ae_8h.html" title=" " alt="" coords="470,225,521,251"/>
 <area shape="poly" title=" " alt="" coords="909,171,754,190,647,206,535,228,534,223,646,201,753,185,909,166"/>
 <area shape="rect" title=" " alt="" coords="1031,299,1099,324"/>
@@ -194,9 +197,6 @@ Functions</h2></td></tr>
 <tr class="separator:af551381b05b81b103ee2c9977dd49c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94f1cc1f9e6d67c080bfa3e0b67b0417" id="r_a94f1cc1f9e6d67c080bfa3e0b67b0417"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417">readQueryFromClient</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *el, int fd, void *privData)</td></tr>
 <tr class="separator:a94f1cc1f9e6d67c080bfa3e0b67b0417"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e1ac22bfef5283339884646a8651381" id="r_a3e1ac22bfef5283339884646a8651381"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a3e1ac22bfef5283339884646a8651381">sendRDBChunk</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *el, int fd, void *privdata)</td></tr>
-<tr class="memdesc:a3e1ac22bfef5283339884646a8651381"><td class="mdescLeft">&#160;</td><td class="mdescRight">REPL_STATE_MASTER_SEND_RDB下的写事件处理  <br /></td></tr>
-<tr class="separator:a3e1ac22bfef5283339884646a8651381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5a55d0c6d3a2749f2c449972fc108f1" id="r_ab5a55d0c6d3a2749f2c449972fc108f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1">saveRDBToSlave</a> (<a class="el" href="structredisClient.html">redisClient</a> *client)</td></tr>
 <tr class="memdesc:ab5a55d0c6d3a2749f2c449972fc108f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB  <br /></td></tr>
 <tr class="separator:ab5a55d0c6d3a2749f2c449972fc108f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -213,9 +213,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a2488a8d8c669244d969dfc95efade9cc" id="r_a2488a8d8c669244d969dfc95efade9cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a2488a8d8c669244d969dfc95efade9cc">handleCommandPropagate</a> ()</td></tr>
 <tr class="memdesc:a2488a8d8c669244d969dfc95efade9cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">命令传播：作为正常服务器处理命令  <br /></td></tr>
 <tr class="separator:a2488a8d8c669244d969dfc95efade9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25b3eb800a047663de289571211e677b" id="r_a25b3eb800a047663de289571211e677b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a25b3eb800a047663de289571211e677b">readToReadBuf</a> (<a class="el" href="structredisClient.html">redisClient</a> *client)</td></tr>
-<tr class="memdesc:a25b3eb800a047663de289571211e677b"><td class="mdescLeft">&#160;</td><td class="mdescRight">read接口， 读取到client-&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。  <br /></td></tr>
-<tr class="separator:a25b3eb800a047663de289571211e677b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56bb0547aea12b8e175e789f7c908256" id="r_a56bb0547aea12b8e175e789f7c908256"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a56bb0547aea12b8e175e789f7c908256">readToReadBuf</a> (<a class="el" href="structredisClient.html">redisClient</a> *client)</td></tr>
+<tr class="memdesc:a56bb0547aea12b8e175e789f7c908256"><td class="mdescLeft">&#160;</td><td class="mdescRight">read接口， 读取到client-&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。  <br /></td></tr>
+<tr class="separator:a56bb0547aea12b8e175e789f7c908256"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b30e205baee7afc703ed92ddf785f47" id="r_a5b30e205baee7afc703ed92ddf785f47"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="net_8c.html#a5b30e205baee7afc703ed92ddf785f47">readToBuf</a> (<a class="el" href="structredisClient.html">redisClient</a> *client, char *buf, int size)</td></tr>
 <tr class="memdesc:a5b30e205baee7afc703ed92ddf785f47"><td class="mdescLeft">&#160;</td><td class="mdescRight">read 到分配的buf，用于二进制文件等 比如接受RDB文件  <br /></td></tr>
 <tr class="separator:a5b30e205baee7afc703ed92ddf785f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -270,93 +270,77 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_af551381b05b81b103ee2c9977dd49c34_cgraph.png" border="0" usemap="#anet_8c_af551381b05b81b103ee2c9977dd49c34_cgraph" alt=""/></div>
 <map name="anet_8c_af551381b05b81b103ee2c9977dd49c34_cgraph" id="anet_8c_af551381b05b81b103ee2c9977dd49c34_cgraph">
-<area shape="rect" title="封装accept，接受TCP连接。" alt="" coords="5,210,143,235"/>
-<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="866,209,1007,234"/>
-<area shape="poly" title=" " alt="" coords="77,209,89,175,112,129,145,83,166,63,189,47,238,25,289,11,342,4,395,3,448,8,502,17,605,45,702,84,787,126,857,166,907,199,905,203,854,171,785,131,700,89,604,50,500,22,448,13,395,9,342,10,290,17,240,30,192,52,169,67,149,86,117,132,94,177,82,211"/>
-<area shape="rect" href="net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="191,62,363,87"/>
-<area shape="poly" title=" " alt="" coords="81,208,123,154,154,123,189,96,201,90,204,95,192,101,157,127,127,158,86,212"/>
-<area shape="rect" href="net_8c.html#a988b8b0c7f9f9ae97c80193766d2400c" title="获取对端IP和端口" alt="" coords="213,111,340,137"/>
-<area shape="poly" title=" " alt="" coords="90,208,134,177,190,146,207,139,209,144,192,150,136,182,93,212"/>
-<area shape="rect" href="net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="219,161,335,186"/>
-<area shape="poly" title=" " alt="" coords="126,207,210,187,211,192,127,213"/>
-<area shape="rect" href="net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="220,210,333,235"/>
-<area shape="poly" title=" " alt="" coords="143,220,206,220,206,225,143,225"/>
-<area shape="rect" href="list_8c.html#aa89bc4682e3207f060ffa9f1c28db982" title=" " alt="" coords="215,259,338,285"/>
-<area shape="poly" title=" " alt="" coords="127,233,211,254,210,259,126,238"/>
-<area shape="rect" href="list_8c.html#adb40913ad10a1e95c879f226ecdb2ca5" title="创建一个自由node" alt="" coords="217,309,336,334"/>
-<area shape="poly" title=" " alt="" coords="94,233,137,263,192,294,213,302,211,307,190,298,134,268,91,238"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="196,358,357,383"/>
-<area shape="poly" title=" " alt="" coords="86,234,128,287,158,317,192,343,206,351,204,355,189,348,154,321,124,290,82,237"/>
-<area shape="rect" href="redis_8c.html#ad1ecc238e2cc9d387b2d078c916a004d" title=" " alt="" coords="209,534,344,559"/>
-<area shape="poly" title=" " alt="" coords="85,234,263,521,258,524,81,237"/>
-<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="1083,209,1205,234"/>
-<area shape="poly" title=" " alt="" coords="1008,219,1069,219,1069,224,1008,224"/>
-<area shape="rect" href="net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="445,109,547,134"/>
-<area shape="poly" title=" " alt="" coords="338,85,432,105,431,110,337,90"/>
-<area shape="poly" title=" " alt="" coords="330,158,431,134,432,139,332,163"/>
-<area shape="poly" title=" " alt="" coords="332,208,361,195,376,183,384,170,394,156,409,143,430,133,432,138,412,148,398,160,389,173,380,186,364,200,335,213"/>
-<area shape="poly" title=" " alt="" coords="325,355,362,343,410,319,517,275,565,259,629,244,745,227,852,220,853,225,746,232,630,249,567,264,519,280,412,324,364,348,327,360"/>
-<area shape="rect" href="redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="411,634,581,659"/>
-<area shape="poly" title=" " alt="" coords="290,382,478,621,474,624,286,385"/>
-<area shape="rect" href="sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="1290,525,1354,550"/>
-<area shape="poly" title=" " alt="" coords="342,381,510,407,611,417,713,421,938,421,1080,416,1141,423,1216,447,1241,460,1265,477,1303,512,1299,516,1262,481,1239,465,1214,452,1140,428,1080,422,938,427,713,427,611,423,509,412,341,386"/>
-<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="453,158,539,183"/>
-<area shape="poly" title=" " alt="" coords="343,356,361,343,374,327,381,310,385,274,388,238,395,219,409,201,439,181,442,186,412,205,400,222,393,239,390,275,387,311,379,329,364,347,346,360"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="425,334,567,359"/>
-<area shape="poly" title=" " alt="" coords="357,359,411,353,412,359,358,365"/>
-<area shape="rect" href="redis_8c.html#a436c94ccf04190185702d3661b628a4e" title="调用执行命令。已有argc,argv[]" alt="" coords="645,683,784,709"/>
-<area shape="poly" title=" " alt="" coords="554,657,645,678,644,683,552,662"/>
-<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="1435,809,1499,834"/>
-<area shape="poly" title=" " alt="" coords="555,657,583,670,598,682,608,695,617,707,631,719,709,767,775,798,845,814,935,819,1145,819,1422,819,1422,824,1145,824,935,824,844,819,773,803,707,772,628,724,613,711,603,698,594,686,580,674,553,662"/>
-<area shape="rect" href="robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="629,561,800,586"/>
-<area shape="poly" title=" " alt="" coords="534,631,662,588,664,593,536,636"/>
-<area shape="rect" href="sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="1281,859,1363,885"/>
-<area shape="poly" title=" " alt="" coords="565,657,583,670,599,692,606,714,606,759,604,780,606,801,614,820,631,838,668,864,708,885,749,901,793,914,883,928,973,931,1061,925,1142,914,1268,885,1269,891,1143,919,1062,931,973,937,882,934,792,919,748,906,705,889,665,868,628,842,610,823,601,802,599,780,600,759,601,715,594,694,579,674,562,662"/>
-<area shape="rect" href="redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31" title="准备buf，向client写, 后续write类handler处理" alt="" coords="896,659,977,685"/>
-<area shape="poly" title=" " alt="" coords="784,686,882,675,883,680,784,691"/>
-<area shape="rect" href="redis_8c.html#a13cf08c227686743aea4bd8d3fafd836" title=" " alt="" coords="871,709,1003,734"/>
-<area shape="poly" title=" " alt="" coords="785,701,857,710,857,715,784,707"/>
-<area shape="rect" href="robj_8c.html#a7e70cffb275f2a77f067c9c106d6e017" title="引用计数，调用对应类型释放" alt="" coords="887,758,986,783"/>
-<area shape="poly" title=" " alt="" coords="748,706,849,744,874,752,873,757,847,749,746,711"/>
-<area shape="rect" href="robj_8c.html#a2a81c902fe7a60308da1f60b0675eebe" title=" " alt="" coords="1090,659,1198,685"/>
-<area shape="poly" title=" " alt="" coords="977,669,1076,669,1076,675,977,675"/>
-<area shape="poly" title=" " alt="" coords="977,659,1025,646,1163,597,1277,552,1278,557,1165,602,1026,651,978,665"/>
-<area shape="rect" href="sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="1429,525,1505,550"/>
-<area shape="poly" title=" " alt="" coords="1354,535,1415,535,1415,540,1354,540"/>
-<area shape="poly" title=" " alt="" coords="1332,549,1456,795,1451,798,1327,552"/>
-<area shape="rect" href="robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="848,462,1025,487"/>
-<area shape="poly" title=" " alt="" coords="734,558,784,528,847,496,867,489,869,494,849,501,786,532,736,563"/>
-<area shape="rect" href="robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="874,610,999,635"/>
-<area shape="poly" title=" " alt="" coords="773,583,866,604,865,610,772,589"/>
-<area shape="rect" href="robj_8c.html#ad9971e82bc1e3e47b0439d12a28b64ac" title=" " alt="" coords="869,511,1005,537"/>
-<area shape="poly" title=" " alt="" coords="772,558,865,537,866,542,773,563"/>
-<area shape="rect" href="robj_8c.html#a7eb7efd1c9c154baf0c66de98ec088be" title=" " alt="" coords="897,561,976,586"/>
-<area shape="poly" title=" " alt="" coords="800,571,883,571,883,576,800,576"/>
-<area shape="rect" href="sds_8c.html#adc333244a10e3a3809e58aa089ac80d7" title=" " alt="" coords="1111,462,1177,487"/>
-<area shape="poly" title=" " alt="" coords="1025,472,1097,472,1097,477,1025,477"/>
-<area shape="poly" title=" " alt="" coords="1178,483,1216,496,1278,519,1276,524,1214,501,1177,488"/>
-<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="1284,411,1360,437"/>
-<area shape="poly" title=" " alt="" coords="1177,463,1270,436,1271,441,1178,468"/>
-<area shape="rect" href="sds_8c.html#ac5487d7ff301833902bb9a64ce95a3e0" title=" " alt="" coords="1109,511,1179,537"/>
-<area shape="poly" title=" " alt="" coords="1005,521,1095,521,1095,527,1005,527"/>
-<area shape="poly" title=" " alt="" coords="1358,857,1422,834,1424,839,1360,862"/>
-<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="672,158,757,183"/>
-<area shape="poly" title=" " alt="" coords="539,168,658,168,658,173,539,173"/>
-<area shape="poly" title=" " alt="" coords="568,348,851,366,1032,382,1215,403,1270,412,1270,417,1214,408,1032,388,851,372,568,353"/>
-<area shape="rect" href="ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="1073,310,1215,335"/>
-<area shape="poly" title=" " alt="" coords="568,341,1059,323,1060,328,568,347"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="649,259,780,285"/>
-<area shape="poly" title=" " alt="" coords="534,331,663,287,665,292,535,336"/>
-<area shape="rect" href="ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="1263,310,1381,335"/>
-<area shape="poly" title=" " alt="" coords="1215,320,1249,320,1249,325,1215,325"/>
-<area shape="poly" title=" " alt="" coords="771,257,866,235,868,240,772,262"/>
-<area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="875,259,998,285"/>
-<area shape="poly" title=" " alt="" coords="780,269,861,269,861,275,780,275"/>
-<area shape="poly" title=" " alt="" coords="990,282,1079,304,1078,309,989,287"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="1094,259,1194,285"/>
-<area shape="poly" title=" " alt="" coords="998,269,1080,269,1080,275,998,275"/>
-<area shape="rect" href="sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="453,683,539,709"/>
-<area shape="poly" title=" " alt="" coords="290,558,339,612,373,643,412,670,441,682,439,687,409,674,370,647,335,616,286,561"/>
+<area shape="rect" title="封装accept，接受TCP连接。" alt="" coords="5,203,143,228"/>
+<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="206,5,347,31"/>
+<area shape="poly" title=" " alt="" coords="78,202,92,169,115,125,148,79,189,40,198,34,201,39,192,44,152,83,120,128,97,171,83,204"/>
+<area shape="rect" href="net_8c.html#a61e54b44fb43184ab3ae5ac58ba7f5d1" title=" " alt="" coords="191,55,363,80"/>
+<area shape="poly" title=" " alt="" coords="81,201,123,147,154,116,189,89,201,83,204,87,192,94,157,120,127,151,86,204"/>
+<area shape="rect" href="net_8c.html#a988b8b0c7f9f9ae97c80193766d2400c" title="获取对端IP和端口" alt="" coords="213,203,340,228"/>
+<area shape="poly" title=" " alt="" coords="143,213,199,213,199,218,143,218"/>
+<area shape="rect" href="net_8c.html#a4595984ff27c62c664b7b0dd801628e1" title="保活" alt="" coords="219,104,335,129"/>
+<area shape="poly" title=" " alt="" coords="90,200,134,170,190,138,207,131,209,136,192,143,136,174,93,205"/>
+<area shape="rect" href="net_8c.html#a0ffab7741e0d2152c02a6af6f3048cae" title=" " alt="" coords="220,153,333,179"/>
+<area shape="poly" title=" " alt="" coords="126,200,210,179,211,185,127,205"/>
+<area shape="rect" href="list_8c.html#aa89bc4682e3207f060ffa9f1c28db982" title=" " alt="" coords="215,252,338,277"/>
+<area shape="poly" title=" " alt="" coords="127,225,211,246,210,251,126,231"/>
+<area shape="rect" href="list_8c.html#adb40913ad10a1e95c879f226ecdb2ca5" title="创建一个自由node" alt="" coords="217,301,336,327"/>
+<area shape="poly" title=" " alt="" coords="94,226,137,256,192,286,213,295,211,299,190,291,134,260,91,230"/>
+<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="196,357,357,383"/>
+<area shape="poly" title=" " alt="" coords="86,227,129,279,159,309,192,336,219,350,216,355,189,340,155,313,125,282,82,230"/>
+<area shape="rect" href="redis_8c.html#ad1ecc238e2cc9d387b2d078c916a004d" title=" " alt="" coords="209,431,344,456"/>
+<area shape="poly" title=" " alt="" coords="83,227,123,302,155,349,192,392,236,422,233,427,189,396,150,352,118,305,79,229"/>
+<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="435,5,557,31"/>
+<area shape="poly" title=" " alt="" coords="348,15,422,15,422,21,348,21"/>
+<area shape="rect" href="net_8c.html#a8a4316a91f1a791c71b6b97c083c609b" title=" " alt="" coords="445,55,547,80"/>
+<area shape="poly" title=" " alt="" coords="363,65,431,65,431,70,363,70"/>
+<area shape="poly" title=" " alt="" coords="333,101,431,79,432,84,334,107"/>
+<area shape="poly" title=" " alt="" coords="332,151,361,138,375,129,385,118,409,97,439,83,441,87,412,102,389,122,379,133,364,143,334,156"/>
+<area shape="rect" href="redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="411,383,581,408"/>
+<area shape="poly" title=" " alt="" coords="358,377,397,381,397,387,357,382"/>
+<area shape="rect" href="sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="1238,353,1302,379"/>
+<area shape="poly" title=" " alt="" coords="316,355,361,336,416,303,459,267,529,195,563,164,603,138,652,121,713,115,938,115,990,124,1068,146,1142,170,1183,191,1198,209,1206,228,1211,263,1214,300,1220,318,1231,338,1236,343,1232,346,1227,341,1215,320,1209,301,1205,264,1201,229,1193,212,1180,195,1140,175,1066,151,989,130,938,121,713,121,653,127,605,143,567,168,533,199,463,271,419,307,364,340,318,360"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="453,432,539,457"/>
+<area shape="poly" title=" " alt="" coords="311,380,412,417,441,426,439,431,410,422,310,385"/>
+<area shape="rect" href="redis_8c.html#a436c94ccf04190185702d3661b628a4e" title="调用执行命令。已有argc,argv[]" alt="" coords="645,396,784,421"/>
+<area shape="poly" title=" " alt="" coords="582,398,632,401,631,406,581,403"/>
+<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="1365,503,1429,528"/>
+<area shape="poly" title=" " alt="" coords="543,406,630,430,716,459,781,486,848,505,888,511,935,513,1129,513,1351,513,1351,518,1129,518,935,518,887,516,847,510,780,491,714,464,629,435,541,411"/>
+<area shape="rect" href="robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="629,255,800,280"/>
+<area shape="poly" title=" " alt="" coords="517,380,679,285,682,289,520,385"/>
+<area shape="rect" href="sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="1229,553,1311,579"/>
+<area shape="poly" title=" " alt="" coords="566,406,583,417,596,432,602,448,607,478,611,507,618,520,631,532,651,543,677,552,742,566,820,574,907,578,1080,576,1216,568,1216,573,1080,581,907,583,820,580,741,571,675,557,649,548,628,536,614,523,606,509,601,479,597,449,591,435,580,421,563,410"/>
+<area shape="rect" href="redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31" title="准备buf，向client写, 后续write类handler处理" alt="" coords="896,353,977,379"/>
+<area shape="poly" title=" " alt="" coords="781,393,882,374,883,379,782,399"/>
+<area shape="rect" href="redis_8c.html#a13cf08c227686743aea4bd8d3fafd836" title=" " alt="" coords="871,452,1003,477"/>
+<area shape="poly" title=" " alt="" coords="766,419,873,446,872,451,765,424"/>
+<area shape="rect" href="robj_8c.html#a7e70cffb275f2a77f067c9c106d6e017" title="引用计数，调用对应类型释放" alt="" coords="887,403,986,428"/>
+<area shape="poly" title=" " alt="" coords="784,408,873,411,873,416,784,413"/>
+<area shape="rect" href="robj_8c.html#a2a81c902fe7a60308da1f60b0675eebe" title=" " alt="" coords="1073,404,1181,429"/>
+<area shape="poly" title=" " alt="" coords="978,374,1067,398,1065,403,977,379"/>
+<area shape="poly" title=" " alt="" coords="978,363,1224,363,1224,369,978,369"/>
+<area shape="rect" href="sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="1359,353,1435,379"/>
+<area shape="poly" title=" " alt="" coords="1303,363,1345,363,1345,369,1303,369"/>
+<area shape="poly" title=" " alt="" coords="1284,377,1378,490,1374,494,1280,380"/>
+<area shape="rect" href="robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="848,304,1025,329"/>
+<area shape="poly" title=" " alt="" coords="773,277,866,298,865,304,772,283"/>
+<area shape="rect" href="robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="874,156,999,181"/>
+<area shape="poly" title=" " alt="" coords="734,252,784,222,847,190,867,183,869,188,849,195,786,226,736,257"/>
+<area shape="rect" href="robj_8c.html#ad9971e82bc1e3e47b0439d12a28b64ac" title=" " alt="" coords="869,205,1005,231"/>
+<area shape="poly" title=" " alt="" coords="772,252,865,231,866,236,773,257"/>
+<area shape="rect" href="robj_8c.html#a7eb7efd1c9c154baf0c66de98ec088be" title=" " alt="" coords="897,255,976,280"/>
+<area shape="poly" title=" " alt="" coords="800,265,883,265,883,270,800,270"/>
+<area shape="rect" href="sds_8c.html#adc333244a10e3a3809e58aa089ac80d7" title=" " alt="" coords="1094,303,1161,328"/>
+<area shape="poly" title=" " alt="" coords="1025,313,1080,313,1080,318,1025,319"/>
+<area shape="poly" title=" " alt="" coords="1162,324,1226,348,1224,353,1160,329"/>
+<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="1232,303,1308,328"/>
+<area shape="poly" title=" " alt="" coords="1161,313,1218,313,1218,318,1161,318"/>
+<area shape="rect" href="sds_8c.html#ac5487d7ff301833902bb9a64ce95a3e0" title=" " alt="" coords="1092,205,1163,231"/>
+<area shape="poly" title=" " alt="" coords="1005,215,1078,215,1078,221,1005,221"/>
+<area shape="poly" title=" " alt="" coords="1302,551,1351,531,1353,536,1304,556"/>
+<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="672,604,757,629"/>
+<area shape="poly" title=" " alt="" coords="540,446,562,454,583,467,596,481,603,496,609,526,613,555,620,569,631,583,661,601,658,606,628,587,615,571,608,556,603,526,598,498,591,484,580,471,560,459,538,452"/>
+<area shape="rect" href="sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="453,481,539,507"/>
+<area shape="poly" title=" " alt="" coords="333,454,440,479,439,484,332,459"/>
 </map>
 </div>
 <div class="dynheader">
@@ -538,28 +522,6 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="net_8c_ae489eda1d386253db9cfb9ab938da1b3_icgraph.png" border="0" usemap="#anet_8c_ae489eda1d386253db9cfb9ab938da1b3_icgraph" alt=""/></div>
-<map name="anet_8c_ae489eda1d386253db9cfb9ab938da1b3_icgraph" id="anet_8c_ae489eda1d386253db9cfb9ab938da1b3_icgraph">
-<area shape="rect" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="1176,5,1276,31"/>
-<area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="1005,5,1128,31"/>
-<area shape="poly" title=" " alt="" coords="1163,21,1128,21,1128,15,1163,15"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="827,5,957,31"/>
-<area shape="poly" title=" " alt="" coords="992,21,958,21,958,15,992,15"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="636,5,779,31"/>
-<area shape="poly" title=" " alt="" coords="813,21,779,21,779,15,813,15"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
-<area shape="poly" title=" " alt="" coords="622,21,588,21,588,15,622,15"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
-<area shape="poly" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
-</map>
-</div>
 
 </div>
 </div>
@@ -1116,70 +1078,51 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_a94f1cc1f9e6d67c080bfa3e0b67b0417_cgraph.png" border="0" usemap="#anet_8c_a94f1cc1f9e6d67c080bfa3e0b67b0417_cgraph" alt=""/></div>
 <map name="anet_8c_a94f1cc1f9e6d67c080bfa3e0b67b0417_cgraph" id="anet_8c_a94f1cc1f9e6d67c080bfa3e0b67b0417_cgraph">
-<area shape="rect" title=" " alt="" coords="5,208,167,233"/>
-<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="670,5,811,31"/>
-<area shape="poly" title=" " alt="" coords="98,206,145,162,178,138,213,117,270,92,329,72,449,43,562,26,656,18,656,23,562,31,450,48,330,77,272,97,216,122,181,142,149,166,101,210"/>
-<area shape="rect" href="redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="215,505,385,531"/>
-<area shape="poly" title=" " alt="" coords="99,232,284,493,280,496,94,235"/>
-<area shape="rect" href="sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="1094,407,1158,432"/>
-<area shape="poly" title=" " alt="" coords="167,218,517,218,742,218,822,213,887,206,918,207,949,212,983,224,1020,244,1057,276,1086,317,1107,358,1120,393,1115,395,1102,360,1081,319,1053,280,1017,248,981,229,948,217,917,212,887,212,823,218,742,223,517,223,167,223"/>
-<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="257,631,343,656"/>
-<area shape="poly" title=" " alt="" coords="93,233,135,362,172,452,217,541,247,584,278,619,274,623,243,587,212,543,167,454,130,364,88,234"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="229,132,371,157"/>
-<area shape="poly" title=" " alt="" coords="122,205,250,159,252,164,124,210"/>
-<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="887,5,1009,31"/>
-<area shape="poly" title=" " alt="" coords="812,15,873,15,873,21,812,21"/>
-<area shape="rect" href="redis_8c.html#a436c94ccf04190185702d3661b628a4e" title="调用执行命令。已有argc,argv[]" alt="" coords="449,505,588,531"/>
-<area shape="poly" title=" " alt="" coords="385,515,436,515,436,521,385,521"/>
-<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="1239,605,1303,631"/>
-<area shape="poly" title=" " alt="" coords="323,529,372,558,434,588,517,622,583,646,651,661,739,666,949,666,1068,661,1185,641,1225,630,1227,635,1186,646,1068,666,949,671,739,671,650,666,582,651,516,627,432,592,370,563,320,533"/>
-<area shape="rect" href="robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="433,357,604,383"/>
-<area shape="poly" title=" " alt="" coords="319,503,486,388,489,393,322,507"/>
-<area shape="rect" href="sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="1085,605,1167,631"/>
-<area shape="poly" title=" " alt="" coords="351,528,486,559,652,589,769,601,886,609,1072,615,1071,620,885,614,769,606,652,594,485,565,350,533"/>
-<area shape="rect" href="redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31" title="准备buf，向client写, 后续write类handler处理" alt="" coords="700,555,781,580"/>
-<area shape="poly" title=" " alt="" coords="577,528,687,553,686,558,576,533"/>
-<area shape="rect" href="redis_8c.html#a13cf08c227686743aea4bd8d3fafd836" title=" " alt="" coords="675,456,807,481"/>
-<area shape="poly" title=" " alt="" coords="576,503,669,482,670,487,577,508"/>
-<area shape="rect" href="robj_8c.html#a7e70cffb275f2a77f067c9c106d6e017" title="引用计数，调用对应类型释放" alt="" coords="691,505,790,531"/>
-<area shape="poly" title=" " alt="" coords="588,515,677,515,677,521,588,521"/>
-<area shape="rect" href="robj_8c.html#a2a81c902fe7a60308da1f60b0675eebe" title=" " alt="" coords="894,504,1002,529"/>
-<area shape="poly" title=" " alt="" coords="781,555,881,530,883,535,782,560"/>
-<area shape="poly" title=" " alt="" coords="782,570,832,572,892,571,957,560,988,551,1017,538,1047,518,1072,493,1109,442,1113,445,1076,497,1050,522,1020,543,990,556,958,566,893,576,832,578,782,575"/>
-<area shape="rect" href="sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="1233,407,1309,432"/>
-<area shape="poly" title=" " alt="" coords="1158,417,1219,417,1219,422,1158,422"/>
-<area shape="poly" title=" " alt="" coords="1139,431,1255,592,1251,596,1135,434"/>
-<area shape="rect" href="robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="652,259,829,284"/>
-<area shape="poly" title=" " alt="" coords="538,355,588,324,651,293,671,286,673,291,653,298,590,329,540,360"/>
-<area shape="rect" href="robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="678,308,803,333"/>
-<area shape="poly" title=" " alt="" coords="576,355,669,334,670,339,577,360"/>
-<area shape="rect" href="robj_8c.html#ad9971e82bc1e3e47b0439d12a28b64ac" title=" " alt="" coords="673,357,809,383"/>
-<area shape="poly" title=" " alt="" coords="604,367,659,367,659,373,604,373"/>
-<area shape="rect" href="robj_8c.html#a7eb7efd1c9c154baf0c66de98ec088be" title=" " alt="" coords="701,407,780,432"/>
-<area shape="poly" title=" " alt="" coords="577,380,689,405,688,410,576,385"/>
-<area shape="rect" href="sds_8c.html#adc333244a10e3a3809e58aa089ac80d7" title=" " alt="" coords="915,259,981,284"/>
-<area shape="poly" title=" " alt="" coords="829,269,901,269,901,274,829,274"/>
-<area shape="poly" title=" " alt="" coords="967,282,1101,396,1097,400,963,287"/>
-<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="1088,208,1164,233"/>
-<area shape="poly" title=" " alt="" coords="981,259,1074,233,1075,238,982,265"/>
-<area shape="rect" href="sds_8c.html#ac5487d7ff301833902bb9a64ce95a3e0" title=" " alt="" coords="913,357,983,383"/>
-<area shape="poly" title=" " alt="" coords="809,367,899,367,899,373,809,373"/>
-<area shape="poly" title=" " alt="" coords="1167,615,1225,615,1225,621,1167,621"/>
-<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP" alt="" coords="476,707,561,732"/>
-<area shape="poly" title=" " alt="" coords="338,654,469,700,467,705,337,659"/>
-<area shape="poly" title=" " alt="" coords="372,145,655,164,836,179,1019,199,1074,208,1074,213,1018,205,836,184,655,169,372,151"/>
-<area shape="rect" href="ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="877,56,1019,81"/>
-<area shape="poly" title=" " alt="" coords="326,129,375,109,433,91,549,73,666,64,774,61,863,62,863,67,774,66,666,69,549,78,434,97,377,114,328,134"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="453,107,584,132"/>
-<area shape="poly" title=" " alt="" coords="371,134,439,126,440,131,372,139"/>
-<area shape="rect" href="ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="1067,56,1185,81"/>
-<area shape="poly" title=" " alt="" coords="1019,66,1053,66,1053,71,1019,71"/>
-<area shape="poly" title=" " alt="" coords="547,104,698,34,701,39,549,109"/>
-<area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="679,107,802,132"/>
-<area shape="poly" title=" " alt="" coords="584,117,665,117,665,122,584,122"/>
-<area shape="poly" title=" " alt="" coords="793,104,882,82,883,87,794,109"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="898,107,998,132"/>
-<area shape="poly" title=" " alt="" coords="802,117,884,117,884,122,802,122"/>
+<area shape="rect" title=" " alt="" coords="5,441,167,466"/>
+<area shape="rect" href="redis_8c.html#a1792fc8a1ef7c60a0989c3476f5f79a5" title="解析协议到 argc, argv[] *3\r &#160;$3\r\nSET\r &#160;$2\r\nk1\r &#160;$2\r\nv1\r" alt="" coords="215,169,385,194"/>
+<area shape="poly" title=" " alt="" coords="95,439,278,203,282,207,99,442"/>
+<area shape="rect" href="sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="1042,266,1106,291"/>
+<area shape="poly" title=" " alt="" coords="167,451,517,451,742,451,813,452,870,452,923,440,952,427,984,409,1010,386,1032,358,1061,303,1065,305,1036,361,1014,389,987,413,954,432,925,445,871,457,813,458,742,456,517,456,167,456"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="257,491,343,517"/>
+<area shape="poly" title=" " alt="" coords="141,464,245,488,243,493,140,469"/>
+<area shape="rect" href="redis_8c.html#a436c94ccf04190185702d3661b628a4e" title="调用执行命令。已有argc,argv[]" alt="" coords="449,317,588,342"/>
+<area shape="poly" title=" " alt="" coords="322,192,489,307,486,311,319,196"/>
+<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="1169,43,1233,69"/>
+<area shape="poly" title=" " alt="" coords="316,166,366,130,432,92,514,53,581,25,649,8,739,3,933,3,985,4,1025,9,1115,28,1156,39,1155,44,1114,33,1024,14,984,10,933,8,739,8,650,14,582,30,517,58,435,97,369,135,319,171"/>
+<area shape="rect" href="robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="433,169,604,194"/>
+<area shape="poly" title=" " alt="" coords="385,179,419,179,419,184,385,184"/>
+<area shape="rect" href="sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="1033,43,1115,69"/>
+<area shape="poly" title=" " alt="" coords="336,166,473,122,561,98,652,79,753,65,854,57,1019,53,1019,58,855,63,753,71,652,84,562,103,474,127,337,171"/>
+<area shape="rect" href="redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31" title="准备buf，向client写, 后续write类handler处理" alt="" coords="700,390,781,415"/>
+<area shape="poly" title=" " alt="" coords="553,340,653,376,688,386,686,392,651,381,551,345"/>
+<area shape="rect" href="redis_8c.html#a13cf08c227686743aea4bd8d3fafd836" title=" " alt="" coords="675,291,807,317"/>
+<area shape="poly" title=" " alt="" coords="588,319,661,310,661,316,589,324"/>
+<area shape="rect" href="robj_8c.html#a7e70cffb275f2a77f067c9c106d6e017" title="引用计数，调用对应类型释放" alt="" coords="691,341,790,366"/>
+<area shape="poly" title=" " alt="" coords="588,334,678,344,677,349,588,339"/>
+<area shape="rect" href="robj_8c.html#a2a81c902fe7a60308da1f60b0675eebe" title=" " alt="" coords="877,339,985,365"/>
+<area shape="poly" title=" " alt="" coords="781,389,869,366,871,371,782,395"/>
+<area shape="poly" title=" " alt="" coords="782,404,825,406,878,404,932,394,984,375,1007,360,1027,341,1056,301,1061,305,1031,344,1010,364,987,380,934,399,878,409,825,411,781,410"/>
+<area shape="rect" href="sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="1163,266,1239,291"/>
+<area shape="poly" title=" " alt="" coords="1107,276,1149,276,1149,281,1107,281"/>
+<area shape="poly" title=" " alt="" coords="1080,264,1183,79,1188,82,1085,267"/>
+<area shape="rect" href="robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="652,94,829,119"/>
+<area shape="poly" title=" " alt="" coords="550,166,651,128,676,121,677,126,653,133,552,171"/>
+<area shape="rect" href="robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="678,242,803,267"/>
+<area shape="poly" title=" " alt="" coords="554,192,653,227,681,236,680,241,651,232,553,197"/>
+<area shape="rect" href="robj_8c.html#ad9971e82bc1e3e47b0439d12a28b64ac" title=" " alt="" coords="673,143,809,169"/>
+<area shape="poly" title=" " alt="" coords="604,169,659,163,659,168,604,174"/>
+<area shape="rect" href="robj_8c.html#a7eb7efd1c9c154baf0c66de98ec088be" title=" " alt="" coords="701,193,780,218"/>
+<area shape="poly" title=" " alt="" coords="604,188,688,197,687,202,604,193"/>
+<area shape="rect" href="sds_8c.html#adc333244a10e3a3809e58aa089ac80d7" title=" " alt="" coords="898,94,965,119"/>
+<area shape="poly" title=" " alt="" coords="829,104,884,104,884,109,829,109"/>
+<area shape="poly" title=" " alt="" coords="967,115,987,129,1014,158,1036,191,1066,252,1061,254,1032,194,1010,161,984,133,964,120"/>
+<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="1036,94,1112,119"/>
+<area shape="poly" title=" " alt="" coords="965,104,1022,104,1022,109,965,109"/>
+<area shape="rect" href="sds_8c.html#ac5487d7ff301833902bb9a64ce95a3e0" title=" " alt="" coords="896,143,967,169"/>
+<area shape="poly" title=" " alt="" coords="809,153,882,153,882,159,809,159"/>
+<area shape="poly" title=" " alt="" coords="1115,53,1155,53,1155,59,1115,59"/>
+<area shape="rect" href="redis_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="476,491,561,517"/>
+<area shape="poly" title=" " alt="" coords="343,501,462,501,462,507,343,507"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1243,14 +1186,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a25b3eb800a047663de289571211e677b" name="a25b3eb800a047663de289571211e677b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25b3eb800a047663de289571211e677b">&#9670;&#160;</a></span>readToReadBuf()</h2>
+<a id="a56bb0547aea12b8e175e789f7c908256" name="a56bb0547aea12b8e175e789f7c908256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56bb0547aea12b8e175e789f7c908256">&#9670;&#160;</a></span>readToReadBuf()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int readToReadBuf </td>
+          <td class="memname">void readToReadBuf </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structredisClient.html">redisClient</a> *&#160;</td>
           <td class="paramname"><em>client</em></td><td>)</td>
@@ -1266,12 +1209,12 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>resp长度。 通过这个标记 后面怎么处理readbuf </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="net_8c_a25b3eb800a047663de289571211e677b_cgraph.png" border="0" usemap="#anet_8c_a25b3eb800a047663de289571211e677b_cgraph" alt=""/></div>
-<map name="anet_8c_a25b3eb800a047663de289571211e677b_cgraph" id="anet_8c_a25b3eb800a047663de289571211e677b_cgraph">
+<div class="center"><img src="net_8c_a56bb0547aea12b8e175e789f7c908256_cgraph.png" border="0" usemap="#anet_8c_a56bb0547aea12b8e175e789f7c908256_cgraph" alt=""/></div>
+<map name="anet_8c_a56bb0547aea12b8e175e789f7c908256_cgraph" id="anet_8c_a56bb0547aea12b8e175e789f7c908256_cgraph">
 <area shape="rect" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="5,56,125,81"/>
 <area shape="rect" href="sds_8c.html#a8658173ce436490570dc542671804d53" title=" " alt="" coords="173,5,257,31"/>
 <area shape="poly" title=" " alt="" coords="103,53,163,33,165,38,105,58"/>
@@ -1315,19 +1258,9 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph.png" border="0" usemap="#anet_8c_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph" alt=""/></div>
 <map name="anet_8c_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph" id="anet_8c_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph">
-<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,31,136,56"/>
-<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="184,5,325,31"/>
-<area shape="poly" title=" " alt="" coords="136,32,170,27,171,32,137,37"/>
-<area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="193,55,316,80"/>
-<area shape="poly" title=" " alt="" coords="137,49,180,55,179,60,136,55"/>
-<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="383,5,505,31"/>
-<area shape="poly" title=" " alt="" coords="326,15,369,15,369,21,326,21"/>
-<area shape="rect" href="ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="373,55,515,80"/>
-<area shape="poly" title=" " alt="" coords="316,65,359,65,359,70,316,70"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="394,104,494,129"/>
-<area shape="poly" title=" " alt="" coords="305,77,382,98,380,103,303,83"/>
-<area shape="rect" href="ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="563,55,681,80"/>
-<area shape="poly" title=" " alt="" coords="515,65,549,65,549,70,515,70"/>
+<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,5,136,31"/>
+<area shape="rect" href="io_8c.html#ac541b19430641726f2737b355cc26277" title=" " alt="" coords="184,5,259,31"/>
+<area shape="poly" title=" " alt="" coords="136,15,170,15,170,21,136,21"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1335,95 +1268,29 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph.png" border="0" usemap="#anet_8c_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph" alt=""/></div>
 <map name="anet_8c_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph" id="anet_8c_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph">
-<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="827,5,957,31"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="636,5,779,31"/>
-<area shape="poly" title=" " alt="" coords="813,21,779,21,779,15,813,15"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
-<area shape="poly" title=" " alt="" coords="622,21,588,21,588,15,622,15"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
-<area shape="poly" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a3e1ac22bfef5283339884646a8651381" name="a3e1ac22bfef5283339884646a8651381"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e1ac22bfef5283339884646a8651381">&#9670;&#160;</a></span>sendRDBChunk()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void sendRDBChunk </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structaeEventLoop.html">aeEventLoop</a> *&#160;</td>
-          <td class="paramname"><em>el</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>fd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>privdata</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>REPL_STATE_MASTER_SEND_RDB下的写事件处理 </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">el</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">fd</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">privdata</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="net_8c_a3e1ac22bfef5283339884646a8651381_cgraph.png" border="0" usemap="#anet_8c_a3e1ac22bfef5283339884646a8651381_cgraph" alt=""/></div>
-<map name="anet_8c_a3e1ac22bfef5283339884646a8651381_cgraph" id="anet_8c_a3e1ac22bfef5283339884646a8651381_cgraph">
-<area shape="rect" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="5,31,128,56"/>
-<area shape="rect" href="ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="176,5,317,31"/>
-<area shape="poly" title=" " alt="" coords="128,32,162,27,163,33,128,37"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="197,55,297,80"/>
-<area shape="poly" title=" " alt="" coords="128,49,184,56,183,62,128,54"/>
-<area shape="rect" href="ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="365,5,484,31"/>
-<area shape="poly" title=" " alt="" coords="318,15,352,15,352,21,318,21"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="net_8c_a3e1ac22bfef5283339884646a8651381_icgraph.png" border="0" usemap="#anet_8c_a3e1ac22bfef5283339884646a8651381_icgraph" alt=""/></div>
-<map name="anet_8c_a3e1ac22bfef5283339884646a8651381_icgraph" id="anet_8c_a3e1ac22bfef5283339884646a8651381_icgraph">
-<area shape="rect" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="1005,5,1128,31"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="827,5,957,31"/>
-<area shape="poly" title=" " alt="" coords="992,21,958,21,958,15,992,15"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="636,5,779,31"/>
-<area shape="poly" title=" " alt="" coords="813,21,779,21,779,15,813,15"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
-<area shape="poly" title=" " alt="" coords="622,21,588,21,588,15,622,15"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
-<area shape="poly" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="416,228,547,253"/>
+<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="225,228,368,253"/>
+<area shape="poly" title=" " alt="" coords="402,243,368,243,368,238,402,238"/>
+<area shape="rect" href="redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="21,5,161,31"/>
+<area shape="poly" title=" " alt="" coords="285,216,270,178,247,131,215,84,176,44,156,33,159,28,179,40,220,81,251,128,275,175,290,214"/>
+<area shape="rect" href="redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="23,55,160,80"/>
+<area shape="poly" title=" " alt="" coords="280,217,239,155,210,122,176,94,154,82,156,78,179,89,213,118,243,152,285,214"/>
+<area shape="rect" href="redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="22,104,161,129"/>
+<area shape="poly" title=" " alt="" coords="272,220,230,180,176,143,149,132,151,127,179,138,233,176,276,216"/>
+<area shape="rect" href="redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="13,153,170,179"/>
+<area shape="poly" title=" " alt="" coords="255,225,176,193,141,181,143,176,178,187,257,220"/>
+<area shape="rect" href="redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="20,203,163,228"/>
+<area shape="poly" title=" " alt="" coords="211,233,163,227,163,221,212,228"/>
+<area shape="rect" href="redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="6,252,177,277"/>
+<area shape="poly" title=" " alt="" coords="212,253,177,257,176,252,211,248"/>
+<area shape="rect" href="redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="5,301,177,327"/>
+<area shape="poly" title=" " alt="" coords="255,261,178,291,139,304,137,299,176,286,253,256"/>
+<area shape="rect" href="redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="23,351,159,376"/>
+<area shape="poly" title=" " alt="" coords="275,266,232,304,179,340,148,353,146,348,176,336,229,300,271,262"/>
+<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="9,400,173,425"/>
+<area shape="poly" title=" " alt="" coords="284,267,242,328,213,361,179,390,153,402,151,398,176,385,209,357,238,325,280,264"/>
+<area shape="rect" href="redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="18,449,165,475"/>
+<area shape="poly" title=" " alt="" coords="289,267,274,305,251,352,219,399,179,439,156,452,154,447,176,435,215,395,246,349,269,303,284,265"/>
 </map>
 </div>
 
@@ -1465,24 +1332,19 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_a07e21cc348fe7968848b00fe2c75a694_cgraph.png" border="0" usemap="#anet_8c_a07e21cc348fe7968848b00fe2c75a694_cgraph" alt=""/></div>
 <map name="anet_8c_a07e21cc348fe7968848b00fe2c75a694_cgraph" id="anet_8c_a07e21cc348fe7968848b00fe2c75a694_cgraph">
-<area shape="rect" title=" " alt="" coords="5,55,148,80"/>
-<area shape="rect" href="ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="564,5,705,31"/>
-<area shape="poly" title=" " alt="" coords="132,52,196,41,386,23,550,17,550,22,386,29,196,46,133,57"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="196,55,327,80"/>
-<area shape="poly" title=" " alt="" coords="148,65,182,65,182,70,148,70"/>
-<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="223,104,299,129"/>
-<area shape="poly" title=" " alt="" coords="126,77,211,101,209,106,124,83"/>
-<area shape="rect" href="ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="753,5,872,31"/>
-<area shape="poly" title=" " alt="" coords="706,15,740,15,740,21,706,21"/>
-<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="375,104,516,129"/>
-<area shape="poly" title=" " alt="" coords="310,77,384,98,383,103,309,83"/>
-<area shape="rect" href="net_8c.html#a3e1ac22bfef5283339884646a8651381" title="REPL_STATE_MASTER_SEND_RDB下的写事件处理" alt="" coords="384,55,507,80"/>
-<area shape="poly" title=" " alt="" coords="327,65,370,65,370,70,327,70"/>
-<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="574,104,695,129"/>
-<area shape="poly" title=" " alt="" coords="516,114,560,114,560,119,516,119"/>
-<area shape="poly" title=" " alt="" coords="494,52,571,32,572,37,495,57"/>
-<area shape="rect" href="net_8c.html#ae489eda1d386253db9cfb9ab938da1b3" title="向fd write写入len长度的buf， 于addwrite不同。" alt="" coords="585,55,685,80"/>
-<area shape="poly" title=" " alt="" coords="507,65,571,65,571,70,507,70"/>
+<area shape="rect" title=" " alt="" coords="5,80,148,105"/>
+<area shape="rect" href="ae_8c.html#af0d520b4da6ba754f03ef3db5c85a75e" title="删除fd上的mask事件监听" alt="" coords="196,5,337,31"/>
+<area shape="poly" title=" " alt="" coords="105,77,195,40,213,33,215,38,197,44,107,82"/>
+<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="201,55,332,80"/>
+<area shape="poly" title=" " alt="" coords="148,81,187,75,188,81,149,86"/>
+<area shape="rect" href="sds_8c.html#aecf67a3fe7eba522737fd9d8fc29aa99" title=" " alt="" coords="229,104,305,129"/>
+<area shape="poly" title=" " alt="" coords="149,99,215,108,214,113,148,104"/>
+<area shape="rect" href="sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="235,153,299,179"/>
+<area shape="poly" title=" " alt="" coords="109,103,197,138,223,148,221,153,195,143,107,108"/>
+<area shape="rect" href="ae_8c.html#a079045f92dbd1b34f1ed5e3b357389ad" title="更新apiState" alt="" coords="385,5,504,31"/>
+<area shape="poly" title=" " alt="" coords="338,15,372,15,372,21,338,21"/>
+<area shape="rect" href="io_8c.html#ac541b19430641726f2737b355cc26277" title=" " alt="" coords="407,55,482,80"/>
+<area shape="poly" title=" " alt="" coords="332,65,393,65,393,70,332,70"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1490,15 +1352,27 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_a07e21cc348fe7968848b00fe2c75a694_icgraph.png" border="0" usemap="#anet_8c_a07e21cc348fe7968848b00fe2c75a694_icgraph" alt=""/></div>
 <map name="anet_8c_a07e21cc348fe7968848b00fe2c75a694_icgraph" id="anet_8c_a07e21cc348fe7968848b00fe2c75a694_icgraph">
-<area shape="rect" title=" " alt="" coords="636,5,779,31"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
-<area shape="poly" title=" " alt="" coords="622,21,588,21,588,15,622,15"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
-<area shape="poly" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" title=" " alt="" coords="225,228,368,253"/>
+<area shape="rect" href="redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="21,5,161,31"/>
+<area shape="poly" title=" " alt="" coords="285,216,270,178,247,131,215,84,176,44,156,33,159,28,179,40,220,81,251,128,275,175,290,214"/>
+<area shape="rect" href="redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="23,55,160,80"/>
+<area shape="poly" title=" " alt="" coords="280,217,239,155,210,122,176,94,154,82,156,78,179,89,213,118,243,152,285,214"/>
+<area shape="rect" href="redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="22,104,161,129"/>
+<area shape="poly" title=" " alt="" coords="272,220,230,180,176,143,149,132,151,127,179,138,233,176,276,216"/>
+<area shape="rect" href="redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="13,153,170,179"/>
+<area shape="poly" title=" " alt="" coords="255,225,176,193,141,181,143,176,178,187,257,220"/>
+<area shape="rect" href="redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="20,203,163,228"/>
+<area shape="poly" title=" " alt="" coords="211,233,163,227,163,221,212,228"/>
+<area shape="rect" href="redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="6,252,177,277"/>
+<area shape="poly" title=" " alt="" coords="212,253,177,257,176,252,211,248"/>
+<area shape="rect" href="redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="5,301,177,327"/>
+<area shape="poly" title=" " alt="" coords="255,261,178,291,139,304,137,299,176,286,253,256"/>
+<area shape="rect" href="redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="23,351,159,376"/>
+<area shape="poly" title=" " alt="" coords="275,266,232,304,179,340,148,353,146,348,176,336,229,300,271,262"/>
+<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="9,400,173,425"/>
+<area shape="poly" title=" " alt="" coords="284,267,242,328,213,361,179,390,153,402,151,398,176,385,209,357,238,325,280,264"/>
+<area shape="rect" href="redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="18,449,165,475"/>
+<area shape="poly" title=" " alt="" coords="289,267,274,305,251,352,219,399,179,439,156,452,154,447,176,435,215,395,246,349,269,303,284,265"/>
 </map>
 </div>
 
