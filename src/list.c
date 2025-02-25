@@ -1,3 +1,12 @@
+/**
+ * @file list.c
+ * @author your name (you@domain.com)
+ * @brief 链表
+ * @version 0.1
+ * @date 2025-02-25
+ * 
+ * 
+ */
 #include "list.h"
 
 list *listCreate()

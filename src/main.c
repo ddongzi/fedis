@@ -1,3 +1,13 @@
+/**
+ * @file main.c
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2025-02-25
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "redis.h"
 #include "log.h"
 int main(int argc, char **argv)

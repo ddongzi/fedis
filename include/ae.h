@@ -81,16 +81,10 @@ aeEventLoop *aeCreateEventLoop(int maxsize);
 int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, void* procArg);
 // 从注册事件中删除，取消IO复用监听。
 int aeDeleteFileEvent(aeEventLoop* loop, int fd, int mask);
-// 返回套接字在被监听的事件类型。
-int aeGetFileEvents(aeEventLoop* loop, int fd);
-// 在给定时间内阻塞等待套接字上指定事件的发生，与事件循环无关？
-int aeWait(int fd, int mask, long long ms);
 // 调用IO复用底层阻塞（比如select)，阻塞所有注册事件，有ready或者超时就返回。
 int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp);
 // 文件事件派发：首先调用apipoll等待事件产生，更新fireevent，调用相应回调函数处理
 int aeProcessEvents(aeEventLoop* loop, int flags);
-// 返回使用的IO多路复用函数库，epoll或者select
-int aeGetApiName(aeEventLoop* loop);
 // 为fd注册事件
 int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask);
 

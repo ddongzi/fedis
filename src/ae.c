@@ -1,11 +1,10 @@
 /**
  * @file ae.c
  * @author ddongzi
- * @brief 
+ * @brief eventloop, epoll 
  * @version 0.1
  * @date 2025-02-17
  * 
- * @copyright Copyright (c) 2025
  * 
  * @note 
  *  1. 为什么读事件不需要删除，写事件需要删除？
@@ -52,13 +51,27 @@ static int aeApiCreate(aeEventLoop* eventLoop)
     log_debug("Create epoll instance. epfd = %d\n", apiState->epfd);
     return AE_OK;
 }
-
+/**
+ * @brief 
+ * 
+ * @param [out] seconds 
+ * @param [out] milliseconds 
+ * @return int 
+ */
+static int aeGetTime(long long* seconds, long long* milliseconds)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);    
+    *seconds = tv.tv_sec;
+    *milliseconds = tv.tv_usec / 1000;
+    return AE_OK;
+}
 /**
  * @brief 调试epoll, 手动检查fd事件
  * 
  * @param [in] fd 
  */
-void checkFdStatus(int fd)
+static void checkFdStatus(int fd)
 {
     struct pollfd pfd;
     pfd.fd = fd;
@@ -250,21 +263,7 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
     return AE_OK;
 }
 
-/**
- * @brief 
- * 
- * @param [out] seconds 
- * @param [out] milliseconds 
- * @return int 
- */
-static int aeGetTime(long long* seconds, long long* milliseconds)
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);    
-    *seconds = tv.tv_sec;
-    *milliseconds = tv.tv_usec / 1000;
-    return AE_OK;
-}
+
 /**
  * @brief 对当前时间增加milliseconds毫秒，得到未来一个时间。
  * 
@@ -315,7 +314,7 @@ int aeDeleteTimeEvent(aeEventLoop* loop, long long id)
     return AE_ERROR;
 }
 
-int processTimeEvents(aeEventLoop* eventLoop)
+static int processTimeEvents(aeEventLoop* eventLoop)
 {
     aeTimeEvent* te;
     long long now_sec, now_ms;
@@ -349,7 +348,7 @@ int processTimeEvents(aeEventLoop* eventLoop)
  * @param [in] flags : [AE_TIME_EVENTS, AE_FILE_EVENTS, AE_ALL_EVENTS]
  * @return int 
  */
-int aeProcessEvents(aeEventLoop* loop, int flags)
+static int aeProcessEvents(aeEventLoop* loop, int flags)
 {
 
     int numevents;
