@@ -1,0 +1,14 @@
+<map id="include/rio.h" name="include/rio.h">
+<area shape="rect" id="Node000001" title="统一 I/O 抽象，支持文件、内存、网络。提供读写、定位、flush" alt="" coords="29,5,132,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,152,76,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="70,33,52,53,38,80,34,109,37,138,31,138,28,109,33,78,48,50,66,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="47,79,114,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="83,31,83,65,78,65,78,31"/>
+<area shape="rect" id="Node000004" href="$sds_8h.html" title=" " alt="" coords="138,79,194,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="96,29,143,68,140,72,93,33"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="147,106,74,147,72,143,145,102"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="115,152,185,177"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="166,105,158,139,153,138,161,104"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="210,152,285,177"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="181,102,226,141,222,145,177,106"/>
+</map>

@@ -26,7 +26,7 @@ var searchData=
   ['sdstrim_23',['sdstrim',['../sds_8h.html#ad42da0c88cdc5793361ecaca30d68808',1,'sdstrim(sds *sds, const char *s):&#160;sds.c'],['../sds_8c.html#ad42da0c88cdc5793361ecaca30d68808',1,'sdstrim(sds *sds, const char *s):&#160;sds.c']]],
   ['seconds_24',['seconds',['../structsaveparam.html#af19a8ec632e45d50c08f9c4f641779c2',1,'saveparam']]],
   ['selectdb_25',['selectDB',['../redis_8h.html#ac9e3135b3adfdaeb9cfc62580bb46e20',1,'redis.h']]],
-  ['send_5fcommand_26',['send_command',['../client_8c.html#aba39da795eeb31e29965c522a40b669f',1,'client.c']]],
+  ['send_5fcommand_26',['send_command',['../client_2client_8c.html#aba39da795eeb31e29965c522a40b669f',1,'client.c']]],
   ['sendpingtomaster_27',['sendpingtomaster',['../redis_8h.html#af14d91dcc5974e75177d984267969d75',1,'sendPingToMaster():&#160;redis.c'],['../redis_8c.html#af14d91dcc5974e75177d984267969d75',1,'sendPingToMaster():&#160;redis.c']]],
   ['sendreplacktomaster_28',['sendReplAckToMaster',['../redis_8c.html#aca2ec7065871e7e886b03f678e9fcac4',1,'redis.c']]],
   ['sendreplconfacktomaster_29',['sendReplconfAckToMaster',['../redis_8h.html#ac9eb9f3e1507ef9698737c107a213b52',1,'redis.h']]],

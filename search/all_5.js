@@ -6,6 +6,7 @@ var searchData=
   ['eof_3',['eof',['../rdb_8c.html#ad9e079060100ad7752438518ffdb5e4b',1,'rdb.c']]],
   ['epfd_4',['epfd',['../structaeApiState.html#ad22cb6aa093b0606521178bee5fc9e57',1,'aeApiState']]],
   ['err_5',['err',['../structsharedObjects.html#a3ca05973a774cd45414265dd9c0621b4',1,'sharedObjects']]],
-  ['eventloop_6',['eventLoop',['../structredisServer.html#a063bbde14197d807d51cffab26ad48a5',1,'redisServer']]],
-  ['events_7',['events',['../structaeApiState.html#aae9919a5fbc7f635b7add5e9afca911f',1,'aeApiState::events'],['../structaeEventLoop.html#aa37dcf314ec826fafa4b3ff05923b434',1,'aeEventLoop::events']]]
+  ['error_6',['error',['../structrio.html#ab4301a8a7d3f32aa3ba575274d473e35',1,'rio']]],
+  ['eventloop_7',['eventLoop',['../structredisServer.html#a063bbde14197d807d51cffab26ad48a5',1,'redisServer']]],
+  ['events_8',['events',['../structaeApiState.html#aae9919a5fbc7f635b7add5e9afca911f',1,'aeApiState::events'],['../structaeEventLoop.html#aa37dcf314ec826fafa4b3ff05923b434',1,'aeEventLoop::events']]]
 ];

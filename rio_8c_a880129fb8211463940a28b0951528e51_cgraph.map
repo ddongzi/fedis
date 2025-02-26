@@ -1,0 +1,11 @@
+<map id="rioInitWithSocket" name="rioInitWithSocket">
+<area shape="rect" id="Node000001" title="网络IO， send,recv" alt="" coords="5,80,139,105"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#a0dae644aa8c703156845104e6a835aaf" title=" " alt="" coords="195,5,326,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,77,186,40,205,33,206,38,188,44,101,82"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#a08ec2f4753139c71664b6b8948f2771f" title=" " alt="" coords="187,55,335,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="139,81,172,76,173,82,139,86"/>
+<area shape="rect" id="Node000004" href="$rio_8c.html#a1bf3f5272bd3ca2ba26dde068e439a5c" title=" " alt="" coords="192,104,329,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="139,98,179,104,178,109,139,104"/>
+<area shape="rect" id="Node000005" href="$rio_8c.html#acb8195a4e9eefe2912e1da9b98b55dce" title=" " alt="" coords="195,153,326,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="103,103,188,138,209,146,208,151,186,143,101,108"/>
+</map>

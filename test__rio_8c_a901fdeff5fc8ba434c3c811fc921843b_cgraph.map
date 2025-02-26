@@ -1,0 +1,17 @@
+<map id="test_socket_rio" name="test_socket_rio">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,128,125,153"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#a880129fb8211463940a28b0951528e51" title="网络IO， send,recv" alt="" coords="173,79,307,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="110,125,180,105,182,110,112,131"/>
+<area shape="rect" id="Node000007" href="$rio_8c.html#a43b7637865c661f97616babab7f6494c" title="读到buf" alt="" coords="204,128,276,153"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="125,138,190,138,190,143,125,143"/>
+<area shape="rect" id="Node000008" href="$rio_8c.html#a5bc2c1b0deb64981df5b8ee10d6b8910" title=" " alt="" coords="203,177,277,203"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="112,151,191,173,189,179,110,156"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#a0dae644aa8c703156845104e6a835aaf" title=" " alt="" coords="363,5,494,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="267,76,354,40,373,33,375,38,356,44,270,81"/>
+<area shape="rect" id="Node000004" href="$rio_8c.html#a08ec2f4753139c71664b6b8948f2771f" title=" " alt="" coords="355,55,503,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="307,80,340,76,341,81,307,86"/>
+<area shape="rect" id="Node000005" href="$rio_8c.html#a1bf3f5272bd3ca2ba26dde068e439a5c" title=" " alt="" coords="360,104,497,129"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="307,98,347,103,346,108,307,103"/>
+<area shape="rect" id="Node000006" href="$rio_8c.html#acb8195a4e9eefe2912e1da9b98b55dce" title=" " alt="" coords="363,153,494,179"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="280,102,308,113,356,138,375,146,374,151,354,143,306,118,278,107"/>
+</map>

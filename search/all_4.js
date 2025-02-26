@@ -1,12 +1,12 @@
 var searchData=
 [
   ['daemonize_0',['daemonize',['../structredisServer.html#a6b46cd70523fa48579926a8076f255d0',1,'redisServer']]],
-  ['data_1',['data',['../structaeTimeEvent.html#aa824b66c50c383a155756a6e36844a08',1,'aeTimeEvent::data'],['../structaeFileEvent.html#aaea8cf4cde088a6a48c0d5197b12791c',1,'aeFileEvent::data']]],
-  ['db_2',['db',['../structredisServer.html#a7e7c26c4e423dbbc81b3f29b4d4b2530',1,'redisServer::db'],['../structredisClient.html#a7775647fe53e92c637f536a2cfbb1f60',1,'redisClient::db']]],
+  ['data_1',['data',['../structaeFileEvent.html#aaea8cf4cde088a6a48c0d5197b12791c',1,'aeFileEvent::data'],['../structaeTimeEvent.html#aa824b66c50c383a155756a6e36844a08',1,'aeTimeEvent::data'],['../structrio.html#ac649ec5bf2cb7d097689d53768ee8c6f',1,'rio::data']]],
+  ['db_2',['db',['../structredisClient.html#a7775647fe53e92c637f536a2cfbb1f60',1,'redisClient::db'],['../structredisServer.html#a7e7c26c4e423dbbc81b3f29b4d4b2530',1,'redisServer::db']]],
   ['db_2ec_3',['db.c',['../db_8c.html',1,'']]],
   ['db_2eh_4',['db.h',['../db_8h.html',1,'']]],
   ['db_5fdict_5ferr_5',['DB_DICT_ERR',['../db_8h.html#a0af15c0a724615d3323f98797e8d6ac3',1,'db.h']]],
-  ['dbadd_6',['dbadd',['../db_8h.html#a0668b6b189bc0afea59f9121fbc795a7',1,'dbAdd(redisDb *db, robj *key, robj *value):&#160;db.c'],['../db_8c.html#a0668b6b189bc0afea59f9121fbc795a7',1,'dbAdd(redisDb *db, robj *key, robj *value):&#160;db.c']]],
+  ['dbadd_6',['dbadd',['../db_8c.html#a0668b6b189bc0afea59f9121fbc795a7',1,'dbAdd(redisDb *db, robj *key, robj *value):&#160;db.c'],['../db_8h.html#a0668b6b189bc0afea59f9121fbc795a7',1,'dbAdd(redisDb *db, robj *key, robj *value):&#160;db.c']]],
   ['dbcheckexpire_7',['dbCheckExpire',['../db_8h.html#ab18d47f5356c3199b119960bcb749a82',1,'db.h']]],
   ['dbclear_8',['dbclear',['../db_8c.html#ab6c3fd835c6c195a0e066285a5799aa8',1,'dbClear(redisDb *db):&#160;db.c'],['../db_8h.html#ab6c3fd835c6c195a0e066285a5799aa8',1,'dbClear(redisDb *db):&#160;db.c']]],
   ['dbcreate_9',['dbcreate',['../db_8h.html#a3ac9f49a6d63c0c62434b58c7d1a2c0d',1,'dbCreate(int id):&#160;db.c'],['../db_8c.html#a3ac9f49a6d63c0c62434b58c7d1a2c0d',1,'dbCreate(int id):&#160;db.c']]],

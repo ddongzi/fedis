@@ -1,0 +1,79 @@
+<map id="main" name="main">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,352,60,377"/>
+<area shape="rect" id="Node000002" href="$test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="110,277,226,303"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="50,350,107,313,120,306,123,311,109,318,53,354"/>
+<area shape="rect" id="Node000017" href="$test__rio_8c.html#a008fdd4d20aae2f5447ff8cf2ee9f5ef" title=" " alt="" coords="123,327,213,352"/>
+<area shape="poly" id="edge18_Node000001_Node000017" title=" " alt="" coords="60,357,108,348,109,353,61,362"/>
+<area shape="rect" id="Node000023" href="$test__rio_8c.html#af6815daa05c57aa681e0c63836bba020" title=" " alt="" coords="119,376,217,401"/>
+<area shape="poly" id="edge27_Node000001_Node000023" title=" " alt="" coords="61,367,106,375,105,380,60,372"/>
+<area shape="rect" id="Node000029" href="$test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="108,425,228,451"/>
+<area shape="poly" id="edge36_Node000001_Node000029" title=" " alt="" coords="52,375,109,412,121,417,118,422,107,416,50,380"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#a9179614ee86ef37de8cdeb71bf4411d4" title=" " alt="" coords="305,327,380,352"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="214,300,293,323,292,328,213,305"/>
+<area shape="rect" id="Node000004" href="$rio_8c.html#aa1674b7200f7887010250df214ca2724" title="内存IO" alt="" coords="287,104,399,129"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="177,275,218,226,274,165,310,136,314,140,278,169,222,229,181,279"/>
+<area shape="rect" id="Node000013" href="$rio_8c.html#a43b7637865c661f97616babab7f6494c" title="读到buf" alt="" coords="307,425,379,451"/>
+<area shape="poly" id="edge14_Node000002_Node000013" title=" " alt="" coords="211,301,230,313,248,339,254,364,261,388,278,412,295,423,292,428,274,416,256,391,249,366,243,341,226,317,208,305"/>
+<area shape="rect" id="Node000014" href="$rio_8c.html#a5bc2c1b0deb64981df5b8ee10d6b8910" title=" " alt="" coords="305,376,380,401"/>
+<area shape="poly" id="edge15_Node000002_Node000014" title=" " alt="" coords="207,301,230,313,244,326,254,339,263,351,277,362,294,371,291,376,275,367,259,354,250,342,241,330,226,318,204,305"/>
+<area shape="rect" id="Node000015" href="$sds_8c.html#ad7b88a16aebd3abe14b725e1c1efc6ec" title=" " alt="" coords="299,179,386,204"/>
+<area shape="poly" id="edge16_Node000002_Node000015" title=" " alt="" coords="184,275,224,246,275,214,290,207,293,212,277,219,227,250,187,279"/>
+<area shape="rect" id="Node000016" href="$sds_8c.html#a5161dccdc2a989df3fec4a39f504c181" title=" " alt="" coords="307,228,378,253"/>
+<area shape="poly" id="edge17_Node000002_Node000016" title=" " alt="" coords="213,275,293,252,295,257,214,280"/>
+<area shape="rect" id="Node000005" href="$rio_8c.html#aa45af1bd0679e1fcb9a3328641eff4a1" title=" " alt="" coords="468,5,595,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="359,102,402,71,456,40,471,33,473,38,459,44,405,76,362,106"/>
+<area shape="rect" id="Node000006" href="$rio_8c.html#af64c35e5ecd578abe1ffcf8654c09491" title="从rio读取(前len字节) 最长len字节到 char*buf" alt="" coords="459,55,603,80"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="391,101,468,81,469,86,393,107"/>
+<area shape="rect" id="Node000009" href="$rio_8c.html#adf47736aa55be01f9f4038998e3351f5" title=" " alt="" coords="465,104,598,129"/>
+<area shape="poly" id="edge9_Node000004_Node000009" title=" " alt="" coords="399,114,451,114,451,119,399,119"/>
+<area shape="rect" id="Node000010" href="$rio_8c.html#a14bc77d1ce22eaf97564ae3819f4f48c" title="向RIO追加写入len字节" alt="" coords="468,153,595,179"/>
+<area shape="poly" id="edge10_Node000004_Node000010" title=" " alt="" coords="393,127,469,147,468,152,391,132"/>
+<area shape="rect" id="Node000007" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="791,104,855,129"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="604,70,669,77,738,89,779,99,777,105,737,94,669,83,603,75"/>
+<area shape="rect" id="Node000008" href="$sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="655,104,736,129"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="575,77,642,98,640,103,573,83"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="736,114,777,114,777,119,736,119"/>
+<area shape="rect" id="Node000011" href="$sds_8c.html#a8658173ce436490570dc542671804d53" title=" " alt="" coords="653,153,737,179"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="595,163,639,163,639,169,595,169"/>
+<area shape="poly" id="edge13_Node000011_Node000007" title=" " alt="" coords="728,151,778,131,780,136,730,156"/>
+<area shape="rect" id="Node000012" href="$sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="785,153,861,179"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="737,163,772,163,772,169,737,169"/>
+<area shape="poly" id="edge19_Node000017_Node000003" title=" " alt="" coords="214,337,292,337,292,342,214,342"/>
+<area shape="poly" id="edge25_Node000017_Node000013" title=" " alt="" coords="207,350,230,362,244,376,254,388,263,400,277,412,295,421,292,426,275,416,259,404,250,391,241,379,226,367,204,355"/>
+<area shape="poly" id="edge26_Node000017_Node000014" title=" " alt="" coords="214,349,293,372,292,377,213,355"/>
+<area shape="rect" id="Node000018" href="$rio_8c.html#afe3c5e9ccb22a7dc63c420e112079720" title=" " alt="" coords="289,277,397,303"/>
+<area shape="poly" id="edge20_Node000017_Node000018" title=" " alt="" coords="213,324,283,304,284,309,214,329"/>
+<area shape="rect" id="Node000019" href="$rio_8c.html#ac47a6fa8b0bccdd3673fe52f51e22b91" title=" " alt="" coords="478,203,585,228"/>
+<area shape="poly" id="edge21_Node000018_Node000019" title=" " alt="" coords="380,275,408,264,456,238,476,230,478,235,458,243,410,268,382,280"/>
+<area shape="rect" id="Node000020" href="$rio_8c.html#a9fa13d9a43cee790c6b2d1cd1a759d21" title=" " alt="" coords="470,252,593,277"/>
+<area shape="poly" id="edge22_Node000018_Node000020" title=" " alt="" coords="396,280,456,272,457,277,397,285"/>
+<area shape="rect" id="Node000021" href="$rio_8c.html#a9f431e7a38249a3115c7a4649f5d9654" title=" " alt="" coords="475,301,587,327"/>
+<area shape="poly" id="edge23_Node000018_Node000021" title=" " alt="" coords="397,294,462,303,461,308,396,299"/>
+<area shape="rect" id="Node000022" href="$rio_8c.html#a82967a3413f0c54f9674d57feb384e0e" title=" " alt="" coords="478,351,585,376"/>
+<area shape="poly" id="edge24_Node000018_Node000022" title=" " alt="" coords="380,300,410,313,458,337,476,344,474,349,456,342,408,318,377,305"/>
+<area shape="poly" id="edge28_Node000023_Node000003" title=" " alt="" coords="213,373,292,351,293,356,214,379"/>
+<area shape="poly" id="edge34_Node000023_Node000013" title=" " alt="" coords="214,399,294,422,293,427,213,404"/>
+<area shape="poly" id="edge35_Node000023_Node000014" title=" " alt="" coords="218,386,291,386,291,391,218,391"/>
+<area shape="rect" id="Node000024" href="$rio_8c.html#ae073093f16037fe954c201ea363d41a5" title="普通文件IO。 fread, fwrite," alt="" coords="286,475,399,500"/>
+<area shape="poly" id="edge29_Node000023_Node000024" title=" " alt="" coords="207,399,230,412,244,425,254,437,263,449,278,461,287,467,284,471,274,466,259,453,250,441,241,429,226,416,204,404"/>
+<area shape="rect" id="Node000025" href="$rio_8c.html#a094f4f628a7aac0ff5948743ca4ea035" title=" " alt="" coords="476,400,587,425"/>
+<area shape="poly" id="edge30_Node000024_Node000025" title=" " alt="" coords="380,472,408,461,456,436,476,428,478,433,458,440,410,466,382,477"/>
+<area shape="rect" id="Node000026" href="$rio_8c.html#a1255d813067d56b9872f0d9a196589a1" title=" " alt="" coords="467,449,595,475"/>
+<area shape="poly" id="edge31_Node000024_Node000026" title=" " alt="" coords="399,477,453,470,454,475,400,482"/>
+<area shape="rect" id="Node000027" href="$rio_8c.html#a7d46baa8766a44d6d1b603100727ce60" title=" " alt="" coords="473,499,590,524"/>
+<area shape="poly" id="edge32_Node000024_Node000027" title=" " alt="" coords="400,492,459,500,459,505,399,497"/>
+<area shape="rect" id="Node000028" href="$rio_8c.html#aa23499c56ce21a575daab53b7ec99cba" title=" " alt="" coords="476,548,587,573"/>
+<area shape="poly" id="edge33_Node000024_Node000028" title=" " alt="" coords="372,498,458,534,477,541,475,546,456,539,370,502"/>
+<area shape="poly" id="edge42_Node000029_Node000013" title=" " alt="" coords="228,435,293,435,293,441,228,441"/>
+<area shape="poly" id="edge43_Node000029_Node000014" title=" " alt="" coords="213,423,292,400,293,405,214,428"/>
+<area shape="rect" id="Node000030" href="$rio_8c.html#a880129fb8211463940a28b0951528e51" title="网络IO， send,recv" alt="" coords="276,647,409,672"/>
+<area shape="poly" id="edge37_Node000029_Node000030" title=" " alt="" coords="182,450,325,634,321,637,177,453"/>
+<area shape="rect" id="Node000031" href="$rio_8c.html#a0dae644aa8c703156845104e6a835aaf" title=" " alt="" coords="466,597,597,623"/>
+<area shape="poly" id="edge38_Node000030_Node000031" title=" " alt="" coords="391,644,468,624,469,629,393,649"/>
+<area shape="rect" id="Node000032" href="$rio_8c.html#a08ec2f4753139c71664b6b8948f2771f" title=" " alt="" coords="457,647,605,672"/>
+<area shape="poly" id="edge39_Node000030_Node000032" title=" " alt="" coords="410,657,443,657,443,662,410,662"/>
+<area shape="rect" id="Node000033" href="$rio_8c.html#a1bf3f5272bd3ca2ba26dde068e439a5c" title=" " alt="" coords="463,696,600,721"/>
+<area shape="poly" id="edge40_Node000030_Node000033" title=" " alt="" coords="393,669,469,690,468,695,391,675"/>
+<area shape="rect" id="Node000034" href="$rio_8c.html#acb8195a4e9eefe2912e1da9b98b55dce" title=" " alt="" coords="466,745,597,771"/>
+<area shape="poly" id="edge41_Node000030_Node000034" title=" " alt="" coords="362,670,405,700,459,732,473,738,471,743,456,736,402,705,359,674"/>
+</map>

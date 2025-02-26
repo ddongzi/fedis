@@ -7,7 +7,5 @@ var searchData=
   ['initserversignalhandlers_4',['initServerSignalHandlers',['../redis_8c.html#a84a6c0165eaca7e2bcf400d839465ada',1,'redis.c']]],
   ['integers_5',['integers',['../structsharedObjects.html#a4e6d12d005669ca2e4c04e9bd8d53d4b',1,'sharedObjects']]],
   ['invalidcommand_6',['invalidCommand',['../structsharedObjects.html#a39de9904623d2c1fb43ba8dab1cff38b',1,'sharedObjects']]],
-  ['io_2ec_7',['io.c',['../io_8c.html',1,'']]],
-  ['io_2eh_8',['io.h',['../io_8h.html',1,'']]],
-  ['isbgsaving_9',['isBgSaving',['../structredisServer.html#ace11c91f475076d1e817a1c5d40e1e04',1,'redisServer']]]
+  ['isbgsaving_7',['isBgSaving',['../structredisServer.html#ace11c91f475076d1e817a1c5d40e1e04',1,'redisServer']]]
 ];

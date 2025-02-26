@@ -1,7 +1,0 @@
-<map id="aeProcessEvents" name="aeProcessEvents">
-<area shape="rect" id="Node000001" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="227,5,359,31"/>
-<area shape="rect" id="Node000002" href="$ae_8c.html#a6128cc6c85e2cdead05b253352637de3" title="事件循环main" alt="" coords="108,5,179,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,21,179,21,179,15,213,15"/>
-<area shape="rect" id="Node000003" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
-</map>

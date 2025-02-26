@@ -1,0 +1,19 @@
+<map id="test_file_rio" name="test_file_rio">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,104,104,129"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#a9179614ee86ef37de8cdeb71bf4411d4" title=" " alt="" coords="171,29,246,55"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,102,151,64,163,58,165,63,153,68,80,106"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#ae073093f16037fe954c201ea363d41a5" title="普通文件IO。 fread, fwrite," alt="" coords="152,79,265,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="104,106,138,100,139,106,105,111"/>
+<area shape="rect" id="Node000008" href="$rio_8c.html#a43b7637865c661f97616babab7f6494c" title="读到buf" alt="" coords="173,128,245,153"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="105,122,159,130,159,136,104,127"/>
+<area shape="rect" id="Node000009" href="$rio_8c.html#a5bc2c1b0deb64981df5b8ee10d6b8910" title=" " alt="" coords="171,177,246,203"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="82,127,153,162,168,169,166,174,151,167,80,132"/>
+<area shape="rect" id="Node000004" href="$rio_8c.html#a094f4f628a7aac0ff5948743ca4ea035" title=" " alt="" coords="322,5,433,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="237,76,264,64,312,40,327,33,329,38,314,44,266,68,239,81"/>
+<area shape="rect" id="Node000005" href="$rio_8c.html#a1255d813067d56b9872f0d9a196589a1" title=" " alt="" coords="313,55,441,80"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="265,81,300,76,300,81,266,86"/>
+<area shape="rect" id="Node000006" href="$rio_8c.html#a7d46baa8766a44d6d1b603100727ce60" title=" " alt="" coords="319,104,436,129"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="266,97,305,103,305,108,265,102"/>
+<area shape="rect" id="Node000007" href="$rio_8c.html#aa23499c56ce21a575daab53b7ec99cba" title=" " alt="" coords="322,153,433,179"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="242,102,267,113,314,138,331,146,329,151,312,143,264,118,240,107"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="rioInitWithFile" name="rioInitWithFile">
+<area shape="rect" id="Node000001" title="普通文件IO。 fread, fwrite," alt="" coords="5,80,119,105"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#a094f4f628a7aac0ff5948743ca4ea035" title=" " alt="" coords="175,5,286,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,78,166,40,181,33,183,38,168,44,89,82"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#a1255d813067d56b9872f0d9a196589a1" title=" " alt="" coords="167,55,295,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="119,82,153,76,154,82,119,87"/>
+<area shape="rect" id="Node000004" href="$rio_8c.html#a7d46baa8766a44d6d1b603100727ce60" title=" " alt="" coords="172,104,289,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="119,98,159,104,158,109,119,103"/>
+<area shape="rect" id="Node000005" href="$rio_8c.html#aa23499c56ce21a575daab53b7ec99cba" title=" " alt="" coords="175,153,286,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="91,103,168,138,185,146,183,150,166,143,89,108"/>
+</map>

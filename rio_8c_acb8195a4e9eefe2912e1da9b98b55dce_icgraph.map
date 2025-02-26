@@ -1,0 +1,9 @@
+<map id="rioWriteToSocket" name="rioWriteToSocket">
+<area shape="rect" id="Node000001" title=" " alt="" coords="457,5,588,31"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#a880129fb8211463940a28b0951528e51" title="网络IO， send,recv" alt="" coords="276,5,409,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="444,21,410,21,410,15,444,15"/>
+<area shape="rect" id="Node000003" href="$test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="108,5,228,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="262,21,228,21,228,15,262,15"/>
+<area shape="rect" id="Node000004" href="$test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="rioReadFromBuffer" name="rioReadFromBuffer">
+<area shape="rect" id="Node000001" title="从rio读取(前len字节) 最长len字节到 char*buf" alt="" coords="5,5,149,31"/>
+<area shape="rect" id="Node000002" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="327,5,391,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,15,313,15,313,21,149,21"/>
+<area shape="rect" id="Node000003" href="$sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="197,31,279,56"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="150,27,184,32,183,37,149,32"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="279,32,313,25,314,30,280,37"/>
+</map>

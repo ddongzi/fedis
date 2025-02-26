@@ -110,11 +110,11 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="center"><img src="ae_8h__dep__incl.png" border="0" usemap="#ainclude_2ae_8hdep" alt=""/></div>
 <map name="ainclude_2ae_8hdep" id="ainclude_2ae_8hdep">
 <area shape="rect" title=" " alt="" coords="471,5,572,31"/>
-<area shape="rect" href="net_8h.html" title=" " alt="" coords="377,79,484,104"/>
+<area shape="rect" href="net_8h.html" title="网络连接" alt="" coords="377,79,484,104"/>
 <area shape="poly" title=" " alt="" coords="497,41,447,81,444,76,494,37"/>
 <area shape="rect" href="redis_8h.html" title=" " alt="" coords="417,152,535,177"/>
 <area shape="poly" title=" " alt="" coords="517,45,499,105,482,153,477,151,493,103,512,43"/>
-<area shape="rect" href="ae_8c.html" title=" " alt="" coords="812,225,884,251"/>
+<area shape="rect" href="ae_8c.html" title="eventloop, epoll" alt="" coords="812,225,884,251"/>
 <area shape="poly" title=" " alt="" coords="551,36,832,223,829,227,548,40"/>
 <area shape="poly" title=" " alt="" coords="448,114,471,150,466,153,443,117"/>
 <area shape="rect" href="net_8c.html" title=" " alt="" coords="5,225,83,251"/>
@@ -199,18 +199,11 @@ Functions</h2></td></tr>
 <tr class="memitem:af0d520b4da6ba754f03ef3db5c85a75e" id="r_af0d520b4da6ba754f03ef3db5c85a75e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#af0d520b4da6ba754f03ef3db5c85a75e">aeDeleteFileEvent</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *loop, int fd, int mask)</td></tr>
 <tr class="memdesc:af0d520b4da6ba754f03ef3db5c85a75e"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除fd上的mask事件监听  <br /></td></tr>
 <tr class="separator:af0d520b4da6ba754f03ef3db5c85a75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89cb815c43f21507717d2b29d4418da9" id="r_a89cb815c43f21507717d2b29d4418da9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#a89cb815c43f21507717d2b29d4418da9">aeGetFileEvents</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *loop, int fd)</td></tr>
-<tr class="separator:a89cb815c43f21507717d2b29d4418da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7d49b53b9294b630be34fbfeda9fb0f" id="r_ae7d49b53b9294b630be34fbfeda9fb0f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#ae7d49b53b9294b630be34fbfeda9fb0f">aeWait</a> (int fd, int mask, long long ms)</td></tr>
-<tr class="separator:ae7d49b53b9294b630be34fbfeda9fb0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05ec294eb89d30b4ba8c7b84547fe79e" id="r_a05ec294eb89d30b4ba8c7b84547fe79e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#a05ec294eb89d30b4ba8c7b84547fe79e">aeApiPoll</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *eventLoop, struct timeval *tvp)</td></tr>
 <tr class="memdesc:a05ec294eb89d30b4ba8c7b84547fe79e"><td class="mdescLeft">&#160;</td><td class="mdescRight">epoll_wait, 触发事件添加到fireEvents  <br /></td></tr>
 <tr class="separator:a05ec294eb89d30b4ba8c7b84547fe79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e37ecf89afde301c3ec9579677ee54e" id="r_a1e37ecf89afde301c3ec9579677ee54e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#a1e37ecf89afde301c3ec9579677ee54e">aeProcessEvents</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *loop, int flags)</td></tr>
-<tr class="memdesc:a1e37ecf89afde301c3ec9579677ee54e"><td class="mdescLeft">&#160;</td><td class="mdescRight">先处理定时任务，epoll_wait只等到最近定时任务时间。  <br /></td></tr>
 <tr class="separator:a1e37ecf89afde301c3ec9579677ee54e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adca6f29dcb114b039bb2e865c7e665f8" id="r_adca6f29dcb114b039bb2e865c7e665f8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#adca6f29dcb114b039bb2e865c7e665f8">aeGetApiName</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *loop)</td></tr>
-<tr class="separator:adca6f29dcb114b039bb2e865c7e665f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1918ceab75e9ada567ef48aa2649da7" id="r_ae1918ceab75e9ada567ef48aa2649da7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ae_8h.html#ae1918ceab75e9ada567ef48aa2649da7">aeApiAddEvent</a> (<a class="el" href="structaeEventLoop.html">aeEventLoop</a> *eventLoop, int fd, int mask)</td></tr>
 <tr class="memdesc:ae1918ceab75e9ada567ef48aa2649da7"><td class="mdescLeft">&#160;</td><td class="mdescRight">修改/添加 epoll事件  <br /></td></tr>
 <tr class="separator:ae1918ceab75e9ada567ef48aa2649da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -569,20 +562,6 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int numevents </dd></dl>
 <dl class="section note"><dt>Note</dt><dd></dd></dl>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="ae_8h_a05ec294eb89d30b4ba8c7b84547fe79e_icgraph.png" border="0" usemap="#aae_8h_a05ec294eb89d30b4ba8c7b84547fe79e_icgraph" alt=""/></div>
-<map name="aae_8h_a05ec294eb89d30b4ba8c7b84547fe79e_icgraph" id="aae_8h_a05ec294eb89d30b4ba8c7b84547fe79e_icgraph">
-<area shape="rect" title="epoll_wait, 触发事件添加到fireEvents" alt="" coords="407,5,489,31"/>
-<area shape="rect" href="ae_8c.html#a1e37ecf89afde301c3ec9579677ee54e" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="227,5,359,31"/>
-<area shape="poly" title=" " alt="" coords="393,21,359,21,359,15,393,15"/>
-<area shape="rect" href="ae_8c.html#a6128cc6c85e2cdead05b253352637de3" title="事件循环main" alt="" coords="108,5,179,31"/>
-<area shape="poly" title=" " alt="" coords="213,21,179,21,179,15,213,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
-</map>
-</div>
 
 </div>
 </div>
@@ -882,52 +861,6 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="adca6f29dcb114b039bb2e865c7e665f8" name="adca6f29dcb114b039bb2e865c7e665f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adca6f29dcb114b039bb2e865c7e665f8">&#9670;&#160;</a></span>aeGetApiName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int aeGetApiName </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structaeEventLoop.html">aeEventLoop</a> *&#160;</td>
-          <td class="paramname"><em>loop</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a89cb815c43f21507717d2b29d4418da9" name="a89cb815c43f21507717d2b29d4418da9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89cb815c43f21507717d2b29d4418da9">&#9670;&#160;</a></span>aeGetFileEvents()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int aeGetFileEvents </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structaeEventLoop.html">aeEventLoop</a> *&#160;</td>
-          <td class="paramname"><em>loop</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>fd</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a2909fa15dc2d667ec824904fef9df3d8" name="a2909fa15dc2d667ec824904fef9df3d8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2909fa15dc2d667ec824904fef9df3d8">&#9670;&#160;</a></span>aeMain()</h2>
 
@@ -956,17 +889,9 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="ae_8h_a2909fa15dc2d667ec824904fef9df3d8_cgraph.png" border="0" usemap="#aae_8h_a2909fa15dc2d667ec824904fef9df3d8_cgraph" alt=""/></div>
 <map name="aae_8h_a2909fa15dc2d667ec824904fef9df3d8_cgraph" id="aae_8h_a2909fa15dc2d667ec824904fef9df3d8_cgraph">
-<area shape="rect" title="事件循环main" alt="" coords="5,31,76,56"/>
-<area shape="rect" href="ae_8c.html#a1e37ecf89afde301c3ec9579677ee54e" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="124,31,256,56"/>
-<area shape="poly" title=" " alt="" coords="76,41,110,41,110,46,76,46"/>
-<area shape="rect" href="ae_8c.html#a05ec294eb89d30b4ba8c7b84547fe79e" title="epoll_wait, 触发事件添加到fireEvents" alt="" coords="337,5,420,31"/>
-<area shape="poly" title=" " alt="" coords="256,32,323,23,324,28,257,37"/>
-<area shape="rect" href="ae_8c.html#a61a56385fc1ca7d73a1cf1fddeba9487" title=" " alt="" coords="304,55,453,80"/>
-<area shape="poly" title=" " alt="" coords="257,49,291,53,290,59,256,54"/>
-<area shape="rect" href="ae_8c.html#ab2126a771f0de28c5d89a362b0d45156" title="对当前时间增加milliseconds毫秒，得到未来一个时间。" alt="" coords="501,29,688,55"/>
-<area shape="poly" title=" " alt="" coords="453,56,487,52,488,57,454,61"/>
-<area shape="rect" href="ae_8c.html#a58ee29667a8745b430894832049cc872" title="从时间事件链表中删除id的时间事件" alt="" coords="519,79,670,104"/>
-<area shape="poly" title=" " alt="" coords="454,73,506,79,505,84,453,78"/>
+<area shape="rect" title="事件循环main" alt="" coords="5,5,76,31"/>
+<area shape="rect" href="ae_8h.html#a1e37ecf89afde301c3ec9579677ee54e" title=" " alt="" coords="124,5,256,31"/>
+<area shape="poly" title=" " alt="" coords="76,15,110,15,110,21,76,21"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1007,78 +932,18 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>先处理定时任务，epoll_wait只等到最近定时任务时间。 </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">loop</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">flags</td><td>: [AE_TIME_EVENTS, AE_FILE_EVENTS, AE_ALL_EVENTS] </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="ae_8h_a1e37ecf89afde301c3ec9579677ee54e_cgraph.png" border="0" usemap="#aae_8h_a1e37ecf89afde301c3ec9579677ee54e_cgraph" alt=""/></div>
-<map name="aae_8h_a1e37ecf89afde301c3ec9579677ee54e_cgraph" id="aae_8h_a1e37ecf89afde301c3ec9579677ee54e_cgraph">
-<area shape="rect" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="5,31,137,56"/>
-<area shape="rect" href="ae_8c.html#a05ec294eb89d30b4ba8c7b84547fe79e" title="epoll_wait, 触发事件添加到fireEvents" alt="" coords="219,5,301,31"/>
-<area shape="poly" title=" " alt="" coords="137,32,205,23,205,28,138,37"/>
-<area shape="rect" href="ae_8c.html#a61a56385fc1ca7d73a1cf1fddeba9487" title=" " alt="" coords="185,55,335,80"/>
-<area shape="poly" title=" " alt="" coords="138,49,172,53,171,59,137,54"/>
-<area shape="rect" href="ae_8c.html#ab2126a771f0de28c5d89a362b0d45156" title="对当前时间增加milliseconds毫秒，得到未来一个时间。" alt="" coords="383,29,569,55"/>
-<area shape="poly" title=" " alt="" coords="334,56,369,52,369,57,335,61"/>
-<area shape="rect" href="ae_8c.html#a58ee29667a8745b430894832049cc872" title="从时间事件链表中删除id的时间事件" alt="" coords="401,79,551,104"/>
-<area shape="poly" title=" " alt="" coords="335,73,387,79,386,84,334,78"/>
-</map>
-</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="ae_8h_a1e37ecf89afde301c3ec9579677ee54e_icgraph.png" border="0" usemap="#aae_8h_a1e37ecf89afde301c3ec9579677ee54e_icgraph" alt=""/></div>
 <map name="aae_8h_a1e37ecf89afde301c3ec9579677ee54e_icgraph" id="aae_8h_a1e37ecf89afde301c3ec9579677ee54e_icgraph">
-<area shape="rect" title="先处理定时任务，epoll_wait只等到最近定时任务时间。" alt="" coords="227,5,359,31"/>
+<area shape="rect" title=" " alt="" coords="227,5,359,31"/>
 <area shape="rect" href="ae_8c.html#a6128cc6c85e2cdead05b253352637de3" title="事件循环main" alt="" coords="108,5,179,31"/>
 <area shape="poly" title=" " alt="" coords="213,21,179,21,179,15,213,15"/>
 <area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
 <area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
 </map>
 </div>
-
-</div>
-</div>
-<a id="ae7d49b53b9294b630be34fbfeda9fb0f" name="ae7d49b53b9294b630be34fbfeda9fb0f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae7d49b53b9294b630be34fbfeda9fb0f">&#9670;&#160;</a></span>aeWait()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int aeWait </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>fd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>mask</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long long&#160;</td>
-          <td class="paramname"><em>ms</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>

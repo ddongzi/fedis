@@ -5,6 +5,6 @@ var searchData=
   ['bgsaveifneeded_2',['bgsaveifneeded',['../rdb_8h.html#affe7b2aa895155faef6d527e788844d6',1,'bgSaveIfNeeded():&#160;rdb.c'],['../rdb_8c.html#affe7b2aa895155faef6d527e788844d6',1,'bgSaveIfNeeded():&#160;rdb.c']]],
   ['bindaddr_3',['bindaddr',['../structredisServer.html#aa73b5192dab60377ad4cf4ee98c15bdc',1,'redisServer']]],
   ['buf_4',['buf',['../structsds.html#a6ba50d588f0e61a3a904d40750df2ca7',1,'sds']]],
-  ['buffer_5fsize_5',['BUFFER_SIZE',['../client_8c.html#a6b20d41d6252e9871430c242cb1a56e7',1,'client.c']]],
+  ['buffer_5fsize_5',['BUFFER_SIZE',['../client_2client_8c.html#a6b20d41d6252e9871430c242cb1a56e7',1,'client.c']]],
   ['bye_6',['bye',['../structsharedObjects.html#ad23e6ff5d582e0fd215142531726198d',1,'sharedObjects']]]
 ];

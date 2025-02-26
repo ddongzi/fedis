@@ -1,0 +1,21 @@
+<map id="rioInitWithBuf" name="rioInitWithBuf">
+<area shape="rect" id="Node000001" title="内存IO" alt="" coords="5,80,117,105"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#aa45af1bd0679e1fcb9a3328641eff4a1" title=" " alt="" coords="174,5,301,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,77,164,40,182,33,184,38,166,44,87,82"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#af64c35e5ecd578abe1ffcf8654c09491" title="从rio读取(前len字节) 最长len字节到 char*buf" alt="" coords="165,55,309,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="117,82,151,77,152,82,118,87"/>
+<area shape="rect" id="Node000006" href="$rio_8c.html#adf47736aa55be01f9f4038998e3351f5" title=" " alt="" coords="171,104,304,129"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="118,98,158,103,157,108,117,103"/>
+<area shape="rect" id="Node000007" href="$rio_8c.html#a14bc77d1ce22eaf97564ae3819f4f48c" title="向RIO追加写入len字节" alt="" coords="174,153,301,179"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="88,103,166,140,184,146,182,151,164,144,86,108"/>
+<area shape="rect" id="Node000004" href="$sds_8c.html#a84bb88f61c1790d5dbdf3ee6472a469c" title=" " alt="" coords="495,104,559,129"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="310,70,374,77,442,89,483,99,481,105,441,94,373,83,309,75"/>
+<area shape="rect" id="Node000005" href="$sds_8c.html#a85c6874b297e9bc02d926a7aa5be4c09" title="裁剪保留[start, end]" alt="" coords="359,104,440,129"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="280,77,346,98,345,103,279,83"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="440,114,481,114,481,119,440,119"/>
+<area shape="rect" id="Node000008" href="$sds_8c.html#a8658173ce436490570dc542671804d53" title=" " alt="" coords="357,153,441,179"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="301,163,344,163,344,169,301,169"/>
+<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="432,151,482,131,484,136,434,156"/>
+<area shape="rect" id="Node000009" href="$sds_8c.html#a1e9a82868f31ebd89c73459da97fae44" title=" " alt="" coords="489,153,565,179"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="441,163,476,163,476,169,441,169"/>
+</map>

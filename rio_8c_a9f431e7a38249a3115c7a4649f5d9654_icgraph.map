@@ -1,0 +1,17 @@
+<map id="rioTellFromFD" name="rioTellFromFD">
+<area shape="rect" id="Node000001" title=" " alt="" coords="792,31,904,56"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#afe3c5e9ccb22a7dc63c420e112079720" title=" " alt="" coords="636,31,744,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="779,46,744,46,744,41,779,41"/>
+<area shape="rect" id="Node000003" href="$net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="622,37,588,32,588,27,623,31"/>
+<area shape="rect" id="Node000007" href="$test__rio_8c.html#a008fdd4d20aae2f5447ff8cf2ee9f5ef" title=" " alt="" coords="462,55,553,80"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="623,55,553,64,552,59,622,50"/>
+<area shape="rect" id="Node000004" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
+<area shape="rect" id="Node000005" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
+<area shape="rect" id="Node000006" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" id="Node000008" href="$test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="283,55,337,80"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="448,70,337,70,337,65,448,65"/>
+</map>
