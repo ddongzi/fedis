@@ -155,7 +155,6 @@ struct redisServer {
     int isBgSaving; // 正在BGSAVE
 
     // 其他
-    char* neterr;
 
 };
 

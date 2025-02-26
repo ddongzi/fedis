@@ -3,11 +3,12 @@
 #include "redis.h"
 #include "rdb.h"
 #include "log.h"
-#include "io.h"
+#include "rio.h"
+
 static void repliReadHandler(aeEventLoop *el, int fd, void* privData);
 static void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
 
-void printAddrinfo(struct addrinfo *servinfo) {
+static void printAddrinfo(struct addrinfo *servinfo) {
     struct addrinfo *p;
     char ip[INET6_ADDRSTRLEN];
     for (p = servinfo; p != NULL; p = p->ai_next) {
@@ -30,14 +31,7 @@ void printAddrinfo(struct addrinfo *servinfo) {
         log_debug("Address: %s, Port: %d\n", ip, port);
     }
 }
-int anetSetError(char *err, const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    vsnprintf(err, 128, fmt, ap);
-    va_end(ap);
-    return NET_ERR;
-}
+
 
 /**
  * @brief 设置SO_REUSEADDR
@@ -46,16 +40,90 @@ int anetSetError(char *err, const char *fmt, ...)
  * @param [in] fd 
  * @return int 
  */
-int anetSetReuseAddr(char *err, int fd)
+static int anetSetReuseAddr(int fd)
 {
     int yes = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
-        anetSetError(err, "setsockopt SO_REUSEADDR: %s\n", strerror(errno));
-        log_debug("set reuse addr %s\n", strerror(errno));
+        log_error("set reuse addr, %s", strerror(errno));
         return NET_ERR;
     }
     return NET_OK;
 }
+
+/**
+ * @brief 设置非阻塞
+ * 
+ * @param [in] fd 
+ * @return int 
+ */
+static int anetNonBlock(int fd)
+{
+    int flags;
+    if ((flags = fcntl(fd, F_GETFL)) == -1) {
+        log_error("fcntl get (%d) failed", fd);
+        return NET_ERR;
+    }
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        log_error("fcntl set NONBLOCK (%d) failed", fd);
+        return NET_ERR;
+    }
+    return NET_OK;
+}
+
+/**
+ * @brief 启用nodelay ,保证实时性
+ * 
+ * @param [in] fd 
+ * @return int 
+ */
+static int anetEnableTcpNoDelay(int fd)
+{
+    int yes = 1;
+    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1) {
+        log_error("set tcp nodelay fd(%d) failed", fd);
+        return NET_ERR;
+    }
+    return NET_OK;
+
+}
+/**
+ * @brief 设置TCP保活
+ * 
+ * @param [in] err 
+ * @param [in] fd 
+ * @param [in] interval 
+ * @return int 
+ */
+static int anetKeepAlive(int fd, int interval)
+{
+    int yes = 1;
+    int keepidle = 3000;
+    int keepcnt = 5;
+    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes)) == -1) {
+        log_error("set tcp keepalive fd(%d) failed", fd);
+        return NET_ERR;
+    }
+    // 设置 TCP_KEEPIDLE（连接空闲时间）
+    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle)) == -1) {
+        log_error("set tcp keepidle fd(%d) failed", fd);
+        return NET_ERR;
+    }
+
+    // 设置 TCP_KEEPINTVL（探测包间隔时间）
+    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(interval)) == -1) {
+        log_error("set tcp keepintvl fd(%d) failed", fd);
+        return NET_ERR;
+    }
+
+    // 设置 TCP_KEEPCNT（最大探测次数）
+    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt)) == -1) {
+        log_error("set tcp keepcnt fd(%d) failed", fd);
+        return NET_ERR;
+    }
+    return NET_OK;
+}
+
+
 
 /**
  * @brief 创建TCP服务器
@@ -65,7 +133,7 @@ int anetSetReuseAddr(char *err, int fd)
  * @param [in] bindaddr 
  * @return int 监听fd
  */
-int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
+int anetTcpServer(int port, char *bindaddr, int backlog)
 {
     int sockfd, rv;
     char _port[6];  // 端口号最大65535
@@ -110,75 +178,15 @@ int anetTcpServer(char *err, int port, char *bindaddr, int backlog)
     return sockfd;
 }
 
-int anetNonBlock(char *err, int fd)
-{
-    int flags;
-    if ((flags = fcntl(fd, F_GETFL)) == -1) {
-        anetSetError(err, "fcntl(F_GETFL): %s", strerror(errno));
-        return NET_ERR;
-    }
-    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-        anetSetError(err, "fcntl(F_SETFL): %s", strerror(errno));
-        return NET_ERR;
-    }
-    return NET_OK;
 
-}
-int anetEnableTcpNoDelay(char *err, int fd)
-{
-    int yes = 1;
-    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1) {
-        anetSetError(err, "setsockopt(TCP_NODELAY): %s", strerror(errno));
-        return NET_ERR;
-    }
-    return NET_OK;
-
-}
 /**
- * @brief 保活
- * 
- * @param [in] err 
- * @param [in] fd 
- * @param [in] interval 
- * @return int 
- */
-int anetKeepAlive(char *err, int fd, int interval)
-{
-    int yes = 1;
-    int keepidle = 3000;
-    int keepcnt = 5;
-    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes)) == -1) {
-        anetSetError(err, "setsockopt(SO_KEEPALIVE): %s", strerror(errno));
-        return NET_ERR;
-    }
-    // 设置 TCP_KEEPIDLE（连接空闲时间）
-    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle)) == -1) {
-        anetSetError(err, "setsockopt(TCP_KEEPIDLE): %s", strerror(errno));
-        return NET_ERR;
-    }
-
-    // 设置 TCP_KEEPINTVL（探测包间隔时间）
-    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(interval)) == -1) {
-        anetSetError(err, "setsockopt(TCP_KEEPINTVL): %s", strerror(errno));
-        return NET_ERR;
-    }
-
-    // 设置 TCP_KEEPCNT（最大探测次数）
-    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt)) == -1) {
-        anetSetError(err, "setsockopt(TCP_KEEPCNT): %s", strerror(errno));
-        return NET_ERR;
-    }
-    return NET_OK;
-
-}
-/**
- * @brief 获取对端IP和端口
+ * @brief 获取客户fd的 ip和host
  * 
  * @param [in] fd 
- * @param [in] ip 值参数
+ * @param [out] ip 
  * @param [in] ip_len 
- * @param [in] port 值参数
- * @return int 
+ * @param [out] port 
+ * @return int [NET_OK, NET_ERR]
  */
 int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
 {
@@ -234,13 +242,11 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void* data )
 void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
 {
     redisClient* client = (redisClient*) privData;
-    char buf[1024];
-    memset(buf, 0, sizeof(buf));
-    int nread;
-    nread = read(fd, buf, sizeof(buf));
-    if (nread == -1) {
-        return;
-    }
+    char buf[1024] = {0};
+    // TODO 
+    rio r;
+    rioInitWithFD(&r, fd);
+    size_t nread = rioRead(&r, buf, sizeof(buf));
     if (nread == 0) {
         close(fd);
         return;
@@ -360,7 +366,7 @@ int anetIOWrite(int fd, char *buf, int len)
  * @param [in] host 
  * @param [in] port 
  */
-int anetTcpConnect(char* err, const char* host, int port)
+int anetTcpConnect(const char* host, int port)
 {
     int sockfd = -1;
     char portStr[6];
@@ -665,7 +671,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
  */
 void connectMaster()
 {
-    int fd = anetTcpConnect(server->neterr, server->masterhost, server->masterport);
+    int fd = anetTcpConnect(server->masterhost, server->masterport);
     if (fd < 0) {
         log_debug("connectMaster failed: %s\n", strerror(errno));
         return;

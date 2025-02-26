@@ -1,7 +1,7 @@
 /**
  * @file rio.h
  * @author your name (you@domain.com)
- * @brief 统一 I/O 抽象，支持文件、内存、网络。对应注册不同的操作函数
+ * @brief 统一 I/O 抽象，支持文件、内存、网络。提供读写、定位、flush
  * @version 0.1
  * @date 2025-02-25
  * 
@@ -12,7 +12,8 @@
 #define RIO_H
 #include <stdlib.h>
 #include <stdio.h>
-#include "sds.h"    
+#include "sds.h"
+// TODO 错误码只打印 或 内部属性，不作为返回值，不然影响语义    
 enum {
     RIO_OK = 0,       // 无错误
     RIO_ERR_NULL,     // 传入 NULL 指针
@@ -24,11 +25,12 @@ enum {
 };
 
 typedef struct rio {
-    size_t (*read)(struct rio *r, void *buf, size_t len);    // 读操作
-    size_t (*write)(struct rio *r, const void *buf, size_t len); // 写操作
+    ssize_t (*read)(struct rio *r, void *buf, size_t len);    // 读操作
+    ssize_t (*write)(struct rio *r, const void *buf, size_t len); // 写操作
     off_t (*tell)(struct rio *r);  // 当前文件偏移
     void (*flush)(struct rio *r);  // 刷新
     void *data;  // 数据源（File*, sds* , int fd, int socket）
+    int error;  // 错误码，非0表示有错误。
 }rio;
 
 // 向rio中写入 len长度的buf

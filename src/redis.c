@@ -437,12 +437,9 @@ void initServer()
     server->clientsToClose = listCreate();
 
     server->eventLoop = aeCreateEventLoop(server->maxclients);
-    server->neterr = calloc(1024, sizeof(char));
-    memset(server->neterr, 0, 1024);
     server->bindaddr = NULL;
-    int fd = anetTcpServer(server->neterr, server->port, server->bindaddr, server->maxclients);
+    int fd = anetTcpServer(server->port, server->bindaddr, server->maxclients);
     if (fd == -1) {
-        log_debug("NET Error: %s\n", server->neterr);
         exit(1);
     }
     log_debug("● create server, listening.....\n");

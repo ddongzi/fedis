@@ -12,16 +12,16 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
-
+#include "log.h"
 #include "rio.h"
 /* 基于文件io函数 */
-size_t rioReadFromFile(rio* rio, void* buf, size_t len)
+ssize_t rioReadFromFile(rio* rio, void* buf, size_t len)
 {
     FILE* fp = (FILE*)rio->data;
     return fread(buf, 1, len, fp);
 }
 
-size_t rioWriteToFile(rio* rio, const void* buf, size_t len)
+ssize_t rioWriteToFile(rio* rio, const void* buf, size_t len)
 {
     FILE* fp = (FILE*)rio->data;
     return fwrite(buf, 1, len, fp);
@@ -47,7 +47,7 @@ void rioFlushToFile(rio* rio)
  * @param [in] len 
  * @return size_t 读到的字节数
  */
-size_t rioReadFromBuffer(rio *r, void *buf, size_t len) {
+ssize_t rioReadFromBuffer(rio *r, void *buf, size_t len) {
     sds *b = (sds *)r->data;
     size_t nread = len > sdslen(b) ? sdslen(b) : len;
     memcpy(buf, b->buf, nread);
@@ -63,7 +63,7 @@ size_t rioReadFromBuffer(rio *r, void *buf, size_t len) {
  * @return size_t nwritten
  * @note 不产生错误，因为动态扩展
  */
-size_t rioWriteToBuffer(rio *r, const void *buf, size_t len) {
+ssize_t rioWriteToBuffer(rio *r, const void *buf, size_t len) {
     sds *b = (sds *)r->data;
     sdscatlen(b, buf, len);
     return len;
@@ -78,11 +78,11 @@ void rioFlushToBuffer(rio *r) {
 
 
 /*基于网络的 rio*/
-size_t rioReadFromSocket(rio *r, void *buf, size_t len) {
+ssize_t rioReadFromSocket(rio *r, void *buf, size_t len) {
     int fd = *(int *)r->data;
     return recv(fd, buf, len, 0);
 }
-size_t rioWriteToSocket(rio *r, const void *buf, size_t len) {
+ssize_t rioWriteToSocket(rio *r, const void *buf, size_t len) {
     int fd = *(int *)r->data;
     return send(fd, buf, len, 0);
 }
@@ -93,13 +93,14 @@ off_t rioTellFromSocket(rio *r) {
 void rioFlushToSocket(rio *r) {
     // 网络流通常不需要 flush
 }
+
 /*基于文件描述符的 rio*/
-size_t rioReadFromFD(rio *r, void *buf, size_t len) {
+ssize_t rioReadFromFD(rio *r, void *buf, size_t len) {
     int fd = *(int *)r->data;  // 获取 fd
     return read(fd, buf, len);
 }
 
-size_t rioWriteToFD(rio *r, const void *buf, size_t len) {
+ssize_t rioWriteToFD(rio *r, const void *buf, size_t len) {
     int fd = *(int *)r->data;  // 获取 fd
     return write(fd, buf, len);
 }
@@ -131,46 +132,83 @@ void rioInitWithBuf(rio *r, sds *buffer)
     r->data = buffer;
 }
 
-void rioInitWithSocket(rio *r, int fd) {
+void rioInitWithSocket(rio *r, int socket) {
     r->read = rioReadFromSocket;
     r->write = rioWriteToSocket;
     r->tell = rioTellFromSocket;
     r->flush = rioFlushToSocket;
     r->data = malloc(sizeof(int));
-    *(int *)r->data = fd;
+    *(int *)r->data = socket;
 }
 void rioInitWithFD(rio *r, int fd) {
-    int *fd_ptr = malloc(sizeof(int));
-    *fd_ptr = fd;
+
     
     r->read = rioReadFromFD;
     r->write = rioWriteToFD;
     r->tell = rioTellFromFD;
     r->flush = rioFlushToFD;
-    r->data = fd_ptr;
+    *(int *)r->data = fd;
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param [in] r 
+ * @param [in] buf 
+ * @param [in] len 
+ * @return size_t 写入的字节数。通过error检查是否出错还是真的0
+ */
 size_t rioWrite(rio *r, const void *buf, size_t len)
 {
     if (r == NULL || buf == NULL) {
-        return RIO_ERR_NULL;
+        return 0;
     }
-    return r->write(r, buf, len);
+    ssize_t nwritten = r->write(r, buf, len);
+    if (nwritten == -1) {
+        log_error("rioWrite error");
+        return 0; 
+    }
+    return (size_t)nwritten;
 }
+/**
+ * @brief 读到buf
+ * 
+ * @param [in] r 
+ * @param [in] buf 
+ * @param [in] len 
+ * @return size_t 读到的字节数。 通过error检查是否出错还是真的0
+ */
 size_t rioRead(rio *r, void *buf, size_t len)
 {
     if (r == NULL || buf == NULL) {
-        return RIO_ERR_NULL;
+        log_error(" rioread NULL pointer");
+        return 0;
     }
-    return r->read(r, buf, len);
+    ssize_t nread = r->read(r, buf, len);
+    if (nread == -1) {
+        log_error("rioread error");
+        return 0;
+    }
+    return (size_t)nread;
 }
+/**
+ * @brief 偏移量
+ * 
+ * @param [in] r 
+ * @return off_t 偏移量，0表示起点，（正确值，与读写不同），-1表示错误 且错误码标识
+ */
 off_t rioTell(rio *r)
 {
     if (r == NULL ) {
-        return RIO_ERR_NULL;
+        r->error = RIO_ERR_NULL;
+        return -1;
     }
-    return r->tell(r);
+    off_t offset = r->tell(r);
+    if (offset == -1) {
+        r->error = RIO_ERR_TELL;
+        return -1;
+    }
+    return offset;
 }
 void rioFlush(rio *r)
 {
