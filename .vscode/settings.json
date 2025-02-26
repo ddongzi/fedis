@@ -9,6 +9,7 @@
         "string_view": "c",
         "initializer_list": "c",
         "functional": "c",
-        "compare": "c"
+        "compare": "c",
+        "random": "c"
     }
 }
