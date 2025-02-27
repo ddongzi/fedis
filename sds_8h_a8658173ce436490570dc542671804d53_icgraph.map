@@ -1,17 +1,23 @@
 <map id="sdscatlen" name="sdscatlen">
-<area shape="rect" id="Node000001" title=" " alt="" coords="607,55,691,80"/>
-<area shape="rect" id="Node000002" href="$net_8c.html#a56bb0547aea12b8e175e789f7c908256" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="435,5,555,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="595,53,535,33,537,28,596,48"/>
-<area shape="rect" id="Node000003" href="$rio_8c.html#a14bc77d1ce22eaf97564ae3819f4f48c" title="向RIO追加写入len字节" alt="" coords="432,55,559,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="593,70,559,70,559,65,593,65"/>
-<area shape="rect" id="Node000007" href="$test__sds_8c.html#a198f864d881aa0a6ae3ceefde1e521a8" title=" " alt="" coords="437,104,553,129"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="596,87,537,106,535,101,595,82"/>
-<area shape="rect" id="Node000004" href="$rio_8c.html#aa1674b7200f7887010250df214ca2724" title="内存IO" alt="" coords="272,55,384,80"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="418,70,384,70,384,65,418,65"/>
-<area shape="rect" id="Node000005" href="$test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="108,55,224,80"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="258,70,224,70,224,65,258,65"/>
-<area shape="rect" id="Node000006" href="$test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,55,60,80"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="94,70,60,70,60,65,94,65"/>
-<area shape="rect" id="Node000008" href="$test__sds_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="301,104,355,129"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="424,119,356,119,356,114,424,114"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="741,55,825,80"/>
+<area shape="rect" id="Node000002" href="$redis_8c.html#a56bb0547aea12b8e175e789f7c908256" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="570,5,690,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="729,53,670,33,671,28,731,48"/>
+<area shape="rect" id="Node000006" href="$rio_8c.html#a14bc77d1ce22eaf97564ae3819f4f48c" title="向RIO追加写入len字节" alt="" coords="567,55,693,80"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="728,70,694,70,694,65,728,65"/>
+<area shape="rect" id="Node000010" href="$test__sds_8c.html#a198f864d881aa0a6ae3ceefde1e521a8" title=" " alt="" coords="572,104,688,129"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="731,87,671,106,670,101,729,82"/>
+<area shape="rect" id="Node000003" href="$repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="384,5,519,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="556,21,519,21,519,15,556,15"/>
+<area shape="rect" id="Node000004" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,5,336,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="371,21,336,21,336,15,371,15"/>
+<area shape="rect" id="Node000005" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,5,169,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="204,21,170,21,170,15,204,15"/>
+<area shape="rect" id="Node000007" href="$rio_8c.html#aa1674b7200f7887010250df214ca2724" title="内存IO" alt="" coords="395,55,507,80"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="553,70,508,70,508,65,553,65"/>
+<area shape="rect" id="Node000008" href="$test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="219,55,335,80"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="382,70,335,70,335,65,382,65"/>
+<area shape="rect" id="Node000009" href="$test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="60,55,115,80"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="205,70,115,70,115,65,205,65"/>
+<area shape="rect" id="Node000011" href="$test__sds_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="424,104,479,129"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="558,119,479,119,479,114,558,114"/>
 </map>

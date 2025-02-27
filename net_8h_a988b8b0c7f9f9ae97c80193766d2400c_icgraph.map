@@ -1,5 +1,5 @@
 <map id="anetFormatPeer" name="anetFormatPeer">
-<area shape="rect" id="Node000001" title="获取客户fd的 ip和host" alt="" coords="427,5,553,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="427,5,553,31"/>
 <area shape="rect" id="Node000002" href="$net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="413,21,379,21,379,15,413,15"/>
 <area shape="rect" id="Node000003" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>

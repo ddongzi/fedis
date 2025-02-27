@@ -112,7 +112,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="center"><img src="rio_8h__dep__incl.png" border="0" usemap="#ainclude_2rio_8hdep" alt=""/></div>
 <map name="ainclude_2rio_8hdep" id="ainclude_2rio_8hdep">
 <area shape="rect" title="统一 I/O 抽象，支持文件、内存、网络。提供读写、定位、flush" alt="" coords="93,5,195,31"/>
-<area shape="rect" href="net_8c.html" title=" " alt="" coords="5,79,83,104"/>
+<area shape="rect" href="net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="5,79,83,104"/>
 <area shape="poly" title=" " alt="" coords="118,41,62,81,59,76,115,36"/>
 <area shape="rect" href="rio_8c.html" title="统一 I/O 抽象，支持文件、内存、网络" alt="" coords="107,79,181,104"/>
 <area shape="poly" title=" " alt="" coords="147,44,147,79,141,79,141,44"/>
@@ -492,11 +492,44 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="rio_8h_a880129fb8211463940a28b0951528e51_icgraph.png" border="0" usemap="#ario_8h_a880129fb8211463940a28b0951528e51_icgraph" alt=""/></div>
 <map name="ario_8h_a880129fb8211463940a28b0951528e51_icgraph" id="ario_8h_a880129fb8211463940a28b0951528e51_icgraph">
-<area shape="rect" title="网络IO， send,recv" alt="" coords="276,5,409,31"/>
-<area shape="rect" href="test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="108,5,228,31"/>
-<area shape="poly" title=" " alt="" coords="262,21,228,21,228,15,262,15"/>
-<area shape="rect" href="test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" title="网络IO， send,recv" alt="" coords="813,229,947,255"/>
+<area shape="rect" href="repli_8c.html#a6471e3fefda37ec6c94f467a3c140f59" title="向master写" alt="" coords="628,56,765,81"/>
+<area shape="poly" title=" " alt="" coords="853,222,709,83,713,79,857,218"/>
+<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="631,204,762,229"/>
+<area shape="poly" title=" " alt="" coords="799,234,762,228,763,223,800,228"/>
+<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="437,255,580,280"/>
+<area shape="poly" title=" " alt="" coords="800,250,581,265,580,260,800,245"/>
+<area shape="rect" href="test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="637,305,757,331"/>
+<area shape="poly" title=" " alt="" coords="837,262,729,308,727,303,835,258"/>
+<area shape="rect" href="net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="244,5,363,31"/>
+<area shape="poly" title=" " alt="" coords="630,56,580,46,464,32,363,24,363,19,465,27,580,41,631,50"/>
+<area shape="rect" href="repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="441,56,576,81"/>
+<area shape="poly" title=" " alt="" coords="614,71,576,71,576,66,614,66"/>
+<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,31,169,56"/>
+<area shape="poly" title=" " alt="" coords="230,29,170,36,169,31,230,24"/>
+<area shape="poly" title=" " alt="" coords="442,55,355,33,356,28,444,50"/>
+<area shape="poly" title=" " alt="" coords="636,236,557,257,556,252,635,230"/>
+<area shape="poly" title=" " alt="" coords="495,243,479,208,456,168,426,129,388,96,335,70,278,54,221,46,169,43,170,38,222,41,279,49,337,66,391,92,430,125,461,165,484,206,500,240"/>
+<area shape="rect" href="redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="233,107,373,132"/>
+<area shape="poly" title=" " alt="" coords="489,245,446,194,419,168,388,146,364,135,366,130,391,141,422,164,450,191,493,241"/>
+<area shape="rect" href="redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="235,156,372,181"/>
+<area shape="poly" title=" " alt="" coords="478,249,437,221,388,195,357,184,359,179,390,190,439,217,481,244"/>
+<area shape="rect" href="redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="234,205,373,231"/>
+<area shape="poly" title=" " alt="" coords="441,254,356,233,358,228,443,249"/>
+<area shape="rect" href="redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="225,255,382,280"/>
+<area shape="poly" title=" " alt="" coords="424,270,382,270,382,265,424,265"/>
+<area shape="rect" href="redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="232,304,375,329"/>
+<area shape="poly" title=" " alt="" coords="443,286,358,307,356,301,441,281"/>
+<area shape="rect" href="redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="218,353,389,379"/>
+<area shape="poly" title=" " alt="" coords="454,288,439,296,425,308,416,320,406,332,391,344,366,356,363,351,388,340,402,328,411,317,421,304,436,292,451,283"/>
+<area shape="rect" href="redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="217,403,389,428"/>
+<area shape="poly" title=" " alt="" coords="449,289,439,296,422,320,416,344,410,369,391,393,372,405,369,400,388,389,405,366,411,343,418,317,435,292,446,284"/>
+<area shape="rect" href="redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="235,452,371,477"/>
+<area shape="poly" title=" " alt="" coords="447,289,439,296,426,314,419,332,417,368,414,405,406,424,391,443,373,455,370,451,388,439,401,421,408,404,411,368,414,331,421,311,435,292,444,285"/>
+<area shape="rect" href="redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="230,501,377,527"/>
+<area shape="poly" title=" " alt="" coords="446,289,439,296,423,320,416,344,415,368,417,393,419,417,417,442,409,467,391,492,376,503,373,499,387,488,404,465,412,441,414,417,412,393,410,369,411,343,418,318,435,292,442,286"/>
+<area shape="rect" href="test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="481,305,536,331"/>
+<area shape="poly" title=" " alt="" coords="622,321,536,321,536,315,622,315"/>
 </map>
 </div>
 
@@ -648,20 +681,53 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="rio_8h_a5bc2c1b0deb64981df5b8ee10d6b8910_icgraph.png" border="0" usemap="#ario_8h_a5bc2c1b0deb64981df5b8ee10d6b8910_icgraph" alt=""/></div>
 <map name="ario_8h_a5bc2c1b0deb64981df5b8ee10d6b8910_icgraph" id="ario_8h_a5bc2c1b0deb64981df5b8ee10d6b8910_icgraph">
-<area shape="rect" title=" " alt="" coords="276,80,351,105"/>
-<area shape="rect" href="test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="110,5,226,31"/>
-<area shape="poly" title=" " alt="" coords="280,75,227,44,202,33,204,28,229,40,283,70"/>
-<area shape="rect" href="test__rio_8c.html#a008fdd4d20aae2f5447ff8cf2ee9f5ef" title=" " alt="" coords="123,55,213,80"/>
-<area shape="poly" title=" " alt="" coords="262,87,213,78,214,73,263,81"/>
-<area shape="rect" href="test__rio_8c.html#af6815daa05c57aa681e0c63836bba020" title=" " alt="" coords="119,104,217,129"/>
-<area shape="poly" title=" " alt="" coords="263,104,218,111,217,106,262,98"/>
-<area shape="rect" href="test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="108,153,228,179"/>
-<area shape="poly" title=" " alt="" coords="281,115,229,143,202,156,200,151,227,138,278,110"/>
-<area shape="rect" href="test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,80,60,105"/>
-<area shape="poly" title=" " alt="" coords="121,39,109,44,52,82,49,78,107,40,118,34"/>
-<area shape="poly" title=" " alt="" coords="110,81,61,90,60,85,109,76"/>
-<area shape="poly" title=" " alt="" coords="105,108,60,100,61,95,106,103"/>
-<area shape="poly" title=" " alt="" coords="121,150,107,143,50,108,53,103,109,138,123,145"/>
+<area shape="rect" title=" " alt="" coords="813,305,888,331"/>
+<area shape="rect" href="repli_8c.html#a6471e3fefda37ec6c94f467a3c140f59" title="向master写" alt="" coords="628,56,765,81"/>
+<area shape="poly" title=" " alt="" coords="832,295,704,83,708,80,837,292"/>
+<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="631,204,762,229"/>
+<area shape="poly" title=" " alt="" coords="824,298,764,251,728,232,730,227,767,246,827,294"/>
+<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="437,255,580,280"/>
+<area shape="poly" title=" " alt="" coords="799,304,765,295,669,281,580,273,581,268,669,276,766,290,801,299"/>
+<area shape="rect" href="test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="639,305,755,331"/>
+<area shape="poly" title=" " alt="" coords="799,321,755,321,755,315,799,315"/>
+<area shape="rect" href="test__rio_8c.html#a008fdd4d20aae2f5447ff8cf2ee9f5ef" title=" " alt="" coords="651,355,742,380"/>
+<area shape="poly" title=" " alt="" coords="801,337,738,357,736,352,799,331"/>
+<area shape="rect" href="test__rio_8c.html#af6815daa05c57aa681e0c63836bba020" title=" " alt="" coords="647,404,746,429"/>
+<area shape="poly" title=" " alt="" coords="830,343,802,369,767,395,743,406,740,402,764,390,798,365,827,339"/>
+<area shape="rect" href="test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="637,453,757,479"/>
+<area shape="poly" title=" " alt="" coords="841,344,812,394,791,421,767,444,747,456,745,451,764,440,787,417,807,392,836,342"/>
+<area shape="rect" href="net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="244,5,363,31"/>
+<area shape="poly" title=" " alt="" coords="630,56,580,46,464,32,363,24,363,19,465,27,580,41,631,50"/>
+<area shape="rect" href="repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="441,56,576,81"/>
+<area shape="poly" title=" " alt="" coords="614,71,576,71,576,66,614,66"/>
+<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,31,169,56"/>
+<area shape="poly" title=" " alt="" coords="230,29,170,36,169,31,230,24"/>
+<area shape="poly" title=" " alt="" coords="442,55,355,33,356,28,444,50"/>
+<area shape="poly" title=" " alt="" coords="636,236,557,257,556,252,635,230"/>
+<area shape="poly" title=" " alt="" coords="495,243,479,208,456,168,426,129,388,96,335,70,278,54,221,46,169,43,170,38,222,41,279,49,337,66,391,92,430,125,461,165,484,206,500,240"/>
+<area shape="rect" href="redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="233,107,373,132"/>
+<area shape="poly" title=" " alt="" coords="489,245,446,194,419,168,388,146,364,135,366,130,391,141,422,164,450,191,493,241"/>
+<area shape="rect" href="redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="235,156,372,181"/>
+<area shape="poly" title=" " alt="" coords="478,249,437,221,388,195,357,184,359,179,390,190,439,217,481,244"/>
+<area shape="rect" href="redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="234,205,373,231"/>
+<area shape="poly" title=" " alt="" coords="441,254,356,233,358,228,443,249"/>
+<area shape="rect" href="redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="225,255,382,280"/>
+<area shape="poly" title=" " alt="" coords="424,270,382,270,382,265,424,265"/>
+<area shape="rect" href="redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="232,304,375,329"/>
+<area shape="poly" title=" " alt="" coords="443,286,358,307,356,301,441,281"/>
+<area shape="rect" href="redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="218,353,389,379"/>
+<area shape="poly" title=" " alt="" coords="481,290,439,317,390,343,356,356,354,351,388,338,436,313,478,286"/>
+<area shape="rect" href="redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="217,403,389,428"/>
+<area shape="poly" title=" " alt="" coords="493,293,450,344,422,371,391,394,366,405,364,400,388,389,419,367,446,340,489,290"/>
+<area shape="rect" href="redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="235,452,371,477"/>
+<area shape="poly" title=" " alt="" coords="492,293,440,367,419,408,409,425,391,443,370,454,368,450,388,439,405,422,415,406,435,365,487,290"/>
+<area shape="rect" href="redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="230,501,377,527"/>
+<area shape="poly" title=" " alt="" coords="490,292,465,327,440,367,427,402,422,433,414,462,391,492,374,503,371,499,388,488,409,460,417,432,422,401,435,365,460,324,486,289"/>
+<area shape="rect" href="test__rio_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="481,379,536,404"/>
+<area shape="poly" title=" " alt="" coords="647,338,629,344,537,382,535,377,627,340,645,333"/>
+<area shape="poly" title=" " alt="" coords="638,377,537,391,536,385,637,372"/>
+<area shape="poly" title=" " alt="" coords="633,411,536,398,537,392,634,406"/>
+<area shape="poly" title=" " alt="" coords="644,451,627,444,535,406,537,401,629,440,646,446"/>
 </map>
 </div>
 

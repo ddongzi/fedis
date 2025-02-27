@@ -1,0 +1,9 @@
+<map id="handleCommandPropagate" name="handleCommandPropagate">
+<area shape="rect" id="Node000001" title="命令传播：作为正常服务器处理命令" alt="" coords="567,5,765,31"/>
+<area shape="rect" id="Node000002" href="$repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="384,5,519,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="553,21,519,21,519,15,553,15"/>
+<area shape="rect" id="Node000003" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,5,336,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="371,21,336,21,336,15,371,15"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,5,169,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="204,21,170,21,170,15,204,15"/>
+</map>

@@ -1,6 +1,6 @@
 <map id="include/rio.h" name="include/rio.h">
 <area shape="rect" id="Node000001" title="统一 I/O 抽象，支持文件、内存、网络。提供读写、定位、flush" alt="" coords="93,5,195,31"/>
-<area shape="rect" id="Node000002" href="$net_8c.html" title=" " alt="" coords="5,79,83,104"/>
+<area shape="rect" id="Node000002" href="$net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="5,79,83,104"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,41,62,81,59,76,115,36"/>
 <area shape="rect" id="Node000003" href="$rio_8c.html" title="统一 I/O 抽象，支持文件、内存、网络" alt="" coords="107,79,181,104"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="147,44,147,79,141,79,141,44"/>

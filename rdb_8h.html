@@ -85,7 +85,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="center"><img src="rdb_8h__dep__incl.png" border="0" usemap="#ainclude_2rdb_8hdep" alt=""/></div>
 <map name="ainclude_2rdb_8hdep" id="ainclude_2rdb_8hdep">
 <area shape="rect" title=" " alt="" coords="92,5,199,31"/>
-<area shape="rect" href="net_8c.html" title=" " alt="" coords="5,79,83,104"/>
+<area shape="rect" href="net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="5,79,83,104"/>
 <area shape="poly" title=" " alt="" coords="119,41,62,81,59,76,116,36"/>
 <area shape="rect" href="rdb_8c.html" title=" " alt="" coords="107,79,184,104"/>
 <area shape="poly" title=" " alt="" coords="148,44,148,79,143,79,143,44"/>
@@ -464,11 +464,17 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="rdb_8h_a13000232d50f2ac30a217eff8d6b09a9_icgraph.png" border="0" usemap="#ardb_8h_a13000232d50f2ac30a217eff8d6b09a9_icgraph" alt=""/></div>
 <map name="ardb_8h_a13000232d50f2ac30a217eff8d6b09a9_icgraph" id="ardb_8h_a13000232d50f2ac30a217eff8d6b09a9_icgraph">
-<area shape="rect" title="将本地.rdb加载到数据库" alt="" coords="241,5,316,31"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" title="将本地.rdb加载到数据库" alt="" coords="567,31,641,56"/>
+<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="409,5,494,31"/>
+<area shape="poly" title=" " alt="" coords="553,38,494,28,495,22,554,32"/>
+<area shape="rect" href="repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="384,55,519,80"/>
+<area shape="poly" title=" " alt="" coords="554,54,520,59,519,54,553,49"/>
+<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="249,5,304,31"/>
+<area shape="poly" title=" " alt="" coords="395,21,304,21,304,15,395,15"/>
+<area shape="rect" href="net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,55,336,80"/>
+<area shape="poly" title=" " alt="" coords="371,70,336,70,336,65,371,65"/>
+<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,55,169,80"/>
+<area shape="poly" title=" " alt="" coords="204,70,170,70,170,65,204,65"/>
 </map>
 </div>
 
@@ -501,6 +507,20 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>将主的RDB文件复制为自己的RDB </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="rdb_8h_a7963649cd6a7bea26109233c8afc1af8_icgraph.png" border="0" usemap="#ardb_8h_a7963649cd6a7bea26109233c8afc1af8_icgraph" alt=""/></div>
+<map name="ardb_8h_a7963649cd6a7bea26109233c8afc1af8_icgraph" id="ardb_8h_a7963649cd6a7bea26109233c8afc1af8_icgraph">
+<area shape="rect" title="将主的RDB文件复制为自己的RDB" alt="" coords="567,5,685,31"/>
+<area shape="rect" href="repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="384,5,519,31"/>
+<area shape="poly" title=" " alt="" coords="553,21,519,21,519,15,553,15"/>
+<area shape="rect" href="net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,5,336,31"/>
+<area shape="poly" title=" " alt="" coords="371,21,336,21,336,15,371,15"/>
+<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,5,169,31"/>
+<area shape="poly" title=" " alt="" coords="204,21,170,21,170,15,204,15"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -532,9 +552,19 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="rdb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph.png" border="0" usemap="#ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph" alt=""/></div>
 <map name="ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph" id="ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph">
-<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,5,136,31"/>
-<area shape="rect" href="util_8c.html#ac541b19430641726f2737b355cc26277" title=" " alt="" coords="184,5,259,31"/>
-<area shape="poly" title=" " alt="" coords="136,15,170,15,170,21,136,21"/>
+<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,105,136,131"/>
+<area shape="rect" href="rio_8c.html#a880129fb8211463940a28b0951528e51" title="网络IO， send,recv" alt="" coords="184,80,317,105"/>
+<area shape="poly" title=" " alt="" coords="136,106,170,101,171,107,136,111"/>
+<area shape="rect" href="rio_8c.html#a5bc2c1b0deb64981df5b8ee10d6b8910" title=" " alt="" coords="213,129,288,155"/>
+<area shape="poly" title=" " alt="" coords="136,124,200,133,199,138,136,129"/>
+<area shape="rect" href="rio_8c.html#a0dae644aa8c703156845104e6a835aaf" title=" " alt="" coords="374,5,505,31"/>
+<area shape="poly" title=" " alt="" coords="278,77,364,40,383,33,385,38,366,44,280,82"/>
+<area shape="rect" href="rio_8c.html#a08ec2f4753139c71664b6b8948f2771f" title=" " alt="" coords="365,55,513,80"/>
+<area shape="poly" title=" " alt="" coords="317,81,351,76,352,82,318,86"/>
+<area shape="rect" href="rio_8c.html#a1bf3f5272bd3ca2ba26dde068e439a5c" title=" " alt="" coords="371,104,508,129"/>
+<area shape="poly" title=" " alt="" coords="318,98,357,104,357,109,317,104"/>
+<area shape="rect" href="rio_8c.html#acb8195a4e9eefe2912e1da9b98b55dce" title=" " alt="" coords="374,153,505,179"/>
+<area shape="poly" title=" " alt="" coords="290,103,318,114,366,138,386,146,384,151,364,143,316,119,288,108"/>
 </map>
 </div>
 <div class="dynheader">

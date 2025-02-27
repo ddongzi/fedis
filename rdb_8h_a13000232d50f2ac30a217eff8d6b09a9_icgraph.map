@@ -1,7 +1,13 @@
 <map id="rdbLoad" name="rdbLoad">
-<area shape="rect" id="Node000001" title="将本地.rdb加载到数据库" alt="" coords="241,5,316,31"/>
-<area shape="rect" id="Node000002" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" id="Node000003" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" id="Node000001" title="将本地.rdb加载到数据库" alt="" coords="567,31,641,56"/>
+<area shape="rect" id="Node000002" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="409,5,494,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="553,38,494,28,495,22,554,32"/>
+<area shape="rect" id="Node000004" href="$repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="384,55,519,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="554,54,520,59,519,54,553,49"/>
+<area shape="rect" id="Node000003" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="249,5,304,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="395,21,304,21,304,15,395,15"/>
+<area shape="rect" id="Node000005" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,55,336,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="371,70,336,70,336,65,371,65"/>
+<area shape="rect" id="Node000006" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,55,169,80"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="204,70,170,70,170,65,204,65"/>
 </map>

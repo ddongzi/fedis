@@ -1,12 +1,18 @@
 <map id="_rdbLoadStringObject" name="_rdbLoadStringObject">
-<area shape="rect" id="Node000001" title=" " alt="" coords="535,31,696,56"/>
-<area shape="rect" id="Node000002" href="$rdb_8c.html#a1e458c716741e44989d0e4708a6660a6" title=" " alt="" coords="364,5,487,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="521,33,487,29,487,24,521,28"/>
-<area shape="rect" id="Node000003" href="$rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title="将本地.rdb加载到数据库" alt="" coords="241,31,316,56"/>
-<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="521,46,316,46,316,41,521,41"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="351,34,317,40,316,34,350,28"/>
-<area shape="rect" id="Node000004" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,31,193,56"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="228,46,193,46,193,41,228,41"/>
-<area shape="rect" id="Node000005" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,31,60,56"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="94,46,60,46,60,41,94,41"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="860,31,1021,56"/>
+<area shape="rect" id="Node000002" href="$rdb_8c.html#a1e458c716741e44989d0e4708a6660a6" title=" " alt="" coords="689,5,812,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="846,33,812,29,813,24,847,28"/>
+<area shape="rect" id="Node000003" href="$rdb_8c.html#a13000232d50f2ac30a217eff8d6b09a9" title="将本地.rdb加载到数据库" alt="" coords="567,31,641,56"/>
+<area shape="poly" id="edge8_Node000001_Node000003" title=" " alt="" coords="846,46,641,46,641,41,846,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="676,34,642,40,641,34,675,28"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="409,5,494,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="553,38,494,28,495,22,554,32"/>
+<area shape="rect" id="Node000006" href="$repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="384,55,519,80"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="554,54,520,59,519,54,553,49"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="249,5,304,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="395,21,304,21,304,15,395,15"/>
+<area shape="rect" id="Node000007" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,55,336,80"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="371,70,336,70,336,65,371,65"/>
+<area shape="rect" id="Node000008" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,55,169,80"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="204,70,170,70,170,65,204,65"/>
 </map>

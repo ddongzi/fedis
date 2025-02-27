@@ -1,0 +1,18 @@
+<map id="getRespLength" name="getRespLength">
+<area shape="rect" id="Node000001" title="获取buf内RESP的长度， buf以RESP开头" alt="" coords="765,31,884,56"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="854,20,845,12,825,9,807,11,798,16,796,22,801,29,797,32,791,22,794,13,805,6,825,4,848,7,858,16"/>
+<area shape="rect" id="Node000002" href="$redis_8c.html#a56bb0547aea12b8e175e789f7c908256" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="596,5,716,31"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="752,35,716,30,717,24,752,30"/>
+<area shape="rect" id="Node000006" href="$test__resp_8c.html#a979c5fcc0ad2c5d31d9d260eb86c49d7" title=" " alt="" coords="595,55,717,80"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="752,56,718,61,718,56,751,51"/>
+<area shape="rect" id="Node000003" href="$repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="398,5,533,31"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="582,21,533,21,533,15,582,15"/>
+<area shape="rect" id="Node000004" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,5,336,31"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="385,21,336,21,336,15,385,15"/>
+<area shape="rect" id="Node000005" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,5,169,31"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="204,21,170,21,170,15,204,15"/>
+<area shape="rect" id="Node000007" href="$test__resp_8c.html#a7417aacf0adb272e7e522260b0d3f30b" title=" " alt="" coords="384,55,547,80"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="581,70,547,70,547,65,581,65"/>
+<area shape="rect" id="Node000008" href="$test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="249,55,304,80"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="370,70,304,70,304,65,370,65"/>
+</map>

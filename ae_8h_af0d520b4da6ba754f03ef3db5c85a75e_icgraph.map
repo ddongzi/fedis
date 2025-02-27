@@ -1,25 +1,33 @@
 <map id="aeDeleteFileEvent" name="aeDeleteFileEvent">
-<area shape="rect" id="Node000001" title="删除fd上的mask事件监听" alt="" coords="416,228,557,253"/>
-<area shape="rect" id="Node000002" href="$net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="225,228,368,253"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="402,243,368,243,368,238,402,238"/>
-<area shape="rect" id="Node000003" href="$redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="21,5,161,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="285,216,270,178,247,131,215,84,176,44,156,33,159,28,179,40,220,81,251,128,275,175,290,214"/>
-<area shape="rect" id="Node000004" href="$redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="23,55,160,80"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="280,217,239,155,210,122,176,94,154,82,156,78,179,89,213,118,243,152,285,214"/>
-<area shape="rect" id="Node000005" href="$redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="22,104,161,129"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="272,220,230,180,176,143,149,132,151,127,179,138,233,176,276,216"/>
-<area shape="rect" id="Node000006" href="$redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="13,153,170,179"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="255,225,176,193,141,181,143,176,178,187,257,220"/>
-<area shape="rect" id="Node000007" href="$redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="20,203,163,228"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="211,233,163,227,163,221,212,228"/>
-<area shape="rect" id="Node000008" href="$redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="6,252,177,277"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="212,253,177,257,176,252,211,248"/>
-<area shape="rect" id="Node000009" href="$redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="5,301,177,327"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="255,261,178,291,139,304,137,299,176,286,253,256"/>
-<area shape="rect" id="Node000010" href="$redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="23,351,159,376"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="275,266,232,304,179,340,148,353,146,348,176,336,229,300,271,262"/>
-<area shape="rect" id="Node000011" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="9,400,173,425"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="284,267,242,328,213,361,179,390,153,402,151,398,176,385,209,357,238,325,280,264"/>
-<area shape="rect" id="Node000012" href="$redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="18,449,165,475"/>
-<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="289,267,274,305,251,352,219,399,179,439,156,452,154,447,176,435,215,395,246,349,269,303,284,265"/>
+<area shape="rect" id="Node000001" title="删除fd上的mask事件监听" alt="" coords="795,150,936,175"/>
+<area shape="rect" id="Node000002" href="$repli_8c.html#a6471e3fefda37ec6c94f467a3c140f59" title="向master写" alt="" coords="607,24,744,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="832,145,694,52,697,48,835,140"/>
+<area shape="rect" id="Node000006" href="$net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="604,274,747,299"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="835,185,698,276,695,271,832,181"/>
+<area shape="rect" id="Node000003" href="$net_8c.html#a2133ebd4a2431ba8fdbeecb7961fb722" title="收到SLAVEOF命令，开始连接master，切换到CONNECTING" alt="" coords="217,24,336,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="612,24,556,14,470,8,384,14,321,27,320,22,384,9,470,3,556,9,613,19"/>
+<area shape="rect" id="Node000005" href="$repli_8c.html#ad3ec7ed62cce88e10768787dd7f13276" title=" " alt="" coords="403,24,537,50"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="593,40,537,40,537,34,593,34"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,50,169,75"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="204,49,170,54,169,49,204,44"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="389,40,336,40,336,34,389,34"/>
+<area shape="poly" id="edge15_Node000006_Node000004" title=" " alt="" coords="662,262,647,227,624,187,593,147,555,115,525,103,485,92,382,77,270,69,170,66,170,61,270,64,383,72,486,87,527,98,557,111,597,143,628,184,652,225,667,260"/>
+<area shape="rect" id="Node000007" href="$redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="400,126,540,151"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="655,264,613,213,585,187,555,165,531,154,533,149,557,160,589,183,617,210,659,261"/>
+<area shape="rect" id="Node000008" href="$redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="401,175,539,200"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="645,268,603,240,555,214,524,203,526,198,557,209,606,236,648,263"/>
+<area shape="rect" id="Node000009" href="$redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="401,224,539,250"/>
+<area shape="poly" id="edge9_Node000006_Node000009" title=" " alt="" coords="608,273,523,252,524,247,609,268"/>
+<area shape="rect" id="Node000010" href="$redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="391,274,549,299"/>
+<area shape="poly" id="edge10_Node000006_Node000010" title=" " alt="" coords="590,289,549,289,549,284,590,284"/>
+<area shape="rect" id="Node000011" href="$redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="399,323,541,348"/>
+<area shape="poly" id="edge11_Node000006_Node000011" title=" " alt="" coords="609,305,524,326,523,320,608,300"/>
+<area shape="rect" id="Node000012" href="$redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="385,372,555,398"/>
+<area shape="poly" id="edge12_Node000006_Node000012" title=" " alt="" coords="647,309,606,336,557,362,523,375,521,370,555,357,603,332,644,305"/>
+<area shape="rect" id="Node000013" href="$redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="384,422,556,447"/>
+<area shape="poly" id="edge13_Node000006_Node000013" title=" " alt="" coords="659,312,617,362,589,389,557,411,530,424,528,419,555,407,585,385,613,359,655,309"/>
+<area shape="rect" id="Node000014" href="$redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="402,471,538,496"/>
+<area shape="poly" id="edge14_Node000006_Node000014" title=" " alt="" coords="666,313,649,346,625,386,595,426,558,461,534,473,531,469,554,456,591,423,621,383,645,344,661,311"/>
+<area shape="rect" id="Node000015" href="$redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="397,520,543,546"/>
+<area shape="poly" id="edge16_Node000006_Node000015" title=" " alt="" coords="670,313,656,356,633,409,601,463,581,488,558,510,536,523,533,518,554,506,577,484,596,460,628,406,651,354,665,311"/>
 </map>

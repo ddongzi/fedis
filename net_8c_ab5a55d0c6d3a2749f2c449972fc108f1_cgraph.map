@@ -1,5 +1,15 @@
 <map id="saveRDBToSlave" name="saveRDBToSlave">
-<area shape="rect" id="Node000001" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,5,136,31"/>
-<area shape="rect" id="Node000002" href="$util_8c.html#ac541b19430641726f2737b355cc26277" title=" " alt="" coords="184,5,259,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,15,170,15,170,21,136,21"/>
+<area shape="rect" id="Node000001" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,105,136,131"/>
+<area shape="rect" id="Node000002" href="$rio_8c.html#a880129fb8211463940a28b0951528e51" title="网络IO， send,recv" alt="" coords="184,80,317,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,106,170,101,171,107,136,111"/>
+<area shape="rect" id="Node000007" href="$rio_8c.html#a5bc2c1b0deb64981df5b8ee10d6b8910" title=" " alt="" coords="213,129,288,155"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="136,124,200,133,199,138,136,129"/>
+<area shape="rect" id="Node000003" href="$rio_8c.html#a0dae644aa8c703156845104e6a835aaf" title=" " alt="" coords="374,5,505,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="278,77,364,40,383,33,385,38,366,44,280,82"/>
+<area shape="rect" id="Node000004" href="$rio_8c.html#a08ec2f4753139c71664b6b8948f2771f" title=" " alt="" coords="365,55,513,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="317,81,351,76,352,82,318,86"/>
+<area shape="rect" id="Node000005" href="$rio_8c.html#a1bf3f5272bd3ca2ba26dde068e439a5c" title=" " alt="" coords="371,104,508,129"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="318,98,357,104,357,109,317,104"/>
+<area shape="rect" id="Node000006" href="$rio_8c.html#acb8195a4e9eefe2912e1da9b98b55dce" title=" " alt="" coords="374,153,505,179"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="290,103,318,114,366,138,386,146,384,151,364,143,316,119,288,108"/>
 </map>
