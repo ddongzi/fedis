@@ -13,6 +13,39 @@ struct redisServer* server;
 struct sharedObjects shared;
 
 /**
+ * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
+ * @param [in] client 
+ * @return 
+ */
+void readToReadBuf(redisClient* client) 
+{
+    char temp_buf[1]; // 逐字节读取，确保精确性
+    ssize_t n;
+
+    sdsclear(client->readBuf);
+
+    printf("\n to read buf\n");
+    while (1) {
+        // 没必要RIO，
+        n = read(client->fd, temp_buf, sizeof(temp_buf));
+        if (n <= 0) {
+            log_debug("read failed or finished");
+            if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
+            return;
+        }
+        sdscatlen(client->readBuf, temp_buf, n);
+
+        ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
+        if (resp_len != -1) {
+            // 读到一个RESP协议
+            printf("get resp return");
+            break;
+        }
+    }
+    printf("\nread buf finished,  %s\n", client->readBuf->buf);
+}
+
+/**
  * @brief 准备buf，向client写, 后续write类handler处理
  * 
  * @param [in] client 

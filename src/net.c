@@ -1,10 +1,22 @@
-#include "net.h"
+
+/**
+ * @file net.c
+ * @author your name (you@domain.com)
+ * @brief TCP连接配置，RESP协议
+ * @version 0.1
+ * @date 2025-02-27
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include <stdarg.h>
 #include "redis.h"
 #include "rdb.h"
 #include "log.h"
 #include "rio.h"
+#include <sys/stat.h>
 
+#include <sys/sendfile.h>
 static void repliReadHandler(aeEventLoop *el, int fd, void* privData);
 static void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
 
@@ -188,7 +200,7 @@ int anetTcpServer(int port, char *bindaddr, int backlog)
  * @param [out] port 
  * @return int [NET_OK, NET_ERR]
  */
-int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
+static int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
 {
     struct sockaddr_storage sa;
     socklen_t salen = sizeof(sa);
@@ -243,12 +255,11 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
 {
     redisClient* client = (redisClient*) privData;
     char buf[1024] = {0};
-    // TODO 
     rio r;
     rioInitWithFD(&r, fd);
     size_t nread = rioRead(&r, buf, sizeof(buf));
-    if (nread == 0) {
-        close(fd);
+    if (nread == 0 ) {
+        if (r.error) close(fd);
         return;
     }
     log_debug("deal query from client, %s", respParse(buf));
@@ -267,33 +278,49 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData )
  */
 void saveRDBToSlave(redisClient* client)
 {
-    FILE* fp = fopen(server->rdbFileName, "rb");
-    if (!fp) {
-        log_error("can't open RDB file: %s", strerror(errno));
+    struct stat st;
+    long rdb_len ;
+    char length_buf[64];
+    size_t length_len;
+    rio sio;
+    size_t nwritten = 0;
+
+    if (server->rdbfd == -1) {
+        server->rdbfd = open(server->rdbFileName, O_RDONLY);
+        if (server->rdbfd == -1) {
+            log_error("Open RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
+            return;
+        }
+    }
+    if (fstat(server->rdbfd, &st) == -1) {
+        log_error("Stat RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
         return;
     }
-    // 获取RDB长度
-    fseek(fp, 0, SEEK_END);
-    long rdb_len = ftell(fp);
-    rewind(fp);
+
+    rdb_len = st.st_size;
 
     // 发送 $length\r\n
-    char length_buf[64];
     sprintf(length_buf, "$%lu\r\n", rdb_len);
-    size_t length_len = strlen(length_buf);
-    write(client->fd, length_buf, length_len);
+    length_len = strlen(length_buf);
+    rioInitWithSocket(&sio, client->fd);
+    nwritten = rioWrite(&sio, length_buf, length_len);
     log_debug("send RDB length: %s", length_buf);
-    // 直接发送 RDB 数据
-    char buf[1024];
-    size_t nread;
-    while ((nread = fread(buf, 1, sizeof(buf), fp)) > 0) {
-        if (write(client->fd, buf, nread) == -1) {
-            log_debug("Failed to send RDB to client %d: %s", client->fd, strerror(errno));
-            break;
-        }
-        printBuf("RDB sending", buf, nread);
+    if (nwritten == 0 && sio.error) {
+        close(client->fd);
+        return;
     }
-    fclose(fp);
+    if (nwritten != length_len) {
+        log_error("nwritten != length_len");
+        return;
+    } 
+
+    // 发送 RDB 数据, 通过sendfile,
+    off_t offset = 0;
+    ssize_t sent = sendfile(client->fd, server->rdbfd, &offset, rdb_len);
+    if (sent < 0) {
+        log_error("Failed to send RDB FILE to client %d: %s", client->fd, strerror(errno));
+        return;
+    }
 
     // 发送完毕转换状态,  不等client响应？
     client->replState = REPL_STATE_MASTER_CONNECTED;
@@ -308,13 +335,12 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
     size_t msg_len = sdslen(client->writeBuf); 
     ssize_t nwritten;
 
-    nwritten = write(fd, msg, msg_len);
-    if (nwritten == -1) {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            return; // 非阻塞，等待下次写事件
-        }
-        log_debug("write failed to client %d: %s", client->fd, strerror(errno));
-        // 可选择关闭连接或释放资源
+    rio sio;
+    rioInitWithSocket(&sio, fd);
+    nwritten = rioWrite(&sio, msg, msg_len);
+    if (nwritten == 0 && sio.error) { 
+        close(fd);
+        log_error("error writing %d ", fd);
         return;
     }
 
@@ -325,6 +351,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata )
         sdsclear(client->writeBuf); // 全部发送完毕
     } else {
         // sdsrange(client->writeBuf, nwritten, -1); // 删除已发送部分
+        log_error("unexpected. 没发送完. need todo");
         return; // 等待下次写事件发送剩余数据
     }
 
@@ -342,23 +369,6 @@ void netCleanup()
 {
 }
 
-/**
- * @brief 向fd write写入len长度的buf， 于addwrite不同。
- * @param [in] fd 
- * @param [in] buf 
- * @param [in] len 
- * @return int 
- */
-// TODO 暂时没用， 可能需要解耦，吧write send操作
-int anetIOWrite(int fd, char *buf, int len)
-{
-    int nwritten = send(fd, buf, len, 0);
-    if (nwritten == -1) {
-        log_debug("anet write error: %s\n", strerror(errno));
-        return NET_ERR;
-    }
-    return nwritten;
-}
 
 /**
  * @brief 作为客户端，连接到Host:port
@@ -409,57 +419,6 @@ int anetTcpConnect(const char* host, int port)
 
     return sockfd;  // 返回 socket 描述符
 }
-// TODO drawio 图
-/**
- * @brief 向master写
- * 
- * @param [in] el 
- * @param [in] fd 
- * @param [in] privData 
- */
-void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
-{
-    switch (server->replState)
-    {
-    case REPL_STATE_SLAVE_CONNECTING:
-        sendPingToMaster();
-        log_debug("send ping to master");
-        break;
-    case REPL_STATE_SLAVE_SEND_REPLCONF:
-        sendReplconfToMaster();
-        log_debug("send replconf to master");
-        break;
-    case REPL_STATE_SLAVE_SEND_SYNC:
-        //  发送SYNC
-        sendSyncToMaster();
-        log_debug("send sync to master");
-        break;
-    case REPL_STATE_SLAVE_CONNECTED:
-        //  发送REPLCONF ACK
-        sendReplAckToMaster();
-        log_debug("send REPLACK to master");
-        break;
-    default:
-        break;
-    }
-
-    char* msg = server->master->writeBuf->buf;
-    if (sdslen(server->master->writeBuf) == 0) {
-        // 如果没有数据，不可写
-        log_debug("NO buffer available\n");
-        aeDeleteFileEvent(el, fd, AE_WRITABLE);
-        return;
-    }
-
-    int nwritten = write(fd, msg, strlen(msg));
-    if (nwritten == -1) {
-        log_debug("write failed\n");
-        close(fd);
-        return;
-    }
-    sdsclear(server->master->writeBuf);
-    aeDeleteFileEvent(el, fd, AE_WRITABLE);
-}
 
 
 /**
@@ -479,7 +438,8 @@ void handleCommandPropagate()
  * @param [in] len buf长度
  * @return ssize_t 
  */
-static ssize_t getRespLength(const char* buf, size_t len) {
+ ssize_t getRespLength(const char* buf, size_t len) 
+ {
     if (len < 2) return -1;
 
     char type = buf[0];
@@ -547,37 +507,6 @@ static ssize_t getRespLength(const char* buf, size_t len) {
 
 
 /**
- * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
- * @param [in] client 
- * @return 
- */
-void readToReadBuf(redisClient* client) {
-    char temp_buf[1]; // 逐字节读取，确保精确性
-    ssize_t n;
-
-    sdsclear(client->readBuf);
-
-    printf("\n to read buf\n");
-    while (1) {
-        n = read(client->fd, temp_buf, sizeof(temp_buf));
-        if (n <= 0) {
-            log_debug("read failed or finished");
-            if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
-            return;
-        }
-        sdscatlen(client->readBuf, temp_buf, n);
-
-        ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
-        if (resp_len != -1) {
-            // 读到一个RESP协议
-            printf("get resp return");
-            break;
-        }
-    }
-    printf("\nread buf finished,  %s\n", client->readBuf->buf);
-}
-
-/**
  * @brief read 到分配的buf，用于二进制文件等
  *  比如接受RDB文件
  * @param [in] client 
@@ -597,72 +526,6 @@ int readToBuf(redisClient* client, char* buf, int size)
     return nread;
 }
 
-void repliReadHandler(aeEventLoop *el, int fd, void* privData)
-{
-    switch (server->replState) {
-        case REPL_STATE_SLAVE_CONNECTING:
-            readToReadBuf(server->master);
-            if (strstr(server->master->readBuf->buf, "PONG") != NULL) {
-                // 收到PONG, 转到REPLCONF
-                server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
-                log_debug("receive PONG");
-            }
-            sdsclear(server->master->readBuf);
-            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
-            break;
-        case REPL_STATE_SLAVE_SEND_REPLCONF:
-            readToReadBuf(server->master);
-            if (strstr(server->master->readBuf->buf, "+OK")!= NULL) {
-                // 收到REPLCONF OK, 转到REPLCONF
-                server->replState = REPL_STATE_SLAVE_SEND_SYNC;
-                log_debug("receive REPLCONF OK");
-            }
-            sdsclear(server->master->readBuf);
-            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
-            break;
-        case REPL_STATE_SLAVE_SEND_SYNC:
-            // +FULLSYNC\r\n$<length>\r\n<RDB binary data>
-            readToReadBuf(server->master); // 应该只读取到fullsync部分
-            printBuf("+FULLSYNC", server->master->readBuf->buf, sdslen(server->master->readBuf));
-            if (strstr(server->master->readBuf->buf, "+FULLSYNC") != NULL) {
-                // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
-                server->replState = REPL_STATE_SLAVE_TRANSFER;
-                log_debug("receive FULLSYNC");
-            }
-            sdsclear(server->master->readBuf);
-            break;
-        case REPL_STATE_SLAVE_TRANSFER:
-            //  $<length>\r\n<RDB DATA> 因为解析不到一个RESP协议，就一直读
-            readToReadBuf(server->master);
-            printBuf("$<length>", server->master->readBuf->buf, sdslen(server->master->readBuf));
-            int len = 0;
-            if (sscanf(server->master->readBuf->buf, "$%d\r\n", &len)!= 1) {
-                log_error("sscanf failed");
-                exit(1);
-            }
-            log_debug("start transfer ..., len %u", len);
-            char* buf = calloc(len, 1);
-            int nread = readToBuf(server->master, buf, len);
-            receiveRDBfile(buf, nread);
-            log_debug("transfer finished.");
-            rdbLoad();
-            log_debug("rdbload finished.");
-            sdsclear(server->master->readBuf);
-            server->replState = REPL_STATE_SLAVE_CONNECTED;
-            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
-            break;
-        case REPL_STATE_SLAVE_CONNECTED:
-            readToReadBuf(server->master);
-            if (strstr(server->master->readBuf->buf, "+OK") != NULL) {
-                log_debug("replication connection established.");
-                handleCommandPropagate();
-            }
-            break;
-        default:
-            break;
-    }
-
-}
 
 
 /**
