@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "log.h"
 #include <sys/stat.h>
+#include <unistd.h>
+#include <stdlib.h>
 /**
  * @brief 对象类型、RDB操作符
  * 
@@ -138,7 +140,7 @@ void rdbSave()
     // 4. 校验和 TODO
     uint64_t crc = 0;
     fwrite(&crc, sizeof(uint64_t), 1, fp);
-
+    fflush(fp);
     fclose(fp);
     log_debug("Save the RDB file success\n");
 }
@@ -147,7 +149,6 @@ void bgsave()
 {
     pid_t pid = fork();
     if (pid == 0) {
-        sleep(1);   // 模拟落盘时间
         rdbSave();
         exit(0);
     } else if (pid < 0) {
@@ -328,14 +329,4 @@ void receiveRDBfile(char* buf, int n)
     fclose(fp);
     log_debug("Save the RDB file success\n");
     
-}
-
-void getRdbLength(long long* length)
-{
-    struct stat st;
-    if (stat(server->rdbFileName, &st) == 0) {
-        *length = st.st_size;
-    } else {
-        *length = 0;
-    }
 }

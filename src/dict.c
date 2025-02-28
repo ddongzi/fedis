@@ -70,6 +70,11 @@ static double _dictLoadFactor(dict *dict)
     return (double)dict->ht[0].used / (double)dict->ht[0].size;
 }
 
+int dictIsRehashing(dict *dict)
+{
+    return dict->rehashidx != -1;
+}
+
 /**
  * @brief 设置entry的key
  *
@@ -268,11 +273,6 @@ dict *dictCreate(dictType *type, void *privData)
     dict *d = (dict *)malloc(sizeof(dict));
     int res = _dictInit(d, type, privData);
     return res == DICT_ERR ? NULL : d;
-}
-
-int dictIsRehashing(dict *dict)
-{
-    return dict->rehashidx != -1;
 }
 
 /**

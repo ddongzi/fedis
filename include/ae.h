@@ -83,8 +83,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
 int aeDeleteFileEvent(aeEventLoop* loop, int fd, int mask);
 // 调用IO复用底层阻塞（比如select)，阻塞所有注册事件，有ready或者超时就返回。
 int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp);
-// 文件事件派发：首先调用apipoll等待事件产生，更新fireevent，调用相应回调函数处理
-int aeProcessEvents(aeEventLoop* loop, int flags);
+
 // 为fd注册事件
 int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask);
 

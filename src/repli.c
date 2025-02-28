@@ -1,4 +1,66 @@
-#include "redis.h"
+/**
+ * @file repli.c
+ * @author your name (you@domain.com)
+ * @brief 从特性函数
+ * @version 0.1
+ * @date 2025-02-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+ #include "redis.h"
+#include "repli.h"
+#include "rio.h"
+#include "log.h"
+#include "rdb.h"
+#include "net.h"
+#include "util.h"
+
+
+void sendPingToMaster()
+{
+    addWrite(server->master, shared.ping);
+    
+}
+
+void sendSyncToMaster()
+{
+    char* argv[] = {"SYNC"};
+    char* buf = respFormat(1, argv);
+    //  SYNC
+    addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
+
+}
+void sendReplAckToMaster()
+{
+    char* argv[] = {"REPLACK"};
+    char* buf = respFormat(1, argv);
+    //  REPLCONF ACK <从dbid>
+    addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
+}
+
+void sendReplconfToMaster()
+{
+    //  REPLCONF listening-port <从监听port>
+    char* argv[] = {"REPLCONF", "listen-port", "6666"};
+    char* buf = respFormat(3, argv);
+    addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
+}
+/**
+ * @brief 命令传播：作为正常服务器处理命令
+ *
+ */
+void handleCommandPropagate()
+{
+    log_debug("handle commandPropagate");
+}
+
 
 
 /**
@@ -10,6 +72,7 @@
  */
 void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
 {
+    log_debug("1.start, master.writeBuf len = %d", sdslen(server->master->writeBuf));
     switch (server->replState)
     {
     case REPL_STATE_SLAVE_CONNECTING:
@@ -41,7 +104,7 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
         aeDeleteFileEvent(el, fd, AE_WRITABLE);
         return;
     }
-    sizet nwritten;
+    size_t nwritten;
     rio sio;
     rioInitWithSocket(&sio, fd);
     nwritten = rioWrite(&sio, msg, strlen(msg));
@@ -52,6 +115,8 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     }
     // TODO 默认全部写完  
     sdsclear(server->master->writeBuf);
+    log_debug("2. after clear .master.writeBuf len = %d", sdslen(server->master->writeBuf));
+
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
 }
 
@@ -66,7 +131,6 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
                 log_debug("receive PONG");
             }
-            sdsclear(server->master->readBuf);
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
         case REPL_STATE_SLAVE_SEND_REPLCONF:
@@ -76,7 +140,6 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 server->replState = REPL_STATE_SLAVE_SEND_SYNC;
                 log_debug("receive REPLCONF OK");
             }
-            sdsclear(server->master->readBuf);
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
         case REPL_STATE_SLAVE_SEND_SYNC:
@@ -88,7 +151,6 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 server->replState = REPL_STATE_SLAVE_TRANSFER;
                 log_debug("receive FULLSYNC");
             }
-            sdsclear(server->master->readBuf);
             break;
         case REPL_STATE_SLAVE_TRANSFER:
             //  $<length>\r\n<RDB DATA> 
@@ -106,11 +168,10 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             sdsrange(server->master->readBuf, lenLength + 3, sdslen(server->master->readBuf));
 
             log_debug("start transfer ..., len %u", len);
-            receiveRDBfile(server->master->readBuf->buf, nread);
+            receiveRDBfile(server->master->readBuf->buf, len);
             log_debug("transfer finished.");
             rdbLoad();
             log_debug("rdbload finished.");
-            sdsclear(server->master->readBuf);  // TODO 不应该clear
             server->replState = REPL_STATE_SLAVE_CONNECTED;
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
@@ -125,4 +186,16 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             break;
     }
 
+}
+
+
+
+/**
+ * @brief 从服务器定时
+ * 
+ * @return int 
+ */
+int replicationCron()
+{
+    // TODO:
 }

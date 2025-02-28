@@ -21,7 +21,5 @@
 void bgSaveIfNeeded();
 void rdbLoad();
 void receiveRDBfile(char* buf, int n);
-void saveRDBToSlave(redisClient* client);
-void getRdbLength(long long* length); // 可能不需要通过fseek简单定位
 
 #endif

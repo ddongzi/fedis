@@ -20,7 +20,7 @@ enum {
     RIO_ERR_OPEN,     // 文件打开失败
     RIO_ERR_READ,     // 读取失败
     RIO_ERR_WRITE,    // 写入失败
-    RIO_ERR_SEEK,     // `lseek` 失败
+    RIO_ERR_TELL,     // `lseek` 失败
     RIO_ERR_CLOSE     // 关闭失败
 };
 

@@ -66,36 +66,6 @@ static int aeGetTime(long long* seconds, long long* milliseconds)
     *milliseconds = tv.tv_usec / 1000;
     return AE_OK;
 }
-/**
- * @brief 调试epoll, 手动检查fd事件
- * 
- * @param [in] fd 
- */
-static void checkFdStatus(int fd)
-{
-    struct pollfd pfd;
-    pfd.fd = fd;
-    pfd.events = POLLOUT;
-    
-    int ret = poll(&pfd, 1, 1000); // 最多等待 5s
-    if (ret > 0 && (pfd.revents & POLLOUT)) {
-        // 确保连接真的成功
-        int err = 0;
-        socklen_t errlen = sizeof(err);
-        getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &errlen);
-        if (err == 0) {
-            log_debug("Connection established!\n");
-        } else {
-            log_debug("Connection error: %s\n", strerror(err));
-        }
-    } else if (ret == 0) {
-        log_debug("Connection timeout\n");
-    } else {
-        perror("poll error");
-    }
-    
-
-}
 
 /**
  * @brief epoll_wait, 触发事件添加到fireEvents
@@ -112,7 +82,6 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
     
     // if (server->replState == REPL_STATE_SLAVE__NONE) {
     //     log_debug("checking master fd !!");
-    //     checkFdStatus(server->master->fd);
     // }
 
     numevents = epoll_wait(eventLoop->apiState->epfd, 

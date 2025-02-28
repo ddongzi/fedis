@@ -1,0 +1,284 @@
+12:15:03 [36mDEBUG[0m [90msrc/main.c:17:[0m hello log.
+12:15:03 [36mDEBUG[0m [90msrc/redis.c:241:[0m √ init server config.
+
+12:15:03 [36mDEBUG[0m [90msrc/redis.c:410:[0m ●  load rdb from /home/dong/fedis/data/1.rdb
+
+12:15:03 [36mDEBUG[0m [90msrc/ae.c:51:[0m Create epoll instance. epfd = 4
+
+12:15:03 [36mDEBUG[0m [90msrc/net.c:216:[0m listening on port: 6666 addr: (null) ,listen-fd: 5
+
+12:15:03 [36mDEBUG[0m [90msrc/redis.c:422:[0m ● create server, listening.....
+
+12:15:03 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:5, OP :add, mask:read
+
+12:15:03 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create READ event for fd 5.
+
+12:15:03 [36mDEBUG[0m [90msrc/redis.c:425:[0m ● create file event for ACCEPT, listening.....
+
+12:15:03 [36mDEBUG[0m [90msrc/redis.c:428:[0m ● create time event for serverCron
+
+12:15:03 [36mDEBUG[0m [90msrc/redis.c:430:[0m √ init server .
+
+12:15:04 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+12:15:06 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+12:15:06 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[5] event[READ] come.
+
+12:15:06 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 5, ready READABLE
+
+12:15:06 [36mDEBUG[0m [90msrc/net.c:278:[0m Accepted connection from 127.0.0.1:48663,  fd 6
+
+12:15:06 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:6, OP :add, mask:read
+
+12:15:06 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create READ event for fd 6.
+
+12:15:07 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+12:15:10 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+12:15:10 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+12:15:10 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[READ] come.
+
+12:15:10 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready READABLE
+
+04:15:10 [36mDEBUG[0m [90msrc/redis.c:521:[0m deal query from client, get k1 
+04:15:10 [36mDEBUG[0m [90msrc/redis.c:524:[0m  processing query from client, *2
+$3
+get
+$2
+k1
+
+04:15:10 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: get
+
+04:15:10 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: k1
+
+04:15:10 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:6, OP :mod, mask:write
+
+04:15:10 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 6.
+
+04:15:10 [36mDEBUG[0m [90msrc/redis.c:526:[0m  processed query from client
+04:15:10 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:10 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[WRITABLE] come.
+
+04:15:10 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready WRITABLE
+
+04:15:10 [36mDEBUG[0m [90msrc/redis.c:610:[0m reply to client 6, -ERR key not found (18 bytes)
+04:15:13 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[READ] come.
+
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready READABLE
+
+04:15:15 [36mDEBUG[0m [90msrc/redis.c:521:[0m deal query from client, set k1 
+04:15:15 [36mDEBUG[0m [90msrc/redis.c:524:[0m  processing query from client, *2
+$3
+set
+$2
+k1
+
+04:15:15 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: set
+
+04:15:15 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: k1
+
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:6, OP :mod, mask:write
+
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 6.
+
+04:15:15 [36mDEBUG[0m [90msrc/redis.c:526:[0m  processed query from client
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[WRITABLE] come.
+
+04:15:15 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready WRITABLE
+
+04:15:15 [36mDEBUG[0m [90msrc/redis.c:610:[0m reply to client 6, +OK
+ (5 bytes)
+04:15:16 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:16 [36mDEBUG[0m [90msrc/rdb.c:175:[0m CHECK BGSAVE OK, 13, 1
+
+04:15:16 [36mDEBUG[0m [90msrc/rdb.c:104:[0m ======RDB Save(child:397)======
+
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[READ] come.
+
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready READABLE
+
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:521:[0m deal query from client, get k1 
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:524:[0m  processing query from client, *2
+$3
+get
+$2
+k1
+
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: get
+
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: k1
+
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:6, OP :mod, mask:write
+
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 6.
+
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:526:[0m  processed query from client
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[WRITABLE] come.
+
+04:15:19 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready WRITABLE
+
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:610:[0m reply to client 6, -ERR key not found (18 bytes)
+04:15:19 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:22 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:25 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:28 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[READ] come.
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready READABLE
+
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:521:[0m deal query from client, slaveof 127.0.0.1 6667 
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:524:[0m  processing query from client, *3
+$7
+slaveof
+$9
+127.0.0.1
+$4
+6667
+
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: slaveof
+
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: 127.0.0.1
+
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:497:[0m processClientQueryBuf, argv: 6667
+
+04:15:30 [36mDEBUG[0m [90msrc/net.c:306:[0m anetconnect 127.0.0.1:6667
+
+04:15:30 [36mDEBUG[0m [90msrc/net.c:60:[0m Address: 127.0.0.1, Port: 6667
+
+04:15:30 [36mDEBUG[0m [90msrc/net.c:460:[0m Connecting Master fd 7
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :add, mask:read
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create READ event for fd 7.
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:6, OP :mod, mask:write
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 6.
+
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:526:[0m  processed query from client
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:94:[0m 2 events received.
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[6] event[WRITABLE] come.
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[WRITABLE] come.
+
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 6, ready WRITABLE
+
+04:15:30 [36mDEBUG[0m [90msrc/redis.c:610:[0m reply to client 6, +OK
+ (5 bytes)
+04:15:30 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
+
+04:15:38 [36mDEBUG[0m [90msrc/repli.c:79:[0m send ping to master
+04:15:45 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
+
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready READABLE
+
+
+ to read buf
+get resp return
+read buf finished,  +PONG
+
+04:15:45 [36mDEBUG[0m [90msrc/repli.c:129:[0m receive PONG
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
+
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
+
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[WRITABLE] come.
+
+04:15:45 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
+
+04:15:48 [36mDEBUG[0m [90msrc/repli.c:83:[0m send replconf to master
+04:15:55 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
+
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready READABLE
+
+
+ to read buf
+get resp return
+read buf finished,  +OK
+
+04:15:55 [36mDEBUG[0m [90msrc/repli.c:138:[0m receive REPLCONF OK
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
+
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
+
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[WRITABLE] come.
+
+04:15:55 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
+
+04:15:59 [36mDEBUG[0m [90msrc/repli.c:88:[0m send sync to master
+04:16:05 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
+
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready READABLE
+
+
+ to read buf
+get resp return
+read buf finished,  +FULLSYNC
+
++FULLSYNC: (length=11)
+--------------------------------------------------
+Offset | Char | Hex  | Content
+-------|------|------|----------------------------
+     0 |   +  | 0x2b | +FULLSYNC..
+     1 |   F  | 0x46 | +FULLSYNC..
+     2 |   U  | 0x55 | +FULLSYNC..
+     3 |   L  | 0x4c | +FULLSYNC..
+     4 |   L  | 0x4c | +FULLSYNC..
+     5 |   S  | 0x53 | +FULLSYNC..
+     6 |   Y  | 0x59 | +FULLSYNC..
+     7 |   N  | 0x4e | +FULLSYNC..
+     8 |   C  | 0x43 | +FULLSYNC..
+     9 |   .  | 0x0d | +FULLSYNC..
+    10 |   .  | 0x0a | +FULLSYNC..
+       |      |      |        |      |      |        |      |      |        |      |      |        |      |      | 
+--------------------------------------------------
+04:16:05 [36mDEBUG[0m [90msrc/repli.c:149:[0m receive FULLSYNC
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
+
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready READABLE
+
+
+ to read buf
+get resp return
+read buf finished,  $0
+
+$<length>: (length=4)
+--------------------------------------------------
+Offset | Char | Hex  | Content
+-------|------|------|----------------------------
+     0 |   $  | 0x24 | $0..
+     1 |   0  | 0x30 | $0..
+     2 |   .  | 0x0d | $0..
+     3 |   .  | 0x0a | $0..
+       |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      | 
+--------------------------------------------------
+04:16:05 [36mDEBUG[0m [90msrc/repli.c:167:[0m start transfer ..., len 0
+04:16:05 [36mDEBUG[0m [90msrc/rdb.c:330:[0m Save the RDB file success
+
+04:16:05 [36mDEBUG[0m [90msrc/repli.c:169:[0m transfer finished.
+04:16:05 [36mDEBUG[0m [90msrc/repli.c:171:[0m rdbload finished.
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
+
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
+
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[WRITABLE] come.
+
+04:16:05 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
+

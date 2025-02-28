@@ -13,18 +13,7 @@
 #define __NET_H__
 
 #include "ae.h"
-#include <netdb.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <arpa/inet.h>
+
 
 #define NET_OK 0
 #define NET_ERR -1
@@ -37,12 +26,10 @@ void readQueryFromClient(aeEventLoop *el, int fd, void* privData);
 // 封装write
 void sendReplyToClient(aeEventLoop *el, int fd, void *privdata);
 
-int anetNonBlock(int fd);
-int anetEnableTcpNoDelay(int fd);
-int anetKeepAlive(int fd, int interval);
-int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port);
 int anetTcpConnect( const char* host, int port);
 void connectMaster();
 ssize_t getRespLength(const char* buf, size_t len) ;
+char * respFormat(int argc, char** argv);
+
 #endif
 

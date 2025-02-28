@@ -1,13 +1,12 @@
 #ifndef REDIS_H
 #define REDIS_H
-
+#include <stdlib.h>
 #include "ae.h"
-#include "net.h"
 #include "db.h"
 #include "list.h"
 #include "dict.h"
-#include <stdlib.h>
 #include "robj.h"
+#include "client.h"
 
 #define REDIS_SERVERPORT 6666
 #define REDIS_DEFAULT_DBNUM 16
@@ -20,7 +19,6 @@ extern struct redisServer* server;
 extern struct sharedObjects shared;
 
 struct redisCommand;
-
 
 #define REDIS_SHAREAD_MAX_INT 999
 struct sharedObjects {
@@ -40,52 +38,6 @@ struct sharedObjects {
 };
 
 
-
-
-
-// 主从复制状态
-enum REPL_STATE {
-    // 从服务器server.replState 字段
-    REPL_STATE_SLAVE_NONE,          // (从）未启用复制
-    REPL_STATE_SLAVE_CONNECTING,    // 正在连接主服务器
-    REPL_STATE_SLAVE_SEND_REPLCONF,   // 发送port号
-    REPL_STATE_SLAVE_SEND_SYNC,    // 发送SYNC请求
-    REPL_STATE_SLAVE_TRANSFER,      // 接收RDB文件
-    REPL_STATE_SLAVE_CONNECTED,      // 正常复制中
-    // 主服务器维护主向从的状态。
-    REPL_STATE_MASTER_NONE,     //
-    REPL_STATE_MASTER_WAIT_PING,    // 正在等待PING
-    REPL_STATE_MASTER_WAIT_SEND_FULLSYNC,  // 等待FULLSYNC发送
-    REPL_STATE_MASTER_SEND_RDB, // 正在发送RDB
-    REPL_STATE_MASTER_CONNECTED, // 主认为此次同步完成
-
-};
-
-#define REDIS_CLIENT_NORMAL 0
-#define REDIS_CLIENT_MASTER 1
-#define REDIS_CLIENT_SLAVE 2
-
-/**
- * @struct redisClient
- * @brief  client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。
- * 
- */
-typedef struct redisClient {
-    int fd;
-    int flags;  ///<
-    sds* readBuf;
-    sds* writeBuf;
-    int dbid;
-    redisDb* db;
-    int argc;   ///< 参数个数
-    robj** argv;    ///< 参数数组
-    int replState; ///< 用于主服务器维护某个从服务器同步状态。
-    
-} redisClient;
-redisClient *redisClientCreate(int fd);
-void processClientQueryBuf(redisClient* client);
-
-
 typedef void redisCommandProc(redisClient* client);
 typedef struct redisCommand {
     char* name; // 
@@ -100,7 +52,6 @@ struct saveparam {
     time_t seconds; // 保存条件：秒
     int changes; // 保存条件：修改数
 };
-
 
 struct redisServer {
 
@@ -126,8 +77,6 @@ struct redisServer {
     redisDb* db;    // 数据库数组
     dict* commands; // 命令表: 键是字符串，值是cmd结构
 
-
-
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
@@ -138,7 +87,6 @@ struct redisServer {
     char* masterhost; // （从字段）主host
     int masterport; // （从字段）主port
     int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
-
 
     // 模块化
 
@@ -161,14 +109,7 @@ struct redisServer {
 
 
 void initServer();
+void initServerConfig();
 
-void selectDB(redisClient* client, int dbid);
 
-void sendPingToMaster();
-void sendReplconfToMaster();
-void sendSyncToMaster();
-void sendReplconfAckToMaster();
-
-void addWrite(redisClient* client, robj* obj) ;
-void readToReadBuf(redisClient* client) ;
 #endif

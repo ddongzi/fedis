@@ -1,5 +1,4 @@
 #include "sds.h"
-
 /**
  * @brief 
  * 
@@ -66,7 +65,7 @@ sds* sdsdump(const sds* ss)
 void sdsclear(sds* ss)
 {
     if (ss == NULL) return;
-    ss->free = ss->len + ss->free + 1;
+    ss->free = ss->len + ss->free ;
     memset(ss->buf, 0, ss->len);
     ss->len = 0;
 }

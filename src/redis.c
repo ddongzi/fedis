@@ -1,71 +1,23 @@
-#include "redis.h"
-#include <strings.h>
-#include <stdarg.h>
-#include "rdb.h"
 #include <signal.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include "log.h"
 #include <string.h>
+#include <strings.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/sendfile.h>
 
+#include "redis.h"
+#include "rdb.h"
+#include "log.h"
+#include "rio.h"
+#include "repli.h"
+#include "net.h"
 struct redisServer* server;
 
 struct sharedObjects shared;
-
-/**
- * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
- * @param [in] client 
- * @return 
- */
-void readToReadBuf(redisClient* client) 
-{
-    char temp_buf[1]; // 逐字节读取，确保精确性
-    ssize_t n;
-
-    sdsclear(client->readBuf);
-
-    printf("\n to read buf\n");
-    while (1) {
-        // 没必要RIO，
-        n = read(client->fd, temp_buf, sizeof(temp_buf));
-        if (n <= 0) {
-            log_debug("read failed or finished");
-            if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
-            return;
-        }
-        sdscatlen(client->readBuf, temp_buf, n);
-
-        ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
-        if (resp_len != -1) {
-            // 读到一个RESP协议
-            printf("get resp return");
-            break;
-        }
-    }
-    printf("\nread buf finished,  %s\n", client->readBuf->buf);
-}
-
-/**
- * @brief 准备buf，向client写, 后续write类handler处理
- * 
- * @param [in] client 
- * @param [in] obj 
- */
-void addWrite(redisClient* client, robj* obj) 
-{
-    char buf[128];
-    switch (obj->type)
-    {
-    case REDIS_STRING:
-        robjGetValStr(obj, buf, sizeof(buf));
-        break;
-    
-    default:
-        break;
-    }
-
-    sdscat(client->writeBuf, buf);
-}
 
 void _encodingStr(int encoding, char *buf, int maxlen) 
 {
@@ -369,15 +321,7 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 
     return 3000;
 }
-/**
- * @brief 从服务器定时
- * 
- * @return int 
- */
-int replicationCron()
-{
-    // TODO:
-}
+
 
 void sigChildHandler(int sig)
 {
@@ -462,7 +406,7 @@ void initServer()
 
     server->rdbChildPid = -1;
     server->isBgSaving = 0;
-
+    server->rdbfd = -1; //
     log_debug("●  load rdb from %s\n", server->rdbFileName);
     rdbLoad();
 
@@ -486,20 +430,7 @@ void initServer()
     log_debug("√ init server .\n");
 }
 
-redisClient *redisClientCreate(int fd)
-{
-    redisClient *c = malloc(sizeof(redisClient));
-    c->fd = fd;
-    c->flags = REDIS_CLIENT_NORMAL;
-    c->readBuf = sdsempty();
-    c->writeBuf = sdsempty();
-    c->dbid = 0;
-    c->db = &server->db[c->dbid];
-    c->argc = 0;
-    c->argv = NULL;
-    return c;
 
-}
 redisCommand* lookupCommand(const char* cmd)
 {
     for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
@@ -530,7 +461,6 @@ void processCommand(redisClient * c)
     }
     c->argv = NULL;
 }
-
 /**
  * @brief 解析协议到 argc, argv[]
  *  *3\r\n
@@ -575,136 +505,127 @@ void processClientQueryBuf(redisClient* client)
     processCommand(client);
 }
 
+void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
+{
+    redisClient *client = (redisClient *)privData;
+    char buf[1024] = {0};
+    rio r;
+    rioInitWithFD(&r, fd);
+    size_t nread = rioRead(&r, buf, sizeof(buf));
+    if (nread == 0)
+    {
+        if (r.error)
+            close(fd);
+        return;
+    }
+    log_debug("deal query from client, %s", respParse(buf));
 
-/* 从角色： */
+    sdscat(client->readBuf, buf);
+    log_debug(" processing query from client, %s", buf);
+    processClientQueryBuf(client);
+    log_debug(" processed query from client");
+    // 写事件转移到各命令 自注册
+}
 
 /**
- * @brief resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格
- * 
- * @param [in] resp 
- * @return char* 
+ * @brief 主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB
+ *
+ * @param [in] client
  */
-char* respParse(const char* resp) {
-    if (!resp) return NULL;
-    
-    char type = resp[0];
-    const char* data = resp + 1;
-    char* result = NULL;
-    
-    switch (type) {
-        case '+':  // Simple Strings
-        case '-':  // Errors
-            result = strdup(data);
-            result[strcspn(result, "\r\n")] = 0; // 去掉结尾的 \r\n
-            break;
-        case ':':  // Integers
-        //  linux
-            asprintf(&result, "%ld", strtol(data, NULL, 10));
-            break;
-        case '$': { // Bulk Strings
-            int len = strtol(data, NULL, 10);
-            if (len == -1) {
-                result = strdup("(nil)");
-            } else {
-                const char* str = strchr(data, '\n');
-                if (str) {
-                    result = strndup(str + 1, len);
-                }
-            }
-            break;
+void saveRDBToSlave(redisClient *client)
+{
+    struct stat st;
+    long rdb_len;
+    char length_buf[64];
+    size_t length_len;
+    rio sio;
+    size_t nwritten = 0;
+
+    if (server->rdbfd == -1)
+    {
+        server->rdbfd = open(server->rdbFileName, O_RDONLY);
+        if (server->rdbfd == -1)
+        {
+            log_error("Open RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
+            return;
         }
-        case '*': { // Arrays
-            int count = strtol(data, NULL, 10);
-            if (count == -1) {
-                result = strdup("(empty array)");
-            } else {
-                result = malloc(1024);  // 假设最大长度不会超
-                result[0] = '\0';
-                const char* ptr = strchr(data, '\n') + 1;
-                for (int i = 0; i < count; i++) {
-                    char* elem = respParse(ptr);
-                    strcat(result, elem);
-                    strcat(result, " ");
-                    free(elem);
-                    
-                    // 移动 ptr 指向下一个 RESP 片段
-                    if (*ptr == '+' || *ptr == '-' || *ptr == ':') {
-                        ptr = strchr(ptr, '\n') + 1;
-                    } else if (*ptr == '$') {
-                        int blen = strtol(ptr + 1, NULL, 10);
-                        if (blen != -1) {
-                            ptr = strchr(ptr, '\n') + 1 + blen + 2;
-                        } else {
-                            ptr = strchr(ptr, '\n') + 1;
-                        }
-                    }
-                }
-            }
-            break;
-        }
-        default:
-            result = strdup("(unknown)");
-            break;
     }
-    return result;
-}
-
-
-char * respFormat(int argc, char** argv)
-{
-    // 计算 RESP 总长度
-    size_t total_len = 0;
-    for (int i = 0; i < argc; i++) {
-        total_len += snprintf(NULL, 0, "$%zu\r\n%s\r\n", strlen(argv[i]), argv[i]);
-    }
-    total_len += snprintf(NULL, 0, "*%d\r\n", argc);
-
-    // 分配 RESP 命令的字符串
-    char *resp_cmd = (char *)malloc(total_len + 1);
-    if (!resp_cmd) {
-        return NULL;
+    if (fstat(server->rdbfd, &st) == -1)
+    {
+        log_error("Stat RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
+        return;
     }
 
-    // 构造 RESP 字符串
-    char *ptr = resp_cmd;
-    ptr += sprintf(ptr, "*%d\r\n", argc);
-    for (int i = 0; i < argc; i++) {
-        ptr += sprintf(ptr, "$%zu\r\n%s\r\n", strlen(argv[i]), argv[i]);
+    rdb_len = st.st_size;
+    log_debug("Stat RDB file , size: %d", st.st_size);
+
+    // 发送 $length\r\n
+    sprintf(length_buf, "$%lu\r\n", rdb_len);
+    length_len = strlen(length_buf);
+    rioInitWithSocket(&sio, client->fd);
+    nwritten = rioWrite(&sio, length_buf, length_len);
+    log_debug("send RDB length: %s", length_buf);
+    if (nwritten == 0 && sio.error)
+    {
+        close(client->fd);
+        return;
+    }
+    if (nwritten != length_len)
+    {
+        log_error("nwritten != length_len");
+        return;
     }
 
-    return resp_cmd;
+    // 发送 RDB 数据, 通过sendfile,
+    off_t offset = 0;
+    ssize_t sent = sendfile(client->fd, server->rdbfd, &offset, rdb_len);
+    if (sent < 0)
+    {
+        log_error("Failed to send RDB FILE to client %d: %s", client->fd, strerror(errno));
+        return;
+    }
+
+    // 发送完毕转换状态,  不等client响应？
+    client->replState = REPL_STATE_MASTER_CONNECTED;
+    log_debug("RDB sent to slave %d， size:%lld", client->fd, rdb_len);
 }
 
-void sendPingToMaster()
+void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
 {
-    addWrite(server->master, shared.ping);
-    
-}
+    redisClient *client = (redisClient *)privdata;
+    char *msg = client->writeBuf->buf;
+    size_t msg_len = sdslen(client->writeBuf);
+    ssize_t nwritten;
 
-void sendSyncToMaster()
-{
-    char* argv[] = {"SYNC"};
-    char* buf = respFormat(1, argv);
-    //  SYNC
-    addWrite(server->master, robjCreateStringObject(buf));
-    free(buf);
+    rio sio;
+    rioInitWithSocket(&sio, fd);
+    nwritten = rioWrite(&sio, msg, msg_len);
+    if (nwritten == 0 && sio.error)
+    {
+        close(fd);
+        log_error("error writing %d ", fd);
+        return;
+    }
 
-}
-void sendReplAckToMaster()
-{
-    char* argv[] = {"REPLACK"};
-    char* buf = respFormat(1, argv);
-    //  REPLCONF ACK <从dbid>
-    addWrite(server->master, robjCreateStringObject(buf));
-    free(buf);
-}
+    log_debug("reply to client %d, %.*s (%zd bytes)", client->fd, (int)nwritten, msg, nwritten);
 
-void sendReplconfToMaster()
-{
-    //  REPLCONF listening-port <从监听port>
-    char* argv[] = {"REPLCONF", "listen-port", "6666"};
-    char* buf = respFormat(3, argv);
-    addWrite(server->master, robjCreateStringObject(buf));
-    free(buf);
-}
+    // 更新缓冲区
+    if (nwritten == msg_len)
+    {
+        sdsclear(client->writeBuf); // 全部发送完毕
+    }
+    else
+    {
+        // sdsrange(client->writeBuf, nwritten, -1); // 删除已发送部分
+        log_error("unexpected. 没发送完. need todo");
+        return; // 等待下次写事件发送剩余数据
+    }
 
+    // 写完FULLSYNC之后触发状态转移
+    if (client->replState == REPL_STATE_MASTER_WAIT_SEND_FULLSYNC)
+    {
+        client->replState = REPL_STATE_MASTER_SEND_RDB;
+        saveRDBToSlave(client); // 发送 RDB
+    }
+    aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
+}

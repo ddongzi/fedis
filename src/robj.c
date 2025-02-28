@@ -26,7 +26,9 @@ static void _freeStringObject(robj *obj)
 }
 /**
  * @brief 创建embedded str 编码的字符串对象
- * 
+ * | robj 结构体 | sds 头部 | 字符串缓冲区 (len + 1) |
+    ^             ^          ^
+    obj           obj->ptr   ss->buf
  * @param [in] s 
  * @return robj* 
  */
