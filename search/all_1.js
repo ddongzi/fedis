@@ -1,7 +1,7 @@
 var searchData=
 [
   ['accepttcphandler_0',['accepttcphandler',['../net_8h.html#a8c8e701aa41f8abc98b5ef0655d03116',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *privData):&#160;net.c'],['../net_8c.html#af551381b05b81b103ee2c9977dd49c34',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *data):&#160;net.c']]],
-  ['addwrite_1',['addwrite',['../redis_8c.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;redis.c'],['../redis_8h.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;redis.c']]],
+  ['addwrite_1',['addwrite',['../src_2client_8c.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;client.c'],['../client_8h.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;client.c']]],
   ['ae_2ec_2',['ae.c',['../ae_8c.html',1,'']]],
   ['ae_2eh_3',['ae.h',['../ae_8h.html',1,'']]],
   ['ae_5fall_5fevents_4',['AE_ALL_EVENTS',['../ae_8h.html#a680280f52124f876adfeb7e81cb20264',1,'ae.h']]],
@@ -28,19 +28,14 @@ var searchData=
   ['aefileproc_25',['aeFileProc',['../ae_8h.html#ad3980e3de9848ae20864a3d3c2f4d71a',1,'ae.h']]],
   ['aefireevent_26',['aefireevent',['../structaeFireEvent.html',1,'aeFireEvent'],['../ae_8h.html#a7d6d1581620d735d3a23c32b11ad182c',1,'aeFireEvent:&#160;ae.h']]],
   ['aemain_27',['aemain',['../ae_8c.html#a6128cc6c85e2cdead05b253352637de3',1,'aeMain(aeEventLoop *loop):&#160;ae.c'],['../ae_8h.html#a2909fa15dc2d667ec824904fef9df3d8',1,'aeMain(aeEventLoop *eventLoop):&#160;ae.c']]],
-  ['aeprocessevents_28',['aeProcessEvents',['../ae_8h.html#a1e37ecf89afde301c3ec9579677ee54e',1,'ae.h']]],
-  ['aetimeevent_29',['aetimeevent',['../ae_8h.html#adf2848a8fc3292f0073f150d6b259dd8',1,'aeTimeEvent:&#160;ae.h'],['../structaeTimeEvent.html',1,'aeTimeEvent']]],
-  ['aetimeproc_30',['aeTimeProc',['../ae_8h.html#a09cb08f0aea5e5c1460a8b8599d789c8',1,'ae.h']]],
-  ['anetenabletcpnodelay_31',['anetEnableTcpNoDelay',['../net_8h.html#af8459f85a9452da23b5fb7f06490df97',1,'net.h']]],
-  ['anetformatpeer_32',['anetFormatPeer',['../net_8h.html#a988b8b0c7f9f9ae97c80193766d2400c',1,'net.h']]],
-  ['anetkeepalive_33',['anetKeepAlive',['../net_8h.html#ad9f356c26b252364288dd2d640e72ea9',1,'net.h']]],
-  ['anetnonblock_34',['anetNonBlock',['../net_8h.html#a0dd80e8f5a656448db0feadd5c40f6cf',1,'net.h']]],
-  ['anettcpconnect_35',['anettcpconnect',['../net_8h.html#a30fcafaaac3cbacbd83848db6a9cd0f6',1,'anetTcpConnect(const char *host, int port):&#160;net.c'],['../net_8c.html#a30fcafaaac3cbacbd83848db6a9cd0f6',1,'anetTcpConnect(const char *host, int port):&#160;net.c']]],
-  ['anettcpserver_36',['anettcpserver',['../net_8h.html#aff2aeb575af99c3290c508f94a459894',1,'anetTcpServer(int port, char *bindaddr, int backlog):&#160;net.c'],['../net_8c.html#aff2aeb575af99c3290c508f94a459894',1,'anetTcpServer(int port, char *bindaddr, int backlog):&#160;net.c']]],
-  ['ap_37',['ap',['../structlog__Event.html#adeb420d9154c0bff0fbdca8bb0c3a985',1,'log_Event']]],
-  ['apistate_38',['apiState',['../structaeEventLoop.html#ac719a89c6f98a2d951d8f379ca0b3970',1,'aeEventLoop']]],
-  ['appendserversaveparam_39',['appendServerSaveParam',['../redis_8c.html#a4229f995809e04db784e17e0d8e5821c',1,'redis.c']]],
-  ['argc_40',['argc',['../structredisClient.html#a7a33cb5fce559ba48490f7b67b5f7d7e',1,'redisClient']]],
-  ['argv_41',['argv',['../structredisClient.html#a386c035ede60ca037d1b782bdadac641',1,'redisClient']]],
-  ['arity_42',['arity',['../structredisCommand.html#a9c21ad3c5edaf7afa62d2cc612077fda',1,'redisCommand']]]
+  ['aetimeevent_28',['aetimeevent',['../ae_8h.html#adf2848a8fc3292f0073f150d6b259dd8',1,'aeTimeEvent:&#160;ae.h'],['../structaeTimeEvent.html',1,'aeTimeEvent']]],
+  ['aetimeproc_29',['aeTimeProc',['../ae_8h.html#a09cb08f0aea5e5c1460a8b8599d789c8',1,'ae.h']]],
+  ['anettcpconnect_30',['anettcpconnect',['../net_8c.html#a30fcafaaac3cbacbd83848db6a9cd0f6',1,'anetTcpConnect(const char *host, int port):&#160;net.c'],['../net_8h.html#a30fcafaaac3cbacbd83848db6a9cd0f6',1,'anetTcpConnect(const char *host, int port):&#160;net.c']]],
+  ['anettcpserver_31',['anettcpserver',['../net_8h.html#aff2aeb575af99c3290c508f94a459894',1,'anetTcpServer(int port, char *bindaddr, int backlog):&#160;net.c'],['../net_8c.html#aff2aeb575af99c3290c508f94a459894',1,'anetTcpServer(int port, char *bindaddr, int backlog):&#160;net.c']]],
+  ['ap_32',['ap',['../structlog__Event.html#adeb420d9154c0bff0fbdca8bb0c3a985',1,'log_Event']]],
+  ['apistate_33',['apiState',['../structaeEventLoop.html#ac719a89c6f98a2d951d8f379ca0b3970',1,'aeEventLoop']]],
+  ['appendserversaveparam_34',['appendServerSaveParam',['../redis_8c.html#a4229f995809e04db784e17e0d8e5821c',1,'redis.c']]],
+  ['argc_35',['argc',['../structredisClient.html#a7a33cb5fce559ba48490f7b67b5f7d7e',1,'redisClient']]],
+  ['argv_36',['argv',['../structredisClient.html#a386c035ede60ca037d1b782bdadac641',1,'redisClient']]],
+  ['arity_37',['arity',['../structredisCommand.html#a9c21ad3c5edaf7afa62d2cc612077fda',1,'redisCommand']]]
 ];

@@ -111,13 +111,17 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="rio_8h__dep__incl.png" border="0" usemap="#ainclude_2rio_8hdep" alt=""/></div>
 <map name="ainclude_2rio_8hdep" id="ainclude_2rio_8hdep">
-<area shape="rect" title="统一 I/O 抽象，支持文件、内存、网络。提供读写、定位、flush" alt="" coords="93,5,195,31"/>
+<area shape="rect" title="统一 I/O 抽象，支持文件、内存、网络。提供读写、定位、flush" alt="" coords="210,5,313,31"/>
 <area shape="rect" href="net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="5,79,83,104"/>
-<area shape="poly" title=" " alt="" coords="118,41,62,81,59,76,115,36"/>
-<area shape="rect" href="rio_8c.html" title="统一 I/O 抽象，支持文件、内存、网络" alt="" coords="107,79,181,104"/>
-<area shape="poly" title=" " alt="" coords="147,44,147,79,141,79,141,44"/>
-<area shape="rect" href="test__rio_8c.html" title=" " alt="" coords="205,79,315,104"/>
-<area shape="poly" title=" " alt="" coords="176,35,242,76,240,81,173,40"/>
+<area shape="poly" title=" " alt="" coords="214,37,80,81,78,76,213,32"/>
+<area shape="rect" href="redis_8c.html" title=" " alt="" coords="107,79,195,104"/>
+<area shape="poly" title=" " alt="" coords="233,40,170,81,167,76,231,36"/>
+<area shape="rect" href="repli_8c.html" title="从特性函数" alt="" coords="219,79,304,104"/>
+<area shape="poly" title=" " alt="" coords="264,44,264,79,259,79,259,44"/>
+<area shape="rect" href="rio_8c.html" title="统一 I/O 抽象，支持文件、内存、网络" alt="" coords="329,79,402,104"/>
+<area shape="poly" title=" " alt="" coords="291,36,350,76,347,81,288,41"/>
+<area shape="rect" href="test__rio_8c.html" title=" " alt="" coords="426,79,537,104"/>
+<area shape="poly" title=" " alt="" coords="311,32,447,76,445,81,309,37"/>
 </map>
 </div>
 </div>
@@ -142,7 +146,7 @@ Enumerations</h2></td></tr>
 , <a class="el" href="rio_8h.html#a99fb83031ce9923c84392b4e92f956b5a77a49203467a3849e87f566b120c2e70">RIO_ERR_READ</a>
 , <br />
 &#160;&#160;<a class="el" href="rio_8h.html#a99fb83031ce9923c84392b4e92f956b5a6552a0b0d9a0e121a504c5ee9dce3f5c">RIO_ERR_WRITE</a>
-, <a class="el" href="rio_8h.html#a99fb83031ce9923c84392b4e92f956b5a6289e8d93fb86d1b7f0b62e63559a537">RIO_ERR_SEEK</a>
+, <a class="el" href="rio_8h.html#a99fb83031ce9923c84392b4e92f956b5a48009615fce841788214ff96c6663ae6">RIO_ERR_TELL</a>
 , <a class="el" href="rio_8h.html#a99fb83031ce9923c84392b4e92f956b5abb8c4b7de537ae6a770543a59129d75e">RIO_ERR_CLOSE</a>
 <br />
  }</td></tr>
@@ -211,7 +215,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a99fb83031ce9923c84392b4e92f956b5adb499bb331bf3711571e5a9784c29e63" name="a99fb83031ce9923c84392b4e92f956b5adb499bb331bf3711571e5a9784c29e63"></a>RIO_ERR_OPEN&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a99fb83031ce9923c84392b4e92f956b5a77a49203467a3849e87f566b120c2e70" name="a99fb83031ce9923c84392b4e92f956b5a77a49203467a3849e87f566b120c2e70"></a>RIO_ERR_READ&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a99fb83031ce9923c84392b4e92f956b5a6552a0b0d9a0e121a504c5ee9dce3f5c" name="a99fb83031ce9923c84392b4e92f956b5a6552a0b0d9a0e121a504c5ee9dce3f5c"></a>RIO_ERR_WRITE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a99fb83031ce9923c84392b4e92f956b5a6289e8d93fb86d1b7f0b62e63559a537" name="a99fb83031ce9923c84392b4e92f956b5a6289e8d93fb86d1b7f0b62e63559a537"></a>RIO_ERR_SEEK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a99fb83031ce9923c84392b4e92f956b5a48009615fce841788214ff96c6663ae6" name="a99fb83031ce9923c84392b4e92f956b5a48009615fce841788214ff96c6663ae6"></a>RIO_ERR_TELL&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a99fb83031ce9923c84392b4e92f956b5abb8c4b7de537ae6a770543a59129d75e" name="a99fb83031ce9923c84392b4e92f956b5abb8c4b7de537ae6a770543a59129d75e"></a>RIO_ERR_CLOSE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
@@ -369,7 +373,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="rio_8h_afe3c5e9ccb22a7dc63c420e112079720_icgraph.png" border="0" usemap="#ario_8h_afe3c5e9ccb22a7dc63c420e112079720_icgraph" alt=""/></div>
 <map name="ario_8h_afe3c5e9ccb22a7dc63c420e112079720_icgraph" id="ario_8h_afe3c5e9ccb22a7dc63c420e112079720_icgraph">
 <area shape="rect" title=" " alt="" coords="636,31,744,56"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
+<area shape="rect" href="redis_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
 <area shape="poly" title=" " alt="" coords="622,37,588,32,588,27,623,31"/>
 <area shape="rect" href="test__rio_8c.html#a008fdd4d20aae2f5447ff8cf2ee9f5ef" title=" " alt="" coords="462,55,553,80"/>
 <area shape="poly" title=" " alt="" coords="623,55,553,64,552,59,622,50"/>
@@ -495,9 +499,9 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="网络IO， send,recv" alt="" coords="813,229,947,255"/>
 <area shape="rect" href="repli_8c.html#a6471e3fefda37ec6c94f467a3c140f59" title="向master写" alt="" coords="628,56,765,81"/>
 <area shape="poly" title=" " alt="" coords="853,222,709,83,713,79,857,218"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="631,204,762,229"/>
+<area shape="rect" href="redis_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="631,204,762,229"/>
 <area shape="poly" title=" " alt="" coords="799,234,762,228,763,223,800,228"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="437,255,580,280"/>
+<area shape="rect" href="redis_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="437,255,580,280"/>
 <area shape="poly" title=" " alt="" coords="800,250,581,265,580,260,800,245"/>
 <area shape="rect" href="test__rio_8c.html#a901fdeff5fc8ba434c3c811fc921843b" title=" " alt="" coords="637,305,757,331"/>
 <area shape="poly" title=" " alt="" coords="837,262,729,308,727,303,835,258"/>
@@ -583,7 +587,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="rio_8h_a43b7637865c661f97616babab7f6494c_icgraph.png" border="0" usemap="#ario_8h_a43b7637865c661f97616babab7f6494c_icgraph" alt=""/></div>
 <map name="ario_8h_a43b7637865c661f97616babab7f6494c_icgraph" id="ario_8h_a43b7637865c661f97616babab7f6494c_icgraph">
 <area shape="rect" title="读到buf" alt="" coords="636,104,708,129"/>
-<area shape="rect" href="net_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
+<area shape="rect" href="redis_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="427,5,588,31"/>
 <area shape="poly" title=" " alt="" coords="649,96,621,69,587,44,561,33,564,28,589,40,624,65,652,92"/>
 <area shape="rect" href="test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="449,55,565,80"/>
 <area shape="poly" title=" " alt="" coords="622,104,587,94,550,83,551,77,589,89,624,99"/>
@@ -684,9 +688,9 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="813,305,888,331"/>
 <area shape="rect" href="repli_8c.html#a6471e3fefda37ec6c94f467a3c140f59" title="向master写" alt="" coords="628,56,765,81"/>
 <area shape="poly" title=" " alt="" coords="832,295,704,83,708,80,837,292"/>
-<area shape="rect" href="net_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="631,204,762,229"/>
+<area shape="rect" href="redis_8c.html#ab5a55d0c6d3a2749f2c449972fc108f1" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="631,204,762,229"/>
 <area shape="poly" title=" " alt="" coords="824,298,764,251,728,232,730,227,767,246,827,294"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="437,255,580,280"/>
+<area shape="rect" href="redis_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="437,255,580,280"/>
 <area shape="poly" title=" " alt="" coords="799,304,765,295,669,281,580,273,581,268,669,276,766,290,801,299"/>
 <area shape="rect" href="test__rio_8c.html#a374c763688ef16d3eb38a5470d6ec3c6" title=" " alt="" coords="639,305,755,331"/>
 <area shape="poly" title=" " alt="" coords="799,321,755,321,755,315,799,315"/>

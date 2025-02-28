@@ -27,7 +27,7 @@
 <area shape="rect" id="Node000024" href="$db_8c.html#a923a9442ab6c676b4ba6d7532b324309" title=" " alt="" coords="380,308,441,333"/>
 <area shape="poly" id="edge24_Node000002_Node000024" title=" " alt="" coords="265,318,366,318,366,323,265,323"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="474,176,508,181,507,186,473,181"/>
-<area shape="rect" id="Node000005" href="$robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="740,85,917,111"/>
+<area shape="rect" id="Node000005" href="$robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象 | robj 结构体 | sds 头部 | 字符串缓冲区 (len + 1) | ^ ^ ^ obj obj&#45;&gt;ptr ss&#45;&gt;buf" alt="" coords="740,85,917,111"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="626,182,676,151,739,120,759,112,761,117,741,124,678,156,628,186"/>
 <area shape="rect" id="Node000011" href="$robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="766,135,891,160"/>
 <area shape="poly" id="edge10_Node000004_Node000011" title=" " alt="" coords="664,181,757,160,758,166,665,187"/>

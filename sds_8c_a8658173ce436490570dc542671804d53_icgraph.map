@@ -1,6 +1,6 @@
 <map id="sdscatlen" name="sdscatlen">
 <area shape="rect" id="Node000001" title=" " alt="" coords="741,55,825,80"/>
-<area shape="rect" id="Node000002" href="$redis_8c.html#a56bb0547aea12b8e175e789f7c908256" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="570,5,690,31"/>
+<area shape="rect" id="Node000002" href="$src_2client_8c.html#a56bb0547aea12b8e175e789f7c908256" title="read接口， 读取到client&#45;&gt;readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。" alt="" coords="570,5,690,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="729,53,670,33,671,28,731,48"/>
 <area shape="rect" id="Node000006" href="$rio_8c.html#a14bc77d1ce22eaf97564ae3819f4f48c" title="向RIO追加写入len字节" alt="" coords="567,55,693,80"/>
 <area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="728,70,694,70,694,65,728,65"/>

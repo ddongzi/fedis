@@ -1,5 +1,5 @@
 <map id="_createEmbeddedString" name="_createEmbeddedString">
-<area shape="rect" id="Node000001" title="创建embedded str 编码的字符串对象" alt="" coords="5,55,183,80"/>
+<area shape="rect" id="Node000001" title="创建embedded str 编码的字符串对象 | robj 结构体 | sds 头部 | 字符串缓冲区 (len + 1) | ^ ^ ^ obj obj&#45;&gt;ptr ss&#45;&gt;buf" alt="" coords="5,55,183,80"/>
 <area shape="rect" id="Node000002" href="$sds_8c.html#adc333244a10e3a3809e58aa089ac80d7" title=" " alt="" coords="231,55,297,80"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="183,65,217,65,217,70,183,70"/>
 <area shape="rect" id="Node000003" href="$sds_8c.html#aea43f655605ea1172559ff59c2644923" title=" " alt="" coords="351,29,415,55"/>

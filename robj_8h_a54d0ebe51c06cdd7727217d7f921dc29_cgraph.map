@@ -1,6 +1,6 @@
 <map id="robjCreateStringObject" name="robjCreateStringObject">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,128,176,153"/>
-<area shape="rect" id="Node000002" href="$robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="224,53,401,79"/>
+<area shape="rect" id="Node000002" href="$robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象 | robj 结构体 | sds 头部 | 字符串缓冲区 (len + 1) | ^ ^ ^ obj obj&#45;&gt;ptr ss&#45;&gt;buf" alt="" coords="224,53,401,79"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,125,223,87,248,80,249,85,225,93,124,130"/>
 <area shape="rect" id="Node000008" href="$robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="250,103,375,128"/>
 <area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="176,128,236,121,236,127,176,134"/>

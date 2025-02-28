@@ -1,23 +1,11 @@
 <map id="include/net.h" name="include/net.h">
-<area shape="rect" id="Node000001" title="网络连接" alt="" coords="466,5,573,31"/>
-<area shape="rect" id="Node000002" href="$redis_8h.html" title=" " alt="" coords="461,79,578,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="522,44,522,79,517,79,517,44"/>
-<area shape="rect" id="Node000003" href="$skiplist_8h.html" title=" " alt="" coords="5,152,137,177"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="447,107,138,156,137,150,447,101"/>
-<area shape="rect" id="Node000004" href="$ae_8c.html" title="eventloop, epoll" alt="" coords="162,152,234,177"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="453,109,247,155,235,157,234,152,245,149,452,104"/>
-<area shape="rect" id="Node000005" href="$main_8c.html" title=" " alt="" coords="259,152,348,177"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="472,111,339,154,337,149,471,106"/>
-<area shape="rect" id="Node000006" href="$net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="373,152,450,177"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="492,114,430,154,428,150,489,109"/>
-<area shape="rect" id="Node000007" href="$notify_8c.html" title=" " alt="" coords="474,152,565,177"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="522,118,522,152,517,152,517,118"/>
-<area shape="rect" id="Node000008" href="$rdb_8c.html" title=" " alt="" coords="589,152,666,177"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="549,109,611,150,608,154,547,114"/>
-<area shape="rect" id="Node000009" href="$redis_8c.html" title=" " alt="" coords="690,152,778,177"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="568,106,700,149,698,154,566,111"/>
-<area shape="rect" id="Node000010" href="$repli_8c.html" title=" " alt="" coords="802,152,887,177"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="585,104,802,151,801,157,584,110"/>
-<area shape="rect" id="Node000011" href="$robj_8c.html" title=" " alt="" coords="912,152,993,177"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="592,100,900,149,912,152,911,157,899,155,591,105"/>
+<area shape="rect" id="Node000001" title="网络连接" alt="" coords="161,5,267,31"/>
+<area shape="rect" id="Node000002" href="$src_2client_8c.html" title=" " alt="" coords="5,79,97,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,39,79,81,77,76,174,34"/>
+<area shape="rect" id="Node000003" href="$net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="122,79,199,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="199,43,171,80,167,77,195,40"/>
+<area shape="rect" id="Node000004" href="$redis_8c.html" title=" " alt="" coords="223,79,311,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="233,40,261,77,257,80,229,43"/>
+<area shape="rect" id="Node000005" href="$repli_8c.html" title="从特性函数" alt="" coords="335,79,421,104"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="254,34,352,76,350,81,252,39"/>
 </map>

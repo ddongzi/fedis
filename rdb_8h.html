@@ -84,13 +84,15 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="rdb_8h__dep__incl.png" border="0" usemap="#ainclude_2rdb_8hdep" alt=""/></div>
 <map name="ainclude_2rdb_8hdep" id="ainclude_2rdb_8hdep">
-<area shape="rect" title=" " alt="" coords="92,5,199,31"/>
+<area shape="rect" title=" " alt="" coords="145,5,252,31"/>
 <area shape="rect" href="net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="5,79,83,104"/>
-<area shape="poly" title=" " alt="" coords="119,41,62,81,59,76,116,36"/>
+<area shape="poly" title=" " alt="" coords="163,39,70,81,68,76,160,34"/>
 <area shape="rect" href="rdb_8c.html" title=" " alt="" coords="107,79,184,104"/>
-<area shape="poly" title=" " alt="" coords="148,44,148,79,143,79,143,44"/>
+<area shape="poly" title=" " alt="" coords="184,43,156,80,152,77,180,40"/>
 <area shape="rect" href="redis_8c.html" title=" " alt="" coords="208,79,296,104"/>
-<area shape="poly" title=" " alt="" coords="175,36,236,76,233,81,172,40"/>
+<area shape="poly" title=" " alt="" coords="218,40,245,77,241,80,213,43"/>
+<area shape="rect" href="repli_8c.html" title="从特性函数" alt="" coords="320,79,405,104"/>
+<area shape="poly" title=" " alt="" coords="239,34,337,76,335,81,237,39"/>
 </map>
 </div>
 </div>
@@ -133,11 +135,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a7963649cd6a7bea26109233c8afc1af8" id="r_a7963649cd6a7bea26109233c8afc1af8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="rdb_8h.html#a7963649cd6a7bea26109233c8afc1af8">receiveRDBfile</a> (char *buf, int n)</td></tr>
 <tr class="memdesc:a7963649cd6a7bea26109233c8afc1af8"><td class="mdescLeft">&#160;</td><td class="mdescRight">将主的RDB文件复制为自己的RDB  <br /></td></tr>
 <tr class="separator:a7963649cd6a7bea26109233c8afc1af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5a55d0c6d3a2749f2c449972fc108f1" id="r_ab5a55d0c6d3a2749f2c449972fc108f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="rdb_8h.html#ab5a55d0c6d3a2749f2c449972fc108f1">saveRDBToSlave</a> (<a class="el" href="structredisClient.html">redisClient</a> *client)</td></tr>
-<tr class="memdesc:ab5a55d0c6d3a2749f2c449972fc108f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB  <br /></td></tr>
-<tr class="separator:ab5a55d0c6d3a2749f2c449972fc108f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a778fd917c17710af7c383898c6e13c62" id="r_a778fd917c17710af7c383898c6e13c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="rdb_8h.html#a778fd917c17710af7c383898c6e13c62">getRdbLength</a> (long long *length)</td></tr>
-<tr class="separator:a778fd917c17710af7c383898c6e13c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a79072da2d9fb562368f1798bdf8d7645" name="a79072da2d9fb562368f1798bdf8d7645"></a>
@@ -375,24 +372,6 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a778fd917c17710af7c383898c6e13c62" name="a778fd917c17710af7c383898c6e13c62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a778fd917c17710af7c383898c6e13c62">&#9670;&#160;</a></span>getRdbLength()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void getRdbLength </td>
-          <td>(</td>
-          <td class="paramtype">long long *&#160;</td>
-          <td class="paramname"><em>length</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a13000232d50f2ac30a217eff8d6b09a9" name="a13000232d50f2ac30a217eff8d6b09a9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a13000232d50f2ac30a217eff8d6b09a9">&#9670;&#160;</a></span>rdbLoad()</h2>
 
@@ -428,7 +407,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="438,123,527,103,529,108,439,128"/>
 <area shape="rect" href="robj_8c.html#a54d0ebe51c06cdd7727217d7f921dc29" title=" " alt="" coords="508,128,679,153"/>
 <area shape="poly" title=" " alt="" coords="461,136,494,137,494,142,461,142"/>
-<area shape="rect" href="robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象" alt="" coords="727,56,904,81"/>
+<area shape="rect" href="robj_8c.html#a919d89c23dfa5e71bd1435c78cc79b1a" title="创建embedded str 编码的字符串对象 | robj 结构体 | sds 头部 | 字符串缓冲区 (len + 1) | ^ ^ ^ obj obj&#45;&gt;ptr ss&#45;&gt;buf" alt="" coords="727,56,904,81"/>
 <area shape="poly" title=" " alt="" coords="640,125,678,113,726,90,748,83,749,88,728,95,680,118,642,130"/>
 <area shape="rect" href="robj_8c.html#ab1c70d88824b91c9517d58b0aff7d0cd" title=" " alt="" coords="753,105,878,131"/>
 <area shape="poly" title=" " alt="" coords="679,129,739,123,739,128,679,135"/>
@@ -519,82 +498,6 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="371,21,336,21,336,15,371,15"/>
 <area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="5,5,169,31"/>
 <area shape="poly" title=" " alt="" coords="204,21,170,21,170,15,204,15"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="ab5a55d0c6d3a2749f2c449972fc108f1" name="ab5a55d0c6d3a2749f2c449972fc108f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5a55d0c6d3a2749f2c449972fc108f1">&#9670;&#160;</a></span>saveRDBToSlave()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void saveRDBToSlave </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structredisClient.html">redisClient</a> *&#160;</td>
-          <td class="paramname"><em>client</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">client</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="rdb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph.png" border="0" usemap="#ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph" alt=""/></div>
-<map name="ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph" id="ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_cgraph">
-<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="5,105,136,131"/>
-<area shape="rect" href="rio_8c.html#a880129fb8211463940a28b0951528e51" title="网络IO， send,recv" alt="" coords="184,80,317,105"/>
-<area shape="poly" title=" " alt="" coords="136,106,170,101,171,107,136,111"/>
-<area shape="rect" href="rio_8c.html#a5bc2c1b0deb64981df5b8ee10d6b8910" title=" " alt="" coords="213,129,288,155"/>
-<area shape="poly" title=" " alt="" coords="136,124,200,133,199,138,136,129"/>
-<area shape="rect" href="rio_8c.html#a0dae644aa8c703156845104e6a835aaf" title=" " alt="" coords="374,5,505,31"/>
-<area shape="poly" title=" " alt="" coords="278,77,364,40,383,33,385,38,366,44,280,82"/>
-<area shape="rect" href="rio_8c.html#a08ec2f4753139c71664b6b8948f2771f" title=" " alt="" coords="365,55,513,80"/>
-<area shape="poly" title=" " alt="" coords="317,81,351,76,352,82,318,86"/>
-<area shape="rect" href="rio_8c.html#a1bf3f5272bd3ca2ba26dde068e439a5c" title=" " alt="" coords="371,104,508,129"/>
-<area shape="poly" title=" " alt="" coords="318,98,357,104,357,109,317,104"/>
-<area shape="rect" href="rio_8c.html#acb8195a4e9eefe2912e1da9b98b55dce" title=" " alt="" coords="374,153,505,179"/>
-<area shape="poly" title=" " alt="" coords="290,103,318,114,366,138,386,146,384,151,364,143,316,119,288,108"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="rdb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph.png" border="0" usemap="#ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph" alt=""/></div>
-<map name="ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph" id="ardb_8h_ab5a55d0c6d3a2749f2c449972fc108f1_icgraph">
-<area shape="rect" title="主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB" alt="" coords="416,228,547,253"/>
-<area shape="rect" href="net_8c.html#a07e21cc348fe7968848b00fe2c75a694" title=" " alt="" coords="225,228,368,253"/>
-<area shape="poly" title=" " alt="" coords="402,243,368,243,368,238,402,238"/>
-<area shape="rect" href="redis_8c.html#aaafe20401422f803235caf7b91038184" title=" " alt="" coords="21,5,161,31"/>
-<area shape="poly" title=" " alt="" coords="285,216,270,178,247,131,215,84,176,44,156,33,159,28,179,40,220,81,251,128,275,175,290,214"/>
-<area shape="rect" href="redis_8c.html#a0b00125dfe903c22db4443c30a71a099" title=" " alt="" coords="23,55,160,80"/>
-<area shape="poly" title=" " alt="" coords="280,217,239,155,210,122,176,94,154,82,156,78,179,89,213,118,243,152,285,214"/>
-<area shape="rect" href="redis_8c.html#ac134219b8dbebd6b14e5ed3913202854" title=" " alt="" coords="22,104,161,129"/>
-<area shape="poly" title=" " alt="" coords="272,220,230,180,176,143,149,132,151,127,179,138,233,176,276,216"/>
-<area shape="rect" href="redis_8c.html#ad912bd5f35dc7b1737b64af911834c4d" title=" " alt="" coords="13,153,170,179"/>
-<area shape="poly" title=" " alt="" coords="255,225,176,193,141,181,143,176,178,187,257,220"/>
-<area shape="rect" href="redis_8c.html#a989ced9293724bbb7b646d3597a32cd8" title=" " alt="" coords="20,203,163,228"/>
-<area shape="poly" title=" " alt="" coords="211,233,163,227,163,221,212,228"/>
-<area shape="rect" href="redis_8c.html#a66b0471e3f8f92f3e1ac8dfea66a998d" title=" " alt="" coords="6,252,177,277"/>
-<area shape="poly" title=" " alt="" coords="212,253,177,257,176,252,211,248"/>
-<area shape="rect" href="redis_8c.html#a714f77d050ab40facc853711a07cee3b" title=" " alt="" coords="5,301,177,327"/>
-<area shape="poly" title=" " alt="" coords="255,261,178,291,139,304,137,299,176,286,253,256"/>
-<area shape="rect" href="redis_8c.html#a895005e636807a99953c352e0e6e7fb9" title=" " alt="" coords="23,351,159,376"/>
-<area shape="poly" title=" " alt="" coords="275,266,232,304,179,340,148,353,146,348,176,336,229,300,271,262"/>
-<area shape="rect" href="redis_8c.html#ac77720e21fa7a267e9c00e35d92a4737" title=" " alt="" coords="9,400,173,425"/>
-<area shape="poly" title=" " alt="" coords="284,267,242,328,213,361,179,390,153,402,151,398,176,385,209,357,238,325,280,264"/>
-<area shape="rect" href="redis_8c.html#a475fa35bcbbb7cd4cb6e36dd89eaf892" title=" " alt="" coords="18,449,165,475"/>
-<area shape="poly" title=" " alt="" coords="289,267,274,305,251,352,219,399,179,439,156,452,154,447,176,435,215,395,246,349,269,303,284,265"/>
 </map>
 </div>
 
