@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['name_0',['name',['../structredisCommand.html#ae4526b00fd9f55a6f6a9eab29c536116',1,'redisCommand']]],
+  ['name_0',['name',['../structredisCommand.html#ae4526b00fd9f55a6f6a9eab29c536116',1,'redisCommand::name'],['../structsentinelRedisInstance.html#aa5d731b9b7d57ac98e7f9ac7a2dddb11',1,'sentinelRedisInstance::name']]],
   ['net_2ec_1',['net.c',['../net_8c.html',1,'']]],
   ['net_2eh_2',['net.h',['../net_8h.html',1,'']]],
   ['net_5ferr_3',['NET_ERR',['../net_8h.html#ad7d1c7d25a580d3d038b16752bcce665',1,'net.h']]],

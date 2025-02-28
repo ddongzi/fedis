@@ -8,5 +8,6 @@ var searchData=
   ['dbnum_5',['dbnum',['../structredisServer.html#a62d9b4dfd9fa2999fdeafb9756759e40',1,'redisServer']]],
   ['dict_6',['dict',['../structredisDb.html#a4aa609472e0e77d19c87c8a42d94f4a1',1,'redisDb::dict'],['../structdictIterator.html#ad2e2893283fc5c304a49bccb5ce85384',1,'dictIterator::dict']]],
   ['dirty_7',['dirty',['../structredisServer.html#a3e6b5cbb6723ee5e2173ff513e0d1958',1,'redisServer']]],
-  ['dup_8',['dup',['../structlist.html#ac8793429d66d28a5474b50e2e9881322',1,'list']]]
+  ['downafterperiod_8',['downAfterPeriod',['../structsentinelRedisInstance.html#a590288a20bbfa53d59795e9ecb327fcc',1,'sentinelRedisInstance']]],
+  ['dup_9',['dup',['../structlist.html#ac8793429d66d28a5474b50e2e9881322',1,'list']]]
 ];

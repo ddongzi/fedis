@@ -112,6 +112,7 @@ $(function() {
 <li>dbnum&#160;:&#160;<a class="el" href="structredisServer.html#a62d9b4dfd9fa2999fdeafb9756759e40">redisServer</a></li>
 <li>dict&#160;:&#160;<a class="el" href="structdictIterator.html#ad2e2893283fc5c304a49bccb5ce85384">dictIterator</a>, <a class="el" href="structredisDb.html#a4aa609472e0e77d19c87c8a42d94f4a1">redisDb</a></li>
 <li>dirty&#160;:&#160;<a class="el" href="structredisServer.html#a3e6b5cbb6723ee5e2173ff513e0d1958">redisServer</a></li>
+<li>downAfterPeriod&#160;:&#160;<a class="el" href="structsentinelRedisInstance.html#a590288a20bbfa53d59795e9ecb327fcc">sentinelRedisInstance</a></li>
 <li>dup&#160;:&#160;<a class="el" href="structlist.html#ac8793429d66d28a5474b50e2e9881322">list</a></li>
 </ul>
 
@@ -149,11 +150,14 @@ $(function() {
 
 
 <h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
-<li>id&#160;:&#160;<a class="el" href="structaeTimeEvent.html#a24ed4bf76ef40a2c735e9f9cccb45de4">aeTimeEvent</a>, <a class="el" href="structredisDb.html#a0c85effb7de0bae1dd2df7c28b4184cd">redisDb</a></li>
+<li>id&#160;:&#160;<a class="el" href="structaeTimeEvent.html#a24ed4bf76ef40a2c735e9f9cccb45de4">aeTimeEvent</a>, <a class="el" href="structredisDb.html#a0c85effb7de0bae1dd2df7c28b4184cd">redisDb</a>, <a class="el" href="structsentinel.html#a742d151c40bb0e0c9411b93614d6f588">sentinel</a></li>
 <li>index&#160;:&#160;<a class="el" href="structdictIterator.html#a3e0798e8d5e0906fbd6181a2588b3e98">dictIterator</a></li>
+<li>instances&#160;:&#160;<a class="el" href="structsentinel.html#a53cd97e59e637968ee2c25795a391e82">sentinel</a></li>
 <li>integers&#160;:&#160;<a class="el" href="structsharedObjects.html#a4e6d12d005669ca2e4c04e9bd8d53d4b">sharedObjects</a></li>
 <li>invalidCommand&#160;:&#160;<a class="el" href="structsharedObjects.html#a39de9904623d2c1fb43ba8dab1cff38b">sharedObjects</a></li>
+<li>ip&#160;:&#160;<a class="el" href="structsentinelRedisInstance.html#a4317ce60f90efc2be64330905d905131">sentinelRedisInstance</a></li>
 <li>isBgSaving&#160;:&#160;<a class="el" href="structredisServer.html#ace11c91f475076d1e817a1c5d40e1e04">redisServer</a></li>
+<li>isdown&#160;:&#160;<a class="el" href="structsentinelRedisInstance.html#ac0772af0829767cff1645a69b07b17df">sentinelRedisInstance</a></li>
 </ul>
 
 
@@ -167,6 +171,8 @@ $(function() {
 
 
 <h3><a id="index_l" name="index_l"></a>- l -</h3><ul>
+<li>lastPingTime&#160;:&#160;<a class="el" href="structsentinelRedisInstance.html#a936246bf341510334f1513c8a8620e5e">sentinelRedisInstance</a></li>
+<li>lastPongTime&#160;:&#160;<a class="el" href="structsentinelRedisInstance.html#ae346243b12f85ecb7a98c05beb99f8b2">sentinelRedisInstance</a></li>
 <li>lastSave&#160;:&#160;<a class="el" href="structredisServer.html#abe4ff90d7fb09be7c1230dd48a56b2f8">redisServer</a></li>
 <li>len&#160;:&#160;<a class="el" href="structlist.html#a6270c3c257d9f1f35f29a59e4803ea9b">list</a>, <a class="el" href="structsds.html#aafe2dc911f55ad9a80a50a139091f8de">sds</a></li>
 <li>level&#160;:&#160;<a class="el" href="structCallback.html#ae2d14d16fd04cb9d7aeadae7f17a63d5">Callback</a>, <a class="el" href="structlog__Event.html#a296a68f4ae9bb0411f2157dcb4a862c4">log_Event</a>, <a class="el" href="structzskiplistNode.html#a2018b16416b6783f7957a8f3fd5da8e4">zskiplistNode</a></li>
@@ -188,7 +194,7 @@ $(function() {
 
 
 <h3><a id="index_n" name="index_n"></a>- n -</h3><ul>
-<li>name&#160;:&#160;<a class="el" href="structredisCommand.html#ae4526b00fd9f55a6f6a9eab29c536116">redisCommand</a></li>
+<li>name&#160;:&#160;<a class="el" href="structredisCommand.html#ae4526b00fd9f55a6f6a9eab29c536116">redisCommand</a>, <a class="el" href="structsentinelRedisInstance.html#aa5d731b9b7d57ac98e7f9ac7a2dddb11">sentinelRedisInstance</a></li>
 <li>next&#160;:&#160;<a class="el" href="structaeTimeEvent.html#a9721fa6e2866701e2c38f0020beaac60">aeTimeEvent</a>, <a class="el" href="structdictEntry.html#a351c5cedb6f396e6f79d39d006eb9f33">dictEntry</a>, <a class="el" href="structlistNode.html#a860785ea27fb1c044d6a59ba491dd6ab">listNode</a></li>
 </ul>
 
@@ -202,7 +208,7 @@ $(function() {
 <h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
 <li>ping&#160;:&#160;<a class="el" href="structsharedObjects.html#ad0abe7173203898d595894f8dd749bd0">sharedObjects</a></li>
 <li>pong&#160;:&#160;<a class="el" href="structsharedObjects.html#aedb0b943dd75cbed1f7a6706777d58df">sharedObjects</a></li>
-<li>port&#160;:&#160;<a class="el" href="structredisServer.html#a0c5549470cf902a72d96fc2a693cec20">redisServer</a></li>
+<li>port&#160;:&#160;<a class="el" href="structredisServer.html#a0c5549470cf902a72d96fc2a693cec20">redisServer</a>, <a class="el" href="structsentinelRedisInstance.html#a8beb652010b3d6bebaac6f9642b0845b">sentinelRedisInstance</a></li>
 <li>prev&#160;:&#160;<a class="el" href="structlistNode.html#a79259218e5b958028b7e650d48d3cb01">listNode</a></li>
 <li>privdata&#160;:&#160;<a class="el" href="structdict.html#a36ce9f4e7d035fa4d7d2886f30b6a9af">dict</a></li>
 <li>proc&#160;:&#160;<a class="el" href="structredisCommand.html#a24f22d9b254c49ba9fedf8f260ba6ad8">redisCommand</a></li>
@@ -220,7 +226,7 @@ $(function() {
 <li>rehashidx&#160;:&#160;<a class="el" href="structdict.html#a83fa6a7b418a55ca5a90a54d45f48f33">dict</a></li>
 <li>replState&#160;:&#160;<a class="el" href="structredisClient.html#a146a2c863e5b4ba8b29ccd815e9c4a14">redisClient</a>, <a class="el" href="structredisServer.html#abeac38517583ae4eb20de5ff7013d93f">redisServer</a></li>
 <li>rfileProc&#160;:&#160;<a class="el" href="structaeFileEvent.html#ae39bf42ed5c4cac998ee5c9fc4ee0069">aeFileEvent</a></li>
-<li>role&#160;:&#160;<a class="el" href="structredisServer.html#a4295f769cc7bc0bf64813dfc5d544379">redisServer</a></li>
+<li>role&#160;:&#160;<a class="el" href="structredisServer.html#a4295f769cc7bc0bf64813dfc5d544379">redisServer</a>, <a class="el" href="structsentinelRedisInstance.html#a0b6c49e1abd59172f6b6d8f66217062c">sentinelRedisInstance</a></li>
 </ul>
 
 

@@ -9,5 +9,5 @@ var searchData=
   ['rehashidx_6',['rehashidx',['../structdict.html#a83fa6a7b418a55ca5a90a54d45f48f33',1,'dict']]],
   ['replstate_7',['replstate',['../structredisClient.html#a146a2c863e5b4ba8b29ccd815e9c4a14',1,'redisClient::replState'],['../structredisServer.html#abeac38517583ae4eb20de5ff7013d93f',1,'redisServer::replState']]],
   ['rfileproc_8',['rfileProc',['../structaeFileEvent.html#ae39bf42ed5c4cac998ee5c9fc4ee0069',1,'aeFileEvent']]],
-  ['role_9',['role',['../structredisServer.html#a4295f769cc7bc0bf64813dfc5d544379',1,'redisServer']]]
+  ['role_9',['role',['../structredisServer.html#a4295f769cc7bc0bf64813dfc5d544379',1,'redisServer::role'],['../structsentinelRedisInstance.html#a0b6c49e1abd59172f6b6d8f66217062c',1,'sentinelRedisInstance::role']]]
 ];
