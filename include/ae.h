@@ -21,7 +21,7 @@
 #define AE_OK       0
 
 struct aeEventLoop;
-
+//不同的模块定义自己的数据结构 clientData， 比如携带入参和回调
 typedef void aeFileProc(struct aeEventLoop *eventLoop, int fd, void *clientData);
 // 时间事件处理函数返回
 #define AE_NOMORE -1

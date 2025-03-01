@@ -163,7 +163,7 @@ static int anetKeepAlive(int fd, int interval)
  * 封装了socket，bind，listen
  * @param [in] err 错误信息
  * @param [in] port
- * @param [in] bindaddr
+ * @param [in] bindaddr 内部分配
  * @return int 监听fd
  */
 int anetTcpServer(int port, char *bindaddr, int backlog)
@@ -255,6 +255,8 @@ static int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
  * @param [in] fd
  * @param [in] privData
  */
+// TODO 目前只在accept用了回调，listen没有， data要声明为结构， 包含回调和入参
+
 void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
 {
     int cfd, port;
@@ -271,6 +273,11 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
     anetEnableTcpNoDelay(cfd);
     anetKeepAlive(cfd, 300);
     anetFormatPeer(cfd, ip, sizeof(ip), &port);
+
+    // TODO 需要适配sentinel， 添加回调函数，把具体逻辑给调用者
+
+    callback(cfd, NULL);
+
     // 创建client实例
     redisClient *client = redisClientCreate(cfd);
     listAddNodeTail(server->clients, listCreateNode(client));

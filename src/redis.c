@@ -415,11 +415,12 @@ void initServer()
 
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->bindaddr = NULL;
+    // 需要freeaddrInfo释放 
     int fd = anetTcpServer(server->port, server->bindaddr, server->maxclients);
     if (fd == -1) {
         exit(1);
     }
-    log_debug("● create server, listening.....\n");
+    log_debug("● create server, listening.....");
     
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
     log_debug("● create file event for ACCEPT, listening.....\n");
@@ -628,4 +629,28 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
         saveRDBToSlave(client); // 发送 RDB
     }
     aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
+}
+
+
+
+int main(int argc, char **argv)
+{
+
+    log_set_level(LOG_DEBUG);
+    log_debug("hello log.");
+
+    server = calloc(1,sizeof(struct redisServer)); // 2. 普通主从服务器
+    initServerConfig();
+    // 参数覆盖配置
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
+            server->port = atoi(argv[i + 1]);
+            i++;
+        } 
+    }
+    initServer();
+    aeMain(server->eventLoop);
+
+    return 0;
 }

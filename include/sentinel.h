@@ -2,6 +2,12 @@
 #define SENTINEL_H
 #include <time.h>
 #include "dict.h"
+#include "ae.h"
+
+#define SENTINEL_LISTENPORT 7777
+#define SENTINEL_MAXCONNECTIONS 30
+sentinel* sentinel;
+
 // sentinel 维护的redis实例状态：主、从、sentinel
 typedef struct sentinelRedisInstance {
     char* name;
@@ -18,7 +24,10 @@ typedef struct sentinelRedisInstance {
 typedef struct sentinel {
     char* id; // sentinel ID 唯一
     dict* instances; ///< 维护的实例字典。键：实例名。值：实例。
-    
+    char* bindaddr;
+    int port;
+    aeEventLoop* eventLoop;
+    int maxConnections;    
 } sentinel;
 
 // 监控实例状态。定期执行，发送PING，检查保活。
@@ -31,6 +40,7 @@ void sentinelCheckHealth(sentinelRedisInstance *ri);
 void sentinelFailover(sentinelRedisInstance *ri);
 // 更新实例信息
 void sentinelUpdateMasterInfo(sentinel *sentinel, sentinelRedisInstance *ri);
+void sentinelRedisInstanceFree(sentinelRedisInstance* instance);
 
 
 #endif
