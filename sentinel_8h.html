@@ -75,6 +75,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">sentinel.h File Reference</div></div>
@@ -82,24 +83,35 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;time.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="dict_8h_source.html">dict.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ae_8h_source.html">ae.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sentinel.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="sentinel_8h__incl.png" border="0" usemap="#ainclude_2sentinel_8h" alt=""/></div>
 <map name="ainclude_2sentinel_8h" id="ainclude_2sentinel_8h">
-<area shape="rect" title=" " alt="" coords="71,5,208,31"/>
-<area shape="rect" title=" " alt="" coords="65,79,129,104"/>
-<area shape="poly" title=" " alt="" coords="135,32,113,68,108,66,130,30"/>
-<area shape="rect" href="dict_8h.html" title=" " alt="" coords="153,79,211,104"/>
-<area shape="poly" title=" " alt="" coords="149,30,170,66,166,68,144,32"/>
+<area shape="rect" title=" " alt="" coords="345,5,483,31"/>
+<area shape="rect" title=" " alt="" coords="382,152,446,177"/>
+<area shape="poly" title=" " alt="" coords="417,31,417,138,411,138,411,31"/>
+<area shape="rect" href="dict_8h.html" title=" " alt="" coords="198,79,257,104"/>
+<area shape="poly" title=" " alt="" coords="385,33,271,76,269,71,383,28"/>
+<area shape="rect" href="ae_8h.html" title=" " alt="" coords="470,79,521,104"/>
+<area shape="poly" title=" " alt="" coords="429,29,474,68,470,72,425,33"/>
+<area shape="rect" title=" " alt="" coords="192,152,263,177"/>
+<area shape="poly" title=" " alt="" coords="230,104,230,138,225,138,225,104"/>
 <area shape="rect" title=" " alt="" coords="5,152,76,177"/>
-<area shape="poly" title=" " alt="" coords="160,106,77,148,75,143,158,102"/>
-<area shape="rect" title=" " alt="" coords="100,152,171,177"/>
-<area shape="poly" title=" " alt="" coords="177,106,153,142,148,139,172,103"/>
-<area shape="rect" title=" " alt="" coords="195,152,262,177"/>
-<area shape="poly" title=" " alt="" coords="192,103,216,139,211,142,187,106"/>
+<area shape="poly" title=" " alt="" coords="199,106,84,150,82,145,197,101"/>
+<area shape="rect" title=" " alt="" coords="101,152,167,177"/>
+<area shape="poly" title=" " alt="" coords="214,106,162,146,158,141,211,102"/>
 <area shape="rect" title=" " alt="" coords="287,152,357,177"/>
-<area shape="poly" title=" " alt="" coords="206,102,288,143,286,148,203,106"/>
+<area shape="poly" title=" " alt="" coords="244,102,297,141,294,146,241,106"/>
+<area shape="poly" title=" " alt="" coords="484,106,439,145,436,141,481,102"/>
+<area shape="poly" title=" " alt="" coords="471,106,363,149,361,144,469,101"/>
+<area shape="rect" title=" " alt="" coords="470,152,561,177"/>
+<area shape="poly" title=" " alt="" coords="501,104,511,138,506,140,496,105"/>
+<area shape="rect" title=" " alt="" coords="585,152,677,177"/>
+<area shape="poly" title=" " alt="" coords="518,102,598,143,596,148,516,106"/>
+<area shape="rect" title=" " alt="" coords="701,152,769,177"/>
+<area shape="poly" title=" " alt="" coords="522,98,688,147,687,152,520,103"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -122,12 +134,19 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsentinel.html">sentinel</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a7a86aaaa868f9022cdfd4281121c28f0" id="r_a7a86aaaa868f9022cdfd4281121c28f0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#a7a86aaaa868f9022cdfd4281121c28f0">SENTINEL_LISTENPORT</a>&#160;&#160;&#160;7777</td></tr>
+<tr class="separator:a7a86aaaa868f9022cdfd4281121c28f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04bc557dfce8102234f6a4e5852c6e1e" id="r_a04bc557dfce8102234f6a4e5852c6e1e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#a04bc557dfce8102234f6a4e5852c6e1e">SENTINEL_MAXCONNECTIONS</a>&#160;&#160;&#160;30</td></tr>
+<tr class="separator:a04bc557dfce8102234f6a4e5852c6e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:acb53a8cde1d0cbec1aef5bb89b886553" id="r_acb53a8cde1d0cbec1aef5bb89b886553"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#acb53a8cde1d0cbec1aef5bb89b886553">sentinelRedisInstance</a></td></tr>
 <tr class="separator:acb53a8cde1d0cbec1aef5bb89b886553"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab022b7aaf19c564867c8de75be44bdea" id="r_ab022b7aaf19c564867c8de75be44bdea"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structsentinel.html">sentinel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#ab022b7aaf19c564867c8de75be44bdea">sentinel</a></td></tr>
-<tr class="separator:ab022b7aaf19c564867c8de75be44bdea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a7c2eec3a0d42fd6f2e9f347f39fffb" id="r_a2a7c2eec3a0d42fd6f2e9f347f39fffb"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structsentinel.html">sentinel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#a2a7c2eec3a0d42fd6f2e9f347f39fffb">sentinel</a></td></tr>
+<tr class="separator:a2a7c2eec3a0d42fd6f2e9f347f39fffb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -141,16 +160,47 @@ Functions</h2></td></tr>
 <tr class="separator:ad4bdb415f0bd3ec9afd0d855dbaf54f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb6e031f2ebdeaeb1e53639828e9cade" id="r_abb6e031f2ebdeaeb1e53639828e9cade"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#abb6e031f2ebdeaeb1e53639828e9cade">sentinelUpdateMasterInfo</a> (<a class="el" href="structsentinel.html">sentinel</a> *<a class="el" href="structsentinel.html">sentinel</a>, <a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a> *ri)</td></tr>
 <tr class="separator:abb6e031f2ebdeaeb1e53639828e9cade"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abccec36e4b5d5aff787f9a63da9e20b9" id="r_abccec36e4b5d5aff787f9a63da9e20b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8h.html#abccec36e4b5d5aff787f9a63da9e20b9">sentinelRedisInstanceFree</a> (<a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a> *instance)</td></tr>
+<tr class="separator:abccec36e4b5d5aff787f9a63da9e20b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="ab022b7aaf19c564867c8de75be44bdea" name="ab022b7aaf19c564867c8de75be44bdea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab022b7aaf19c564867c8de75be44bdea">&#9670;&#160;</a></span>sentinel</h2>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a7a86aaaa868f9022cdfd4281121c28f0" name="a7a86aaaa868f9022cdfd4281121c28f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a86aaaa868f9022cdfd4281121c28f0">&#9670;&#160;</a></span>SENTINEL_LISTENPORT</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="structsentinel.html">sentinel</a> <a class="el" href="structsentinel.html">sentinel</a></td>
+          <td class="memname">#define SENTINEL_LISTENPORT&#160;&#160;&#160;7777</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04bc557dfce8102234f6a4e5852c6e1e" name="a04bc557dfce8102234f6a4e5852c6e1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04bc557dfce8102234f6a4e5852c6e1e">&#9670;&#160;</a></span>SENTINEL_MAXCONNECTIONS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SENTINEL_MAXCONNECTIONS&#160;&#160;&#160;30</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="a2a7c2eec3a0d42fd6f2e9f347f39fffb" name="a2a7c2eec3a0d42fd6f2e9f347f39fffb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a7c2eec3a0d42fd6f2e9f347f39fffb">&#9670;&#160;</a></span>sentinel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structsentinel.html">sentinel</a> * <a class="el" href="structsentinel.html">sentinel</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -237,6 +287,24 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a> *&#160;</td>
           <td class="paramname"><em>ri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abccec36e4b5d5aff787f9a63da9e20b9" name="abccec36e4b5d5aff787f9a63da9e20b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abccec36e4b5d5aff787f9a63da9e20b9">&#9670;&#160;</a></span>sentinelRedisInstanceFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sentinelRedisInstanceFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a> *&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
           <td></td>
         </tr>
       </table>

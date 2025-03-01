@@ -73,74 +73,208 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">sentinel.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="sentinel_8h_source.html">sentinel.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="redis_8h_source.html">redis.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &lt;sys/time.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="sentinel_8h_source.html">sentinel.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sentinel.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sentinel_8c__incl.png" border="0" usemap="#asrc_2sentinel_8c" alt=""/></div>
 <map name="asrc_2sentinel_8c" id="asrc_2sentinel_8c">
-<area shape="rect" title=" " alt="" coords="291,5,399,31"/>
-<area shape="rect" href="sentinel_8h.html" title=" " alt="" coords="23,152,110,177"/>
-<area shape="poly" title=" " alt="" coords="324,33,102,148,100,143,322,29"/>
-<area shape="rect" href="redis_8h.html" title=" " alt="" coords="565,79,632,104"/>
-<area shape="poly" title=" " alt="" coords="387,28,552,74,551,79,385,33"/>
-<area shape="rect" title=" " alt="" coords="47,225,111,251"/>
-<area shape="poly" title=" " alt="" coords="71,177,77,211,72,212,66,178"/>
-<area shape="rect" href="dict_8h.html" title=" " alt="" coords="103,299,161,324"/>
-<area shape="poly" title=" " alt="" coords="58,179,37,212,33,231,37,250,47,264,61,275,91,293,89,298,57,280,43,267,32,252,28,231,33,210,54,176"/>
-<area shape="rect" title=" " alt="" coords="97,372,167,397"/>
-<area shape="poly" title=" " alt="" coords="135,324,135,358,129,358,129,324"/>
-<area shape="rect" title=" " alt="" coords="573,372,643,397"/>
-<area shape="poly" title=" " alt="" coords="162,314,559,373,558,379,161,320"/>
-<area shape="rect" title=" " alt="" coords="5,372,72,397"/>
-<area shape="poly" title=" " alt="" coords="119,326,66,366,63,361,115,322"/>
-<area shape="rect" title=" " alt="" coords="191,372,262,397"/>
-<area shape="poly" title=" " alt="" coords="149,322,202,361,199,366,146,326"/>
-<area shape="poly" title=" " alt="" coords="565,97,513,102,447,112,374,129,304,154,255,184,212,220,177,258,150,289,146,286,173,254,209,216,252,179,302,150,373,124,446,107,512,97,565,92"/>
-<area shape="poly" title=" " alt="" coords="601,104,601,251,608,358,603,359,596,251,596,104"/>
-<area shape="rect" href="ae_8h.html" title=" " alt="" coords="315,152,365,177"/>
-<area shape="poly" title=" " alt="" coords="566,104,380,155,378,150,564,99"/>
-<area shape="rect" href="db_8h.html" title=" " alt="" coords="611,225,661,251"/>
-<area shape="poly" title=" " alt="" coords="604,104,632,211,627,213,599,105"/>
-<area shape="rect" href="robj_8h.html" title=" " alt="" coords="741,299,800,324"/>
-<area shape="poly" title=" " alt="" coords="633,94,662,100,693,111,723,127,749,150,767,183,776,220,778,255,777,285,771,285,773,255,770,221,762,185,745,154,720,132,691,116,660,105,632,99"/>
-<area shape="rect" href="list_8h.html" title=" " alt="" coords="825,299,879,324"/>
-<area shape="poly" title=" " alt="" coords="633,94,702,111,740,127,774,150,802,182,823,218,848,284,843,286,818,220,797,185,770,154,737,132,700,116,631,99"/>
-<area shape="rect" href="client_8h.html" title=" " alt="" coords="663,152,734,177"/>
-<area shape="poly" title=" " alt="" coords="616,102,673,142,670,146,613,106"/>
-<area shape="poly" title=" " alt="" coords="315,175,125,227,123,222,314,170"/>
-<area shape="poly" title=" " alt="" coords="315,173,267,191,244,206,226,227,214,260,211,295,215,329,221,358,216,359,209,330,206,295,209,258,222,224,241,202,265,186,313,168"/>
-<area shape="rect" title=" " alt="" coords="236,225,327,251"/>
-<area shape="poly" title=" " alt="" coords="332,179,301,217,297,213,328,176"/>
-<area shape="rect" title=" " alt="" coords="351,225,443,251"/>
-<area shape="poly" title=" " alt="" coords="352,176,381,213,377,216,347,179"/>
-<area shape="rect" title=" " alt="" coords="467,225,535,251"/>
-<area shape="poly" title=" " alt="" coords="367,175,464,217,462,222,364,180"/>
-<area shape="poly" title=" " alt="" coords="611,246,175,307,174,301,610,240"/>
-<area shape="poly" title=" " alt="" coords="636,252,615,359,610,358,631,251"/>
-<area shape="rect" href="sds_8h.html" title=" " alt="" coords="661,299,717,324"/>
-<area shape="poly" title=" " alt="" coords="647,249,675,286,670,289,643,253"/>
-<area shape="poly" title=" " alt="" coords="659,248,738,290,735,294,656,253"/>
-<area shape="poly" title=" " alt="" coords="678,326,633,365,630,361,675,322"/>
-<area shape="poly" title=" " alt="" coords="661,320,276,378,276,373,661,314"/>
-<area shape="rect" title=" " alt="" coords="668,372,743,397"/>
-<area shape="poly" title=" " alt="" coords="695,324,702,358,697,359,689,325"/>
-<area shape="poly" title=" " alt="" coords="825,323,657,372,656,367,824,318"/>
-<area shape="poly" title=" " alt="" coords="690,179,657,217,653,213,686,176"/>
-<area shape="poly" title=" " alt="" coords="701,178,694,285,688,285,695,178"/>
-<area shape="poly" title=" " alt="" coords="707,177,761,285,756,287,702,179"/>
+<area shape="rect" title=" " alt="" coords="265,5,373,31"/>
+<area shape="rect" title=" " alt="" coords="5,225,72,251"/>
+<area shape="poly" title=" " alt="" coords="300,33,227,81,134,155,62,218,59,214,131,151,224,77,297,29"/>
+<area shape="rect" title=" " alt="" coords="97,225,167,251"/>
+<area shape="poly" title=" " alt="" coords="307,33,252,83,187,154,147,215,143,212,183,150,249,79,303,29"/>
+<area shape="rect" title=" " alt="" coords="468,79,543,104"/>
+<area shape="poly" title=" " alt="" coords="350,28,463,71,461,76,348,33"/>
+<area shape="rect" title=" " alt="" coords="381,225,472,251"/>
+<area shape="poly" title=" " alt="" coords="324,30,333,64,348,103,380,163,413,213,408,216,376,166,343,105,328,65,319,32"/>
+<area shape="rect" href="sentinel_8h.html" title=" " alt="" coords="357,79,443,104"/>
+<area shape="poly" title=" " alt="" coords="333,29,378,68,375,72,330,33"/>
+<area shape="rect" title=" " alt="" coords="705,225,769,251"/>
+<area shape="poly" title=" " alt="" coords="428,102,699,218,697,222,426,107"/>
+<area shape="rect" href="dict_8h.html" title=" " alt="" coords="197,152,256,177"/>
+<area shape="poly" title=" " alt="" coords="373,106,269,149,267,144,371,102"/>
+<area shape="rect" href="ae_8h.html" title=" " alt="" coords="459,152,509,177"/>
+<area shape="poly" title=" " alt="" coords="415,102,461,141,458,145,412,106"/>
+<area shape="poly" title=" " alt="" coords="198,180,83,223,81,218,196,175"/>
+<area shape="poly" title=" " alt="" coords="213,179,160,219,157,215,210,175"/>
+<area shape="rect" title=" " alt="" coords="191,225,262,251"/>
+<area shape="poly" title=" " alt="" coords="229,178,229,212,224,212,224,178"/>
+<area shape="rect" title=" " alt="" coords="286,225,357,251"/>
+<area shape="poly" title=" " alt="" coords="243,175,296,215,293,219,240,179"/>
+<area shape="poly" title=" " alt="" coords="477,179,447,216,443,213,472,176"/>
+<area shape="poly" title=" " alt="" coords="510,171,693,222,691,227,509,176"/>
+<area shape="poly" title=" " alt="" coords="460,179,361,222,359,217,458,175"/>
+<area shape="rect" title=" " alt="" coords="497,225,589,251"/>
+<area shape="poly" title=" " alt="" coords="496,176,527,213,523,217,492,179"/>
+<area shape="rect" title=" " alt="" coords="613,225,681,251"/>
+<area shape="poly" title=" " alt="" coords="510,175,609,217,607,222,508,179"/>
 </map>
 </div>
-</div><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:abccec36e4b5d5aff787f9a63da9e20b9" id="r_abccec36e4b5d5aff787f9a63da9e20b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8c.html#abccec36e4b5d5aff787f9a63da9e20b9">sentinelRedisInstanceFree</a> (<a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a> *instance)</td></tr>
+<tr class="separator:abccec36e4b5d5aff787f9a63da9e20b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7131415a90158b5bf6acd595ca7b31a" id="r_ad7131415a90158b5bf6acd595ca7b31a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8c.html#ad7131415a90158b5bf6acd595ca7b31a">sentinelinit</a> ()</td></tr>
+<tr class="separator:ad7131415a90158b5bf6acd595ca7b31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf9e6b7e6f15df4b525a2e7705ba3089" id="r_abf9e6b7e6f15df4b525a2e7705ba3089"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8c.html#abf9e6b7e6f15df4b525a2e7705ba3089">main</a> (int argc, char const *argv[])</td></tr>
+<tr class="separator:abf9e6b7e6f15df4b525a2e7705ba3089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:acbacf5e8542cb5b27b05b2dd81b627b6" id="r_acbacf5e8542cb5b27b05b2dd81b627b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structsentinel.html">sentinel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sentinel_8c.html#acbacf5e8542cb5b27b05b2dd81b627b6">sentinel</a></td></tr>
+<tr class="separator:acbacf5e8542cb5b27b05b2dd81b627b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>your name (<a href="#" onclick="location.href='mai'+'lto:'+'you'+'@d'+'oma'+'in'+'.co'+'m'; return false;">you@d<span class="obfuscator">.nosp@m.</span>omai<span class="obfuscator">.nosp@m.</span>n.com</a>) </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2025-02-28</dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2025 </dd></dl>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="abf9e6b7e6f15df4b525a2e7705ba3089" name="abf9e6b7e6f15df4b525a2e7705ba3089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf9e6b7e6f15df4b525a2e7705ba3089">&#9670;&#160;</a></span>main()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int main </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>argv</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="sentinel_8c_abf9e6b7e6f15df4b525a2e7705ba3089_cgraph.png" border="0" usemap="#asentinel_8c_abf9e6b7e6f15df4b525a2e7705ba3089_cgraph" alt=""/></div>
+<map name="asentinel_8c_abf9e6b7e6f15df4b525a2e7705ba3089_cgraph" id="asentinel_8c_abf9e6b7e6f15df4b525a2e7705ba3089_cgraph">
+<area shape="rect" title=" " alt="" coords="5,80,60,105"/>
+<area shape="rect" href="log_8c.html#af2493e94f152a28b2ba4e3a2e2bba65d" title=" " alt="" coords="108,55,216,80"/>
+<area shape="poly" title=" " alt="" coords="60,85,94,78,95,83,61,90"/>
+<area shape="rect" href="sentinel_8c.html#ad7131415a90158b5bf6acd595ca7b31a" title=" " alt="" coords="115,104,209,129"/>
+<area shape="poly" title=" " alt="" coords="61,95,101,103,100,108,60,100"/>
+<area shape="rect" href="net_8h.html#acf0d4a3b1fa80dbd9b61325130a29ce5" title=" " alt="" coords="270,5,407,31"/>
+<area shape="poly" title=" " alt="" coords="193,102,214,89,228,77,237,64,247,52,263,40,274,34,276,38,265,44,251,56,242,68,232,80,218,93,196,106"/>
+<area shape="rect" href="ae_8c.html#a020ff62d04ad908e680932e7bd854db6" title=" " alt="" coords="264,55,413,80"/>
+<area shape="poly" title=" " alt="" coords="207,101,278,81,280,86,209,107"/>
+<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="268,104,409,129"/>
+<area shape="poly" title=" " alt="" coords="210,114,254,114,254,119,210,119"/>
+<area shape="rect" href="net_8c.html#aff2aeb575af99c3290c508f94a459894" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="281,153,396,179"/>
+<area shape="poly" title=" " alt="" coords="209,127,280,147,278,152,207,132"/>
+<area shape="rect" href="dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="294,203,383,228"/>
+<area shape="poly" title=" " alt="" coords="180,128,217,157,265,188,282,195,280,200,263,192,214,162,176,132"/>
+<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="461,104,583,129"/>
+<area shape="poly" title=" " alt="" coords="409,114,448,114,448,119,409,119"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad7131415a90158b5bf6acd595ca7b31a" name="ad7131415a90158b5bf6acd595ca7b31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7131415a90158b5bf6acd595ca7b31a">&#9670;&#160;</a></span>sentinelinit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sentinelinit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="sentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_cgraph.png" border="0" usemap="#asentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_cgraph" alt=""/></div>
+<map name="asentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_cgraph" id="asentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_cgraph">
+<area shape="rect" title=" " alt="" coords="5,104,100,129"/>
+<area shape="rect" href="net_8h.html#acf0d4a3b1fa80dbd9b61325130a29ce5" title=" " alt="" coords="154,5,291,31"/>
+<area shape="poly" title=" " alt="" coords="65,102,100,71,147,40,160,33,163,38,149,44,104,75,69,106"/>
+<area shape="rect" href="ae_8c.html#a020ff62d04ad908e680932e7bd854db6" title=" " alt="" coords="148,55,297,80"/>
+<area shape="poly" title=" " alt="" coords="96,101,164,82,165,87,98,107"/>
+<area shape="rect" href="ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="152,104,293,129"/>
+<area shape="poly" title=" " alt="" coords="100,114,138,114,138,119,100,119"/>
+<area shape="rect" href="net_8c.html#aff2aeb575af99c3290c508f94a459894" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="165,153,280,179"/>
+<area shape="poly" title=" " alt="" coords="98,127,165,147,164,152,96,132"/>
+<area shape="rect" href="dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="178,203,267,228"/>
+<area shape="poly" title=" " alt="" coords="69,128,104,157,149,188,166,196,164,200,147,192,101,162,66,132"/>
+<area shape="rect" href="ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="345,104,467,129"/>
+<area shape="poly" title=" " alt="" coords="293,114,332,114,332,119,293,119"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="sentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_icgraph.png" border="0" usemap="#asentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_icgraph" alt=""/></div>
+<map name="asentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_icgraph" id="asentinel_8c_ad7131415a90158b5bf6acd595ca7b31a_icgraph">
+<area shape="rect" title=" " alt="" coords="108,5,203,31"/>
+<area shape="rect" href="sentinel_8c.html#abf9e6b7e6f15df4b525a2e7705ba3089" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" title=" " alt="" coords="95,21,60,21,60,15,95,15"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="abccec36e4b5d5aff787f9a63da9e20b9" name="abccec36e4b5d5aff787f9a63da9e20b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abccec36e4b5d5aff787f9a63da9e20b9">&#9670;&#160;</a></span>sentinelRedisInstanceFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sentinelRedisInstanceFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsentinelRedisInstance.html">sentinelRedisInstance</a> *&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="acbacf5e8542cb5b27b05b2dd81b627b6" name="acbacf5e8542cb5b27b05b2dd81b627b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbacf5e8542cb5b27b05b2dd81b627b6">&#9670;&#160;</a></span>sentinel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structsentinel.html">sentinel</a>* <a class="el" href="structsentinel.html">sentinel</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

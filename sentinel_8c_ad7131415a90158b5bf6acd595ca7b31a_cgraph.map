@@ -1,0 +1,15 @@
+<map id="sentinelinit" name="sentinelinit">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,104,100,129"/>
+<area shape="rect" id="Node000002" href="$net_8h.html#acf0d4a3b1fa80dbd9b61325130a29ce5" title=" " alt="" coords="154,5,291,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,102,100,71,147,40,160,33,163,38,149,44,104,75,69,106"/>
+<area shape="rect" id="Node000003" href="$ae_8c.html#a020ff62d04ad908e680932e7bd854db6" title=" " alt="" coords="148,55,297,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="96,101,164,82,165,87,98,107"/>
+<area shape="rect" id="Node000004" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="152,104,293,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="100,114,138,114,138,119,100,119"/>
+<area shape="rect" id="Node000006" href="$net_8c.html#aff2aeb575af99c3290c508f94a459894" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="165,153,280,179"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="98,127,165,147,164,152,96,132"/>
+<area shape="rect" id="Node000007" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="178,203,267,228"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="69,128,104,157,149,188,166,196,164,200,147,192,101,162,66,132"/>
+<area shape="rect" id="Node000005" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="345,104,467,129"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="293,114,332,114,332,119,293,119"/>
+</map>

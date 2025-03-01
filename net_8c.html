@@ -346,18 +346,6 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="309,512,437,558,435,563,307,517"/>
 </map>
 </div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="net_8c_af551381b05b81b103ee2c9977dd49c34_icgraph.png" border="0" usemap="#anet_8c_af551381b05b81b103ee2c9977dd49c34_icgraph" alt=""/></div>
-<map name="anet_8c_af551381b05b81b103ee2c9977dd49c34_icgraph" id="anet_8c_af551381b05b81b103ee2c9977dd49c34_icgraph">
-<area shape="rect" title="封装accept，接受TCP连接。" alt="" coords="241,5,379,31"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,193,21,193,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
-</map>
-</div>
 
 </div>
 </div>
@@ -447,7 +435,7 @@ Here is the caller graph for this function:</div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">err</td><td>错误信息 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">port</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">bindaddr</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bindaddr</td><td>内部分配 </td></tr>
   </table>
   </dd>
 </dl>
@@ -457,11 +445,15 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_aff2aeb575af99c3290c508f94a459894_icgraph.png" border="0" usemap="#anet_8c_aff2aeb575af99c3290c508f94a459894_icgraph" alt=""/></div>
 <map name="anet_8c_aff2aeb575af99c3290c508f94a459894_icgraph" id="anet_8c_aff2aeb575af99c3290c508f94a459894_icgraph">
-<area shape="rect" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="241,5,356,31"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="228,21,194,21,194,15,228,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
+<area shape="rect" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="251,31,365,56"/>
+<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="113,5,198,31"/>
+<area shape="poly" title=" " alt="" coords="237,34,198,28,199,22,238,29"/>
+<area shape="rect" href="sentinel_8c.html#ad7131415a90158b5bf6acd595ca7b31a" title=" " alt="" coords="108,55,203,80"/>
+<area shape="poly" title=" " alt="" coords="237,57,203,63,203,57,237,52"/>
+<area shape="rect" href="redis_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" title=" " alt="" coords="99,21,60,21,60,15,99,15"/>
+<area shape="rect" href="sentinel_8c.html#abf9e6b7e6f15df4b525a2e7705ba3089" title=" " alt="" coords="5,55,60,80"/>
+<area shape="poly" title=" " alt="" coords="95,70,60,70,60,65,95,65"/>
 </map>
 </div>
 
@@ -793,24 +785,20 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="net_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph.png" border="0" usemap="#anet_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph" alt=""/></div>
 <map name="anet_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph" id="anet_8c_a06edf3ed445d768a53750d1098f26ddf_icgraph">
-<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="787,31,872,56"/>
-<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="653,31,739,56"/>
-<area shape="poly" title=" " alt="" coords="773,46,739,46,739,41,773,41"/>
-<area shape="poly" title=" " alt="" coords="719,19,712,12,696,9,682,11,675,16,674,22,678,29,673,32,668,22,671,13,680,6,696,4,714,7,722,16"/>
-<area shape="rect" href="redis_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="444,5,605,31"/>
-<area shape="poly" title=" " alt="" coords="639,38,605,33,606,27,640,32"/>
-<area shape="rect" href="test__resp_8c.html#a0c1b917423c7ba47546044b0c9065048" title=" " alt="" coords="467,55,582,80"/>
-<area shape="poly" title=" " alt="" coords="640,54,583,62,582,57,639,49"/>
-<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="250,5,387,31"/>
-<area shape="poly" title=" " alt="" coords="430,21,388,21,388,15,430,15"/>
-<area shape="rect" href="redis_8c.html#a29060721f5ddfa26790f0778bde74ff2" title=" " alt="" coords="108,5,193,31"/>
-<area shape="poly" title=" " alt="" coords="236,21,194,21,194,15,236,15"/>
-<area shape="rect" href="main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" title=" " alt="" coords="94,21,60,21,60,15,94,15"/>
-<area shape="rect" href="test__resp_8c.html#aa591d164a0385b9b4228b24d5255946e" title=" " alt="" coords="241,55,396,80"/>
-<area shape="poly" title=" " alt="" coords="453,70,396,70,396,65,453,65"/>
-<area shape="rect" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="123,55,178,80"/>
-<area shape="poly" title=" " alt="" coords="227,70,178,70,178,65,227,65"/>
+<area shape="rect" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="653,31,739,56"/>
+<area shape="rect" href="test__resp_8c.html#a06edf3ed445d768a53750d1098f26ddf" title="resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格" alt="" coords="520,31,605,56"/>
+<area shape="poly" title=" " alt="" coords="640,46,606,46,606,41,640,41"/>
+<area shape="poly" title=" " alt="" coords="585,19,578,12,563,9,549,11,542,16,540,22,544,29,540,32,535,22,538,13,547,6,563,4,581,7,589,16"/>
+<area shape="rect" href="redis_8c.html#a94f1cc1f9e6d67c080bfa3e0b67b0417" title=" " alt="" coords="311,5,472,31"/>
+<area shape="poly" title=" " alt="" coords="506,38,472,33,472,27,507,32"/>
+<area shape="rect" href="test__resp_8c.html#a0c1b917423c7ba47546044b0c9065048" title=" " alt="" coords="334,55,449,80"/>
+<area shape="poly" title=" " alt="" coords="507,54,450,62,449,57,506,49"/>
+<area shape="rect" href="net_8c.html#af551381b05b81b103ee2c9977dd49c34" title="封装accept，接受TCP连接。" alt="" coords="117,5,254,31"/>
+<area shape="poly" title=" " alt="" coords="297,21,254,21,254,15,297,15"/>
+<area shape="rect" href="test__resp_8c.html#aa591d164a0385b9b4228b24d5255946e" title=" " alt="" coords="108,55,263,80"/>
+<area shape="poly" title=" " alt="" coords="320,70,263,70,263,65,320,65"/>
+<area shape="rect" href="test__resp_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,55,60,80"/>
+<area shape="poly" title=" " alt="" coords="94,70,60,70,60,65,94,65"/>
 </map>
 </div>
 

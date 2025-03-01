@@ -2,7 +2,7 @@ var searchData=
 [
   ['ping_0',['ping',['../structsharedObjects.html#ad0abe7173203898d595894f8dd749bd0',1,'sharedObjects']]],
   ['pong_1',['pong',['../structsharedObjects.html#aedb0b943dd75cbed1f7a6706777d58df',1,'sharedObjects']]],
-  ['port_2',['port',['../structredisServer.html#a0c5549470cf902a72d96fc2a693cec20',1,'redisServer::port'],['../structsentinelRedisInstance.html#a8beb652010b3d6bebaac6f9642b0845b',1,'sentinelRedisInstance::port']]],
+  ['port_2',['port',['../structredisServer.html#a0c5549470cf902a72d96fc2a693cec20',1,'redisServer::port'],['../structsentinelRedisInstance.html#a8beb652010b3d6bebaac6f9642b0845b',1,'sentinelRedisInstance::port'],['../structsentinel.html#aaa747dfe181fb1894156c6219ed4600b',1,'sentinel::port']]],
   ['prepareshutdown_3',['prepareShutdown',['../redis_8c.html#a639dd45c9a032fe12a995af31506c068',1,'redis.c']]],
   ['prev_4',['prev',['../structlistNode.html#a79259218e5b958028b7e650d48d3cb01',1,'listNode']]],
   ['printbuf_5',['printbuf',['../util_8h.html#ac541b19430641726f2737b355cc26277',1,'printBuf(const char *prefix, const char *buf, int len):&#160;util.c'],['../util_8c.html#ac541b19430641726f2737b355cc26277',1,'printBuf(const char *prefix, const char *buf, int len):&#160;util.c']]],

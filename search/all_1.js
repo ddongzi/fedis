@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['accepttcphandler_0',['accepttcphandler',['../net_8h.html#a8c8e701aa41f8abc98b5ef0655d03116',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *privData):&#160;net.c'],['../net_8c.html#af551381b05b81b103ee2c9977dd49c34',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *data):&#160;net.c']]],
+  ['accepttcphandler_0',['accepttcphandler',['../net_8h.html#acf0d4a3b1fa80dbd9b61325130a29ce5',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *privData, void callback(int fd, void *ctx)):&#160;net.h'],['../net_8c.html#af551381b05b81b103ee2c9977dd49c34',1,'acceptTcpHandler(aeEventLoop *el, int fd, void *data):&#160;net.c']]],
   ['addwrite_1',['addwrite',['../src_2client_8c.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;client.c'],['../client_8h.html#a111c8d49d9cee18218fdd1bb950a6d31',1,'addWrite(redisClient *client, robj *obj):&#160;client.c']]],
   ['ae_2ec_2',['ae.c',['../ae_8c.html',1,'']]],
   ['ae_2eh_3',['ae.h',['../ae_8h.html',1,'']]],

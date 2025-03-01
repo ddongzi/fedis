@@ -81,16 +81,27 @@ Collaboration diagram for sentinel:</div>
 <div class="dyncontent">
 <div class="center"><img src="structsentinel__coll__graph.png" border="0" usemap="#asentinel_coll__map" alt="Collaboration graph"/></div>
 <map name="asentinel_coll__map" id="asentinel_coll__map">
-<area shape="rect" title=" " alt="" coords="38,269,113,295"/>
-<area shape="rect" href="structdict.html" title=" " alt="" coords="52,181,99,207"/>
-<area shape="poly" title=" " alt="" coords="78,221,78,269,73,269,73,221"/>
+<area shape="rect" title=" " alt="" coords="214,269,289,295"/>
+<area shape="rect" href="structdict.html" title=" " alt="" coords="115,181,161,207"/>
+<area shape="poly" title=" " alt="" coords="166,213,238,267,234,271,162,217"/>
 <area shape="rect" href="structdictType.html" title=" " alt="" coords="5,93,81,119"/>
-<area shape="poly" title=" " alt="" coords="53,131,62,156,72,180,67,182,57,158,48,133"/>
+<area shape="poly" title=" " alt="" coords="68,126,127,179,123,183,65,130"/>
 <area shape="rect" href="structdictHT.html" title=" " alt="" coords="106,93,170,119"/>
-<area shape="poly" title=" " alt="" coords="124,131,86,182,82,179,119,128"/>
+<area shape="poly" title=" " alt="" coords="141,133,141,181,135,181,135,133"/>
 <area shape="rect" href="structdictEntry.html" title=" " alt="" coords="98,5,178,31"/>
 <area shape="poly" title=" " alt="" coords="141,45,141,93,135,93,135,45"/>
 <area shape="poly" title=" " alt="" coords="192,9,201,12,205,18,196,26,178,29,178,23,194,22,199,18,197,16,191,14"/>
+<area shape="rect" href="structaeEventLoop.html" title=" " alt="" coords="313,181,419,207"/>
+<area shape="poly" title=" " alt="" coords="341,217,269,271,265,267,338,213"/>
+<area shape="rect" href="structaeFileEvent.html" title=" " alt="" coords="194,93,293,119"/>
+<area shape="poly" title=" " alt="" coords="271,125,313,155,349,179,346,183,310,160,268,129"/>
+<area shape="rect" href="structaeFireEvent.html" title=" " alt="" coords="317,93,415,119"/>
+<area shape="poly" title=" " alt="" coords="369,133,369,181,363,181,363,133"/>
+<area shape="rect" href="structaeApiState.html" title=" " alt="" coords="439,93,533,119"/>
+<area shape="poly" title=" " alt="" coords="471,132,442,159,398,184,396,179,439,155,467,128"/>
+<area shape="rect" href="structaeTimeEvent.html" title=" " alt="" coords="557,93,665,119"/>
+<area shape="poly" title=" " alt="" coords="583,128,520,160,469,176,420,187,419,181,468,171,518,155,581,124"/>
+<area shape="poly" title=" " alt="" coords="681,97,692,106,684,114,666,117,665,111,682,109,687,106,678,102"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -101,8 +112,44 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a53cd97e59e637968ee2c25795a391e82" id="r_a53cd97e59e637968ee2c25795a391e82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdict.html">dict</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsentinel.html#a53cd97e59e637968ee2c25795a391e82">instances</a></td></tr>
 <tr class="memdesc:a53cd97e59e637968ee2c25795a391e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">维护的实例字典。键：实例名。值：实例。  <br /></td></tr>
 <tr class="separator:a53cd97e59e637968ee2c25795a391e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8354c170752cf0f4c6e6d8430c5526b" id="r_af8354c170752cf0f4c6e6d8430c5526b"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsentinel.html#af8354c170752cf0f4c6e6d8430c5526b">bindaddr</a></td></tr>
+<tr class="separator:af8354c170752cf0f4c6e6d8430c5526b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa747dfe181fb1894156c6219ed4600b" id="r_aaa747dfe181fb1894156c6219ed4600b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsentinel.html#aaa747dfe181fb1894156c6219ed4600b">port</a></td></tr>
+<tr class="separator:aaa747dfe181fb1894156c6219ed4600b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147db35d7128f7e8546f9fe4549fbacb" id="r_a147db35d7128f7e8546f9fe4549fbacb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structaeEventLoop.html">aeEventLoop</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsentinel.html#a147db35d7128f7e8546f9fe4549fbacb">eventLoop</a></td></tr>
+<tr class="separator:a147db35d7128f7e8546f9fe4549fbacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a958ebdd63248a3a5f9daed6c345ec46c" id="r_a958ebdd63248a3a5f9daed6c345ec46c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsentinel.html#a958ebdd63248a3a5f9daed6c345ec46c">maxConnections</a></td></tr>
+<tr class="separator:a958ebdd63248a3a5f9daed6c345ec46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Field Documentation</h2>
+<a id="af8354c170752cf0f4c6e6d8430c5526b" name="af8354c170752cf0f4c6e6d8430c5526b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8354c170752cf0f4c6e6d8430c5526b">&#9670;&#160;</a></span>bindaddr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* sentinel::bindaddr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a147db35d7128f7e8546f9fe4549fbacb" name="a147db35d7128f7e8546f9fe4549fbacb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147db35d7128f7e8546f9fe4549fbacb">&#9670;&#160;</a></span>eventLoop</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structaeEventLoop.html">aeEventLoop</a>* sentinel::eventLoop</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a742d151c40bb0e0c9411b93614d6f588" name="a742d151c40bb0e0c9411b93614d6f588"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a742d151c40bb0e0c9411b93614d6f588">&#9670;&#160;</a></span>id</h2>
 
@@ -130,6 +177,34 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>维护的实例字典。键：实例名。值：实例。 </p>
+
+</div>
+</div>
+<a id="a958ebdd63248a3a5f9daed6c345ec46c" name="a958ebdd63248a3a5f9daed6c345ec46c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958ebdd63248a3a5f9daed6c345ec46c">&#9670;&#160;</a></span>maxConnections</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int sentinel::maxConnections</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa747dfe181fb1894156c6219ed4600b" name="aaa747dfe181fb1894156c6219ed4600b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa747dfe181fb1894156c6219ed4600b">&#9670;&#160;</a></span>port</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int sentinel::port</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

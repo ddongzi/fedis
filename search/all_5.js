@@ -7,6 +7,6 @@ var searchData=
   ['epfd_4',['epfd',['../structaeApiState.html#ad22cb6aa093b0606521178bee5fc9e57',1,'aeApiState']]],
   ['err_5',['err',['../structsharedObjects.html#a3ca05973a774cd45414265dd9c0621b4',1,'sharedObjects']]],
   ['error_6',['error',['../structrio.html#ab4301a8a7d3f32aa3ba575274d473e35',1,'rio']]],
-  ['eventloop_7',['eventLoop',['../structredisServer.html#a063bbde14197d807d51cffab26ad48a5',1,'redisServer']]],
+  ['eventloop_7',['eventloop',['../structredisServer.html#a063bbde14197d807d51cffab26ad48a5',1,'redisServer::eventLoop'],['../structsentinel.html#a147db35d7128f7e8546f9fe4549fbacb',1,'sentinel::eventLoop']]],
   ['events_8',['events',['../structaeApiState.html#aae9919a5fbc7f635b7add5e9afca911f',1,'aeApiState::events'],['../structaeEventLoop.html#aa37dcf314ec826fafa4b3ff05923b434',1,'aeEventLoop::events']]]
 ];

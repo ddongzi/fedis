@@ -104,7 +104,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="ae_8h.html#afaac43d9573452f9fc6c718f90c4c645">   21</a></span><span class="preprocessor">#define AE_OK       0</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">struct </span><a class="code hl_struct" href="structaeEventLoop.html">aeEventLoop</a>;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">//不同的模块定义自己的数据结构 clientData， 比如携带入参和回调</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="ae_8h.html#ad3980e3de9848ae20864a3d3c2f4d71a">   25</a></span><span class="keyword">typedef</span> <span class="keywordtype">void</span> <a class="code hl_typedef" href="ae_8h.html#ad3980e3de9848ae20864a3d3c2f4d71a">aeFileProc</a>(<span class="keyword">struct</span> <a class="code hl_struct" href="structaeEventLoop.html">aeEventLoop</a> *eventLoop, <span class="keywordtype">int</span> fd, <span class="keywordtype">void</span> *clientData);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// 时间事件处理函数返回</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="ae_8h.html#a51464410d1f951b043b6d881574e4a4a">   27</a></span><span class="preprocessor">#define AE_NOMORE -1</span></div>

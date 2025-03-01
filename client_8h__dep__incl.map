@@ -1,28 +1,24 @@
 <map id="include/client.h" name="include/client.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="283,5,404,31"/>
-<area shape="rect" id="Node000002" href="$redis_8h.html" title=" " alt="" coords="522,79,639,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="395,32,543,76,541,81,394,37"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="225,5,347,31"/>
+<area shape="rect" id="Node000002" href="$redis_8h.html" title=" " alt="" coords="407,79,525,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="328,33,438,76,436,81,326,38"/>
 <area shape="rect" id="Node000005" href="$src_2client_8c.html" title=" " alt="" coords="5,152,97,177"/>
-<area shape="poly" id="edge13_Node000001_Node000005" title=" " alt="" coords="309,39,76,154,73,150,306,35"/>
+<area shape="poly" id="edge11_Node000001_Node000005" title=" " alt="" coords="257,40,72,154,69,149,254,36"/>
 <area shape="rect" id="Node000003" href="$skiplist_8h.html" title=" " alt="" coords="121,152,253,177"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="509,108,251,155,250,149,508,103"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="409,110,233,154,232,149,408,105"/>
 <area shape="rect" id="Node000004" href="$ae_8c.html" title="eventloop, epoll" alt="" coords="278,152,350,177"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="525,110,351,156,350,151,524,105"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="509,103,327,124,109,155,98,157,97,151,108,149,326,119,508,98"/>
-<area shape="rect" id="Node000006" href="$main_8c.html" title=" " alt="" coords="375,152,464,177"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="543,112,447,154,445,149,541,107"/>
-<area shape="rect" id="Node000007" href="$net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="489,152,566,177"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="566,117,538,153,534,150,562,113"/>
-<area shape="rect" id="Node000008" href="$notify_8c.html" title=" " alt="" coords="590,152,681,177"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="600,113,629,150,624,154,596,117"/>
-<area shape="rect" id="Node000009" href="$rdb_8c.html" title=" " alt="" coords="705,152,782,177"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="620,107,718,149,716,154,618,112"/>
-<area shape="rect" id="Node000010" href="$redis_8c.html" title=" " alt="" coords="806,152,894,177"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="638,105,807,149,806,154,636,110"/>
-<area shape="rect" id="Node000011" href="$repli_8c.html" title="从特性函数" alt="" coords="918,152,1003,177"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="653,103,907,149,918,152,917,157,905,155,652,108"/>
-<area shape="rect" id="Node000012" href="$robj_8c.html" title=" " alt="" coords="1028,152,1109,177"/>
-<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="653,98,819,119,1016,149,1028,152,1027,157,1015,155,819,125,653,104"/>
-<area shape="rect" id="Node000013" href="$sentinel_8c.html" title=" " alt="" coords="1133,152,1241,177"/>
-<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="653,97,864,118,1122,149,1134,151,1133,156,1122,155,864,123,653,102"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="431,112,340,154,338,149,428,107"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="394,107,109,155,98,157,97,151,108,149,393,101"/>
+<area shape="rect" id="Node000006" href="$net_8c.html" title="TCP连接配置，RESP协议" alt="" coords="374,152,451,177"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="451,117,423,153,419,150,447,113"/>
+<area shape="rect" id="Node000007" href="$notify_8c.html" title=" " alt="" coords="475,152,566,177"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="485,113,514,150,510,154,481,117"/>
+<area shape="rect" id="Node000008" href="$rdb_8c.html" title=" " alt="" coords="590,152,667,177"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="506,107,603,149,601,154,504,112"/>
+<area shape="rect" id="Node000009" href="$redis_8c.html" title=" " alt="" coords="691,152,779,177"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="523,105,692,149,691,154,522,110"/>
+<area shape="rect" id="Node000010" href="$repli_8c.html" title="从特性函数" alt="" coords="803,152,889,177"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="538,103,792,149,804,152,803,157,791,155,538,108"/>
+<area shape="rect" id="Node000011" href="$robj_8c.html" title=" " alt="" coords="913,152,995,177"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="539,98,705,119,901,149,914,152,913,157,900,155,704,125,538,104"/>
 </map>

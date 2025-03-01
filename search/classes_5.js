@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['saveparam_0',['saveparam',['../structsaveparam.html',1,'']]],
-  ['sds_1',['sds',['../structsds.html',1,'']]],
-  ['sentinel_2',['sentinel',['../structsentinel.html',1,'']]],
-  ['sentinelredisinstance_3',['sentinelRedisInstance',['../structsentinelRedisInstance.html',1,'']]],
-  ['sharedobjects_4',['sharedObjects',['../structsharedObjects.html',1,'']]]
+  ['redisclient_0',['redisClient',['../structredisClient.html',1,'']]],
+  ['rediscommand_1',['redisCommand',['../structredisCommand.html',1,'']]],
+  ['redisdb_2',['redisDb',['../structredisDb.html',1,'']]],
+  ['redisobject_3',['redisObject',['../structredisObject.html',1,'']]],
+  ['redisserver_4',['redisServer',['../structredisServer.html',1,'']]],
+  ['rio_5',['rio',['../structrio.html',1,'']]]
 ];

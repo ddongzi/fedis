@@ -1,0 +1,19 @@
+<map id="main" name="main">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,80,60,105"/>
+<area shape="rect" id="Node000002" href="$log_8c.html#af2493e94f152a28b2ba4e3a2e2bba65d" title=" " alt="" coords="108,55,216,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="60,85,94,78,95,83,61,90"/>
+<area shape="rect" id="Node000003" href="$sentinel_8c.html#ad7131415a90158b5bf6acd595ca7b31a" title=" " alt="" coords="115,104,209,129"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="61,95,101,103,100,108,60,100"/>
+<area shape="rect" id="Node000004" href="$net_8h.html#acf0d4a3b1fa80dbd9b61325130a29ce5" title=" " alt="" coords="270,5,407,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="193,102,214,89,228,77,237,64,247,52,263,40,274,34,276,38,265,44,251,56,242,68,232,80,218,93,196,106"/>
+<area shape="rect" id="Node000005" href="$ae_8c.html#a020ff62d04ad908e680932e7bd854db6" title=" " alt="" coords="264,55,413,80"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="207,101,278,81,280,86,209,107"/>
+<area shape="rect" id="Node000006" href="$ae_8c.html#a382772b873fa551b64da933a4619f3bb" title="注册文件事件" alt="" coords="268,104,409,129"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="210,114,254,114,254,119,210,119"/>
+<area shape="rect" id="Node000008" href="$net_8c.html#aff2aeb575af99c3290c508f94a459894" title="创建TCP服务器 封装了socket，bind，listen" alt="" coords="281,153,396,179"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="209,127,280,147,278,152,207,132"/>
+<area shape="rect" id="Node000009" href="$dict_8c.html#ac84c9d5cbebc94cf6b67fd20906f4a12" title=" " alt="" coords="294,203,383,228"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="180,128,217,157,265,188,282,195,280,200,263,192,214,162,176,132"/>
+<area shape="rect" id="Node000007" href="$ae_8c.html#ae1918ceab75e9ada567ef48aa2649da7" title="修改/添加 epoll事件" alt="" coords="461,104,583,129"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="409,114,448,114,448,119,409,119"/>
+</map>
