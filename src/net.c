@@ -22,13 +22,14 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <stdarg.h>
-
-#include "redis.h"
+#include <strings.h>
+#include "server.h"
 #include "rdb.h"
 #include "log.h"
 #include "rio.h"
 #include "repli.h"
 #include "net.h"
+#include "sentinel.h"
 
 static void printAddrinfo(struct addrinfo *servinfo)
 {
@@ -249,16 +250,39 @@ static int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
     return NET_OK;
 }
 
+
+/**
+ * @brief 关闭连接
+ * 
+ * @param [in] conn 
+ */
+void netCloseConnection(connection *conn)
+{
+    close(conn->io->fd);
+}
+
+connection* netCreateConnection(int cfd , const char* ip, const int port)
+{
+    connection *conn = (connection *)malloc(sizeof(connection));
+    conn->cfd = cfd;
+    conn->ip = ip;
+    conn->port = port;
+    rio* io = (rio*)malloc(sizeof(rio));
+    conn->io = rioInitWithSocket(io, cfd);
+    return conn;
+}
+
 /**
  * @brief 封装accept，接受TCP连接。
  * @param [in] el
  * @param [in] fd
  * @param [in] privData
  */
-// TODO 目前只在accept用了回调，listen没有， data要声明为结构， 包含回调和入参
 
 void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
 {
+    aeEventContext* acceptCtx = (aeEventContext*) data;
+
     int cfd, port;
     char ip[128];
     struct sockaddr_storage sa;
@@ -274,18 +298,14 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
     anetKeepAlive(cfd, 300);
     anetFormatPeer(cfd, ip, sizeof(ip), &port);
 
-    // TODO 需要适配sentinel， 添加回调函数，把具体逻辑给调用者
+    // TODO 需要适配sentinel， 添加回调函数，把具体逻辑给调用者。
+    // 解决：刚开始不区分，而是通过第一个命令时候才创建客户端， 现在内容通过一个类型connection临时保存
 
-    callback(cfd, NULL);
+    connection* conn = netCreateConnection(cfd, ip, port);
 
-    // 创建client实例
-    redisClient *client = redisClientCreate(cfd);
-    listAddNodeTail(server->clients, listCreateNode(client));
-
-    log_debug("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
-
+    aeCreateFileEvent(el, cfd, AE_READABLE, detectClientType, conn);
     // 注册读事件
-    aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
+    log_debug("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
 }
 
 

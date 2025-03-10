@@ -1,4 +1,4 @@
-#include "redis.h"
+#include "server.h"
 
 typedef struct zskiplistNode{
     struct zskiplistNode* backward; 

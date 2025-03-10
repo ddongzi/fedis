@@ -9,11 +9,15 @@
 #include "client.h"
 
 #define REDIS_SERVERPORT 6666
+#define REDIS_SENTINELPORT 7777
 #define REDIS_DEFAULT_DBNUM 16
 #define REDIS_MAX_CLIENTS 10000
 
-#define REDIS_CLUSTER_MASTER 0x01
-#define REDIS_CLUSTER_SLAVE 0x10
+
+// 服务端三种角色：主 从 sentinel
+#define SERVER_ROLE_MASTER 0
+#define SERVER_ROLE_SLAVE 1
+#define SERVER_ROLE_SENTINEL 2
 
 extern struct redisServer* server;
 extern struct sharedObjects shared;
@@ -38,11 +42,16 @@ struct sharedObjects {
 };
 
 
+// CMD支持服务端类型
+#define CMD_MASTER 0
+#define CMD_SLAVE 1
+#define CMD_SENTINEL 2
 typedef void redisCommandProc(redisClient* client);
 typedef struct redisCommand {
     char* name; // 
     redisCommandProc* proc;
     int arity; // 参数个数. -x:表示至少X个变长参数（完整，包含操作字）
+    int flags; ///< 支持的角色， CMD_SENTINEL, CMD_COMMON
 } redisCommand;
 
 extern redisCommand commandsTable[];

@@ -13,7 +13,11 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include "sentinel.h"
-
+#include "server.h"
+#include "net.h"
+#include "log.h"
+#include <errno.h>
+#include <string.h>
 sentinel* sentinel;
 
 /**
@@ -61,7 +65,7 @@ void sentinelRedisInstanceFree(sentinelRedisInstance* instance)
     // TODO
 }
 
-void sentinelinit()
+void sentinelStateInit()
 {
     int maxIdlen = 64;  // 
     sentinel->id = calloc(1, sizeof(char) * maxIdlen);
@@ -76,27 +80,35 @@ void sentinelinit()
         .valDestructor = dictValfree,
     }
     sentinel->instances = dictCreate(&dt, NULL);
+}
 
-    // 服务器
-    sentinel->port = SENTINEL_LISTENPORT;
-    sentinel->bindaddr = NULL;
-    int fd = anetTcpServer(sentinel->port, sentinel->bindaddr, sentinel->maxConnections);
-    if (fd == -1) {
-        exit(1);
-    }
-    log_debug("● create server, listening on %d.....", sentinel->port);
+// 禁用一些command
+void sentinelCommandsForbid()
+{
+}
 
-    // 事件循环
-    sentinel->eventLoop = aeCreateEventLoop(sentinel->maxConnections);
-    aeCreateFileEvent(sentinel->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL)
+sentinelRedisInstance* sentinelRedisInstanceCreate(connection* conn)
+{
+    sentinelRedisInstance* instance = (sentinelRedisInstance*)malloc(sizeof(sentinelRedisInstance));
+    instance->conn= conn;
+    instance->name = calloc(1, SENTINEL_INSTANCE_MAXNAMELEN);
+    sprintf(instance->name, SENTINEL_INSTANCE_MAXNAMELEN - 1,"%s:%d", conn->ip, conn->port);
 }
 
 
-int main(int argc, char const *argv[])
+void parseConfIntoSentinel()
 {
-    log_set_level(LOG_DEBUG);
-    log_debug("hello log.");
-    sentinel = calloc(1, sizeof(sentinel));
-    sentinelinit();
-    return 0;
+    FILE* fp = fopen("/home/dong/fedis/conf/sentinel.conf", "r");
+    if (fp == NULL) {
+        log_error("Couldn't open sentinel.conf, %s", strerror(errno));
+        exit(1);
+    }
+
+    char line[1024];
+    
+    while (fgets(line, sizeof(line), fp)) {
+        if (line[0] == '#' || line[0] == '\n') continue;
+        // TODO
+    }
+
 }

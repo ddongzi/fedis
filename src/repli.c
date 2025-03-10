@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
- #include "redis.h"
+ #include "server.h"
 #include "repli.h"
 #include "rio.h"
 #include "log.h"

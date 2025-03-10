@@ -11,6 +11,7 @@
         "functional": "c",
         "compare": "c",
         "random": "c",
-        "sstream": "c"
+        "sstream": "c",
+        "string": "c"
     }
 }

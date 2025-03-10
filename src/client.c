@@ -1,14 +1,20 @@
 #include "client.h"
 #include <stdlib.h>
 #include "errno.h"
-#include "redis.h"
+#include "server.h"
 #include "log.h"
 #include "net.h"
-redisClient *redisClientCreate(int fd)
+/**
+ * @brief 创建通用client结构，默认为普通
+ * 
+ * @param [in] conn 
+ * @return redisClient* 
+ */
+redisClient *redisClientCreate(connection* conn)
 {
     redisClient *c = malloc(sizeof(redisClient));
-    c->fd = fd;
-    c->flags = REDIS_CLIENT_NORMAL;
+    c->connection = conn;
+    c->flags = CLIENT_ROLE_NORMAL;
     c->readBuf = sdsempty();
     c->writeBuf = sdsempty();
     c->dbid = 0;

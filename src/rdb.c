@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "redis.h"
+#include "server.h"
 #include "rdb.h"
 #include <stdint.h>
 #include "log.h"

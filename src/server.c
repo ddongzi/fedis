@@ -9,15 +9,33 @@
 #include <sys/stat.h>
 #include <sys/sendfile.h>
 
-#include "redis.h"
+#include "server.h"
 #include "rdb.h"
 #include "log.h"
 #include "rio.h"
 #include "repli.h"
 #include "net.h"
+#include "sentinel.h"
+
 struct redisServer* server;
 
 struct sharedObjects shared;
+
+// 预定义所有的服务端命令，包含sentinel，initserver会调用
+redisCommand commandsTable[] = {
+    {"SET", commandSetProc, -3, CMD_MASTER},
+    {"GET", commandGetProc, 2, CMD_MASTER | CMD_SLAVE},
+    {"DEL", commandDelProc, 2, CMD_MASTER},
+    {"OBJECT", commandObjectProc, 3, CMD_MASTER | CMD_SLAVE},
+    {"BYE", commandByeProc, 1, CMD_MASTER|CMD_SLAVE},
+    {"SLAVEOF", commandSlaveofProc, 3, CMD_MASTER|CMD_SLAVE},
+    {"REPLCONF", commandReplconfProc, 3, CMD_MASTER|CMD_SLAVE},
+    {"SYNC", commandSyncProc, 1, CMD_MASTER|CMD_SLAVE},
+    {"REPLACK", commandReplACKProc, 1, CMD_MASTER},
+
+    {"PING", commandPingProc, 1, CMD_MASTER|CMD_SLAVE|CMD_SENTINEL},
+
+};
 
 void _encodingStr(int encoding, char *buf, int maxlen) 
 {
@@ -140,19 +158,6 @@ void commandReplACKProc(redisClient* client)
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
-redisCommand commandsTable[] = {
-    {"SET", commandSetProc, -3},
-    {"GET", commandGetProc, 2},
-    {"DEL", commandDelProc, 2},
-    {"OBJECT", commandObjectProc, 3},
-    {"BYE", commandByeProc, 1},
-    {"SLAVEOF", commandSlaveofProc, 3},
-    {"PING", commandPingProc, 1},
-    {"REPLCONF", commandReplconfProc, 3},
-    {"SYNC", commandSyncProc, 1},
-    {"REPLACK", commandReplACKProc, 1}
-};
-
 
 // command dictType
 static unsigned long commandDictHashFunction(const void *key) {
@@ -206,27 +211,44 @@ void appendServerSaveParam(time_t sec, int changes)
     server->saveCondSize++;
 }
 
+static void loadCommands(int role)
+{
+    for (int i = 0; i < sizeof(commandsTable); i++) {
+        if (commandsTable[i].flags & CMD_MASTER && role == CMD_MASTER) {
+            dictAdd(server->commands, commandsTable[i].name, commandsTable[i]);
+        }
+        // CMD_MASTER | CMD_SLAVE 重复add没问题，不覆盖
+        if (commandsTable[i].flags & CMD_SLAVE && role == CMD_SLAVE) {
+            dictAdd(server->commands, commandsTable[i].name, commandsTable[i]);
+        }
+        if (commandsTable[i].flags & CMD_SENTINEL && role == CMD_SENTINEL) {
+            dictAdd(server->commands, commandsTable[i].name, commandsTable[i]);
+        }
+    }
+}
 
 /**
- * @brief 初始化服务器配置
+ * @brief 初始化服务器配置, 这里只能是主、sentinel。  从角色由运行动态切换而来
  * 
- * @param [in] server 
+ * @param [in] role [SERVER_ROLE_MASTER, SERVER_ROLE_SENTINEL]
  */
 void initServerConfig()
 {
-    server = calloc(1,sizeof(struct redisServer));
-    server->port = REDIS_SERVERPORT;
-    server->dbnum = REDIS_DEFAULT_DBNUM;
-    server->saveCondSize = 0;
-    server->saveParams = NULL;
-    appendServerSaveParam(900, 1);
-    appendServerSaveParam(300, 10000);
-    appendServerSaveParam(10, 1);
-
-    server->rdbFileName = "/home/dong/fedis/data/1.rdb";
-    
     server->maxclients = REDIS_MAX_CLIENTS;
 
+    if (role == SERVER_ROLE_MASTER) {
+        // 普通服务器：动态切换
+        server->port = REDIS_SERVERPORT;
+        server->dbnum = REDIS_DEFAULT_DBNUM;
+        server->saveCondSize = 0;
+        server->saveParams = NULL;
+        appendServerSaveParam(900, 1);
+        appendServerSaveParam(300, 10000);
+        appendServerSaveParam(10, 1);
+        server->rdbFileName = "/home/dong/fedis/data/1.rdb";
+    }
+
+    // 
     dictType commandDictType = {
         .hashFunction = commandDictHashFunction,
         .keyCompare = commandDictKeyCompare,
@@ -235,8 +257,12 @@ void initServerConfig()
         .keyDestructor = commandDictKeyDestructor,
         .valDestructor = commandDictValDestructor
     };
-
     server->commands = dictCreate(&commandDictType, NULL);
+    loadCommands(server->role);    
+
+    if (role == SERVER_ROLE_SENTINEL) {
+        server->port = REDIS_SENTINELPORT;
+    }
 
     log_debug("√ init server config.\n");
 }
@@ -388,27 +414,58 @@ void createSharedObjects()
     shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
 }
 
+
+
+/**
+ * @brief net accept到请求，回调redis处理
+ * 
+ * @param [in] cfd 
+ * @param [in] cfd
+ */
+void acceptedCallback(void *data)
+{
+    int cfd = (int)data;
+    // 创建client实例
+    redisClient *client = redisClientCreate(cfd);
+    listAddNodeTail(server->clients, listCreateNode(client));
+    // TODO 不需要回调
+    aeEventContext* readCtx = malloc(sizeof(aeEventContext));
+    readCtx->client = client;
+
+    aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, readCtx);
+}
+
+/**
+ * @brief 
+ * 
+ */
 void initServer()
 {
     initServerSignalHandlers();
     
     createSharedObjects();
 
+    if (server->role == SERVER_ROLE_MASTER) {
+        server->db = calloc(server->dbnum, sizeof(redisDb));
+        for (int i = 0; i < server->dbnum; i++) {
+            dbInit(server->db + i, i);
+        }
+        server->dirty = 0;
+        server->lastSave = server->unixtime;
+    
+        server->rdbChildPid = -1;
+        server->isBgSaving = 0;
+        server->rdbfd = -1; //
+        log_debug("● load rdb from %s", server->rdbFileName);
+        rdbLoad();
+    }
+
+    if (server->role == SERVER_ROLE_SENTINEL) {
+        sentinelStateInit();
+    }
+
     server->unixtime = time(NULL);
     server->mstime = mstime();
-
-    server->db = calloc(server->dbnum, sizeof(redisDb));
-    for (int i = 0; i < server->dbnum; i++) {
-        dbInit(server->db + i, i);
-    }
-    server->dirty = 0;
-    server->lastSave = server->unixtime;
-
-    server->rdbChildPid = -1;
-    server->isBgSaving = 0;
-    server->rdbfd = -1; //
-    log_debug("●  load rdb from %s\n", server->rdbFileName);
-    rdbLoad();
 
     server->clients = listCreate();
     server->clientsToClose = listCreate();
@@ -432,14 +489,9 @@ void initServer()
 }
 
 
-redisCommand* lookupCommand(const char* cmd)
+redisCommand* lookupCommand(dict* commands, const char* cmd)
 {
-    for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
-        if (strcasecmp(commandsTable[i].name, cmd) == 0) {
-            return &commandsTable[i];
-        }
-    }
-    return NULL;
+    return dictFetchValue(commands, cmd);
 }
 /**
  * @brief 调用执行命令。已有argc,argv[]
@@ -450,7 +502,7 @@ void processCommand(redisClient * c)
 {
     redisCommand* cmd;
     // argv[0] 一定是字符串，sds
-    cmd = lookupCommand(((sds*)(c->argv[0]->ptr))->buf);
+    cmd = lookupCommand(server->commands, ((sds*)(c->argv[0]->ptr))->buf);
     if (cmd == NULL) {
         addWrite(c, shared.invalidCommand);
         return;
@@ -506,9 +558,10 @@ void processClientQueryBuf(redisClient* client)
     processCommand(client);
 }
 
-void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
+// redis 使用的read到client， 但是sentinel使用的是instance，
+void readQueryFromClient(aeEventLoop *el, int fd, void *data)
 {
-    redisClient *client = (redisClient *)privData;
+    redisClient *client = data;
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
@@ -632,6 +685,52 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
 }
 
 
+/**
+ * @brief 第一次read，
+ * 
+ * @param [in] eventLoop 
+ * @param [in] fd 
+ * @param [in] data 
+ */
+void detectClientType(struct aeEventLoop *eventLoop, int fd, void *data)
+{
+    // 第一次命令读取， 创建client或者sentinelInstance
+    connection * conn = data;
+    char buf[1024] = {0};
+    size_t nread = rioRead(conn->io, buf, sizeof(buf));
+    if (nread == 0 && conn->io->error) {
+        log_error("Error reading");
+        netCloseConnection(conn);
+    }
+    char typeBuf[32];
+    strncpy(typeBuf, buf, 32);
+    char *token = strtok(typeBuf, " ");
+    redisClient* client = redisClientCreate(conn);
+    if (strcasecmp(token, "SENTINEL") == 0 && server->role == SERVER_ROLE_SENTINEL) {
+        token = strtok(NULL, " ");
+        // 1. 普通客户端查询sentinel服务
+        if (strcasecmp(token, "hello") == 0) {
+            client->flags = CLIENT_ROLE_NORMAL;
+        } else {
+        // 2. 服务器查询sentinel服务
+            client->flags = CLIENT_ROLE_SENTINEL;
+            sentinelRedisInstance* instance = sentinelRedisInstanceCreate(conn);
+            dictAdd(sentinel->instaces, instance->name, instance);
+        }
+    
+    } else if (strcasecmp(token, "REPLCONF") == 0) {
+        // 1. 从服务器请求
+        client->flags = CLIENT_ROLE_SLAVE;
+    } else {
+        // 2. 普通客户端
+        client->flags = CLIENT_ROLE_NORMAL;
+    }
+    listAddNodeTail(server->clients, listCreateNode(client));
+    sdscat(client->readBuf, buf);
+    // 不论什么类型客户端，都是resp格式
+    processClientQueryBuf(client);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -639,9 +738,18 @@ int main(int argc, char **argv)
     log_set_level(LOG_DEBUG);
     log_debug("hello log.");
 
-    server = calloc(1,sizeof(struct redisServer)); // 2. 普通主从服务器
+    server = calloc(1,sizeof(struct redisServer)); 
+    int role = SERVER_ROLE_MASTER;
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--sentinel") == 0 && i + 1 < argc) {
+            role = SERVER_ROLE_SENTINEL;
+            break;
+        } 
+    }
+    server->role = role;
+
     initServerConfig();
-    // 参数覆盖配置
     for (int i = 0; i < argc; i++)
     {
         if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
@@ -649,6 +757,7 @@ int main(int argc, char **argv)
             i++;
         } 
     }
+
     initServer();
     aeMain(server->eventLoop);
 

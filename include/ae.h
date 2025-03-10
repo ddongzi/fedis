@@ -20,12 +20,18 @@
 #define AE_ERROR    -1
 #define AE_OK       0
 
+typedef void (*aeEventCallback)(void *context);
+typedef struct {
+    void *data; ///< 上下文数据
+    aeEventCallback callback; // 
+} aeEventContext;
+
 struct aeEventLoop;
 //不同的模块定义自己的数据结构 clientData， 比如携带入参和回调
-typedef void aeFileProc(struct aeEventLoop *eventLoop, int fd, void *clientData);
+typedef void aeFileProc(struct aeEventLoop *eventLoop, int fd, void *data);
 // 时间事件处理函数返回
 #define AE_NOMORE -1
-typedef int aeTimeProc(struct aeEventLoop* eventLoop, long long id, void* clientData);
+typedef int aeTimeProc(struct aeEventLoop* eventLoop, long long id, void* data);
 // 文件事件
 typedef struct aeFileEvent {
     int mask;   // AE_READABLE，AE_WRITABLE

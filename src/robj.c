@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "sds.h"
 #include <errno.h>
-#include "redis.h"
+#include "server.h"
 #include <limits.h>
 /* string object*/
 /**
