@@ -10,8 +10,9 @@
  */
 #ifndef MASTER_H
 #define MASTER_H
-
-typedef struct MasterState {
+#include "command.h"
+extern struct master *master;
+struct master {
 
     // 数据库
     int dbnum;  // 数据库数量
@@ -19,7 +20,6 @@ typedef struct MasterState {
 
     // 分布式集群
     int clusterEnabled; // 是否开启集群
-    int role; // 角色
 
     // 模块化
 
@@ -34,7 +34,8 @@ typedef struct MasterState {
     char* rdbFileName; //
     pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
     int isBgSaving; // 正在BGSAVE
-}
-
+};
+// 连接到对端master
+void connectMaster();
 
 #endif

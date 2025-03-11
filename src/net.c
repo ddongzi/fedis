@@ -219,7 +219,7 @@ int anetTcpServer(int port, char *bindaddr, int backlog)
 }
 
 /**
- * @brief 获取客户fd的 ip和host
+ * @brief 获取套接字 fd 对端的 IP 地址和端口
  *
  * @param [in] fd
  * @param [out] ip
@@ -227,7 +227,7 @@ int anetTcpServer(int port, char *bindaddr, int backlog)
  * @param [out] port
  * @return int [NET_OK, NET_ERR]
  */
-static int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
+int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
 {
     struct sockaddr_storage sa;
     socklen_t salen = sizeof(sa);
@@ -464,31 +464,7 @@ ssize_t getRespLength(const char *buf, size_t len)
 }
 
 
-/**
- * @brief 收到SLAVEOF命令，开始连接master，切换到CONNECTING
- *
- */
-void connectMaster()
-{
-    int fd = anetTcpConnect(server->masterhost, server->masterport);
-    if (fd < 0)
-    {
-        log_debug("connectMaster failed: %s", strerror(errno));
-        return;
-    }
-    // 非阻塞
-    anetNonBlock(fd);
-    anetEnableTcpNoDelay(fd);
 
-    int err = 0;
-
-    server->master = clientCreate(fd);
-    server->replState = REPL_STATE_SLAVE_CONNECTING;
-    log_debug("Connecting Master fd %d", fd);
-    // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
-    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
-    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
-}
 
 
 /**

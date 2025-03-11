@@ -32,7 +32,7 @@ typedef struct client {
     redisDb* db;
     int argc;   ///< 参数个数
     robj** argv;    ///< 参数数组
-    
+    void* instance; ///< 具体各类实例
 } client;
 client *clientCreate(connection* conn);
 

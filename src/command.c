@@ -107,13 +107,21 @@ void commandByeProc(client* client)
 
 }
 
+/**
+ * @brief [主] 主切从
+ * 
+ * @param [in] client 
+ */
 void commandSlaveofProc(client* client)
 {
+    // TODO 主切从要切换state
     sds* s = (sds*)(client->argv[1]->ptr);
     char* host = s->buf;
-    server->role = REDIS_CLUSTER_SLAVE;
-    server->masterhost = strdup(host);
-    server->masterport = (int)(client->argv[2]->ptr);
+
+    slaveStateInitFromMaster();
+    slave->masterhost = strdup(host);
+    slave->masterport = (int)(client->argv[2]->ptr);
+
     addWrite(client, shared.ok);
     connectMaster();
     aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
@@ -151,10 +159,17 @@ void commandPingMasterProc(client *c) {
     }
 }
 
-
+/**
+ * @brief [主] 处理sync命令
+ * 
+ * @param [in] client 
+ * @return * void 
+ */
 void commandSyncProc(client* client)
 {
-    client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
+    assert(CLIENT_IS_SLAVE(client));
+    slaveInstance* instance = (slaveInstance*)client->instance;
+    instance->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
     addWrite(client, shared.sync);
     aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
 }

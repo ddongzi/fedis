@@ -18,6 +18,18 @@
 #include "rdb.h"
 #include "net.h"
 #include "util.h"
+#include "master.h"
+struct slave* slave;
+void slaveStateInitFromMaster()
+{
+    if (slave == NULL) {
+        slave = calloc(1, sizeof(struct slaveState));
+    }
+    slave->dbnum = master->dbnum;
+    slave->db = master->db;
+    
+    slave->clusterEnabled = master->clusterEnabled;
+}
 
 
 void sendPingToMaster()
@@ -198,4 +210,34 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
 int replicationCron()
 {
     // TODO:
+}
+
+
+/**
+ * @brief 收到SLAVEOF命令,准备变为从，开始连接master，切换到CONNECTING
+ *
+ */
+void connectMaster()
+{
+    int fd = anetTcpConnect(slave->masterhost, slave->masterport);
+    if (fd < 0)
+    {
+        log_debug("connectMaster failed: %s", strerror(errno));
+        return;
+    }
+    // 非阻塞
+    anetNonBlock(fd);
+    anetEnableTcpNoDelay(fd);
+    char ip[64] = {0};
+    int port;
+    anetFormatPeer(fd, ip, sizeof(ip), port);
+
+    connection* conn = netCreateConnection(fd, ip, port);
+    slave->master = clientCreate(conn);
+    slave->replState = REPL_STATE_SLAVE_CONNECTING;
+ 
+    log_debug("Connecting Master fd %d", fd);
+    // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
+    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
+    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
 }

@@ -2,6 +2,8 @@
 #define SLAVE_H
 
 #include "client.h"
+#include "master.h"
+extren struct slave* slave;
 
 // 主从复制状态
 enum REPL_STATE {
@@ -27,8 +29,7 @@ typedef struct {
 } slaveInstance;
 
 // slave服务器特性状态
-typedef struct {
-
+struct slave{
     // 数据库
     int dbnum;  // 数据库数量
     redisDb* db;    // 数据库数组
@@ -42,24 +43,9 @@ typedef struct {
     /***和主共有字段***/
     // 分布式集群
     int clusterEnabled; // 是否开启集群
-    int role; // 角色
 
     // 模块化
-
-    // 持久化
-    long long dirty; // 上次SAVE之后修改了多少次,set del 
-    time_t lastSave;    // 上次SAVE时间
-    int saveCondSize; // 
-    struct saveparam* saveParams; // SAVE条件数组
-    
-    // RDB持久化
-    int rdbfd;     ///< 不关闭rdbfd
-    char* rdbFileName; //
-    pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
-    int isBgSaving; // 正在BGSAVE
-
-    
-} slaveState;
+} ;
 
 
 
@@ -71,5 +57,7 @@ void sendSyncToMaster();
 void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
 void repliReadHandler(aeEventLoop *el, int fd, void* privData);
 
+// TODO 从主初始化slave
+void slaveStateInitFromMaster();
 
 #endif

@@ -27,7 +27,6 @@ typedef struct sentinelRedisInstance {
 struct sentinel {
     char* id; // sentinel ID 唯一
     dict* instances; ///< 维护的实例字典。键：实例名。值：实例sentinelRedisInstance。
-    
 };
 
 // 监控实例状态。定期执行，发送PING，检查保活。

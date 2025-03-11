@@ -42,6 +42,7 @@ void connectMaster();
 ssize_t getRespLength(const char* buf, size_t len) ;
 char * respFormat(int argc, char** argv);
 
+int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port);
 
 connection* netCreateConnection(int cfd , const char* ip, const int port);
 void netCloseConnection(connection *conn);

@@ -41,9 +41,6 @@ struct sharedObjects {
     robj* integers[1000];
 };
 
-
-
-
 char* respParse(const char* resp);
 
 struct saveparam {
@@ -54,7 +51,7 @@ struct saveparam {
 struct redisServer {
 
     // 基础配置
-
+    int flags;  ///< 服务器类型
     char *bindaddr;
     int port;
     int daemonize;  // 是否守护进程
@@ -73,6 +70,8 @@ struct redisServer {
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
+    void* state; ///< 具体server实例
+    
 };
 
 

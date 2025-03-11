@@ -78,12 +78,6 @@ static int aeGetTime(long long* seconds, long long* milliseconds)
 int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
 {
     int numevents;
-    // log_debug("epoll wait ... time: %d ms", tvp ? (tvp->tv_sec * 1000 + tvp->tv_usec / 1000) : -1);
-    
-    // if (server->replState == REPL_STATE_SLAVE__NONE) {
-    //     log_debug("checking master fd !!");
-    // }
-
     numevents = epoll_wait(eventLoop->apiState->epfd, 
         eventLoop->apiState->events, 
         eventLoop->maxsize, 
