@@ -3,16 +3,19 @@
 #include <time.h>
 #include "dict.h"
 #include "ae.h"
+#include "net.h"
 
 #define SENTINEL_LISTENPORT 7777
 #define SENTINEL_MAXCONNECTIONS 30
 #define SENTINEL_INSTANCE_MAXNAMELEN 32
-extern sentinel* sentinel;
+
+
+extern struct sentinel* sentinel;
 
 // 维护sentinel客户端实例状态， 进行读写会通过client的conn结构进行，和此处conn属性一致
 typedef struct sentinelRedisInstance {
+    client* client; ///< 通用读写客户端
     char* name;
-    connection* conn;
     int role;   // 
     int isdown; //
     time_t lastPingTime; // 上次发送PING的时间，sentinel 记录
@@ -21,14 +24,14 @@ typedef struct sentinelRedisInstance {
 } sentinelRedisInstance;
 
 // sentinel 特性状态
-typedef struct sentinel {
+struct sentinel {
     char* id; // sentinel ID 唯一
     dict* instances; ///< 维护的实例字典。键：实例名。值：实例sentinelRedisInstance。
     
-} sentinel;
+};
 
 // 监控实例状态。定期执行，发送PING，检查保活。
-void sentinelMonitor(sentinelState *sentinel);
+void sentinelMonitor(struct sentinel *sentinel);
 // 发送PING
 void sentinelPing(sentinelRedisInstance *ri);
 // 检查是否保活。
@@ -36,7 +39,7 @@ void sentinelCheckHealth(sentinelRedisInstance *ri);
 // 主节点故障。开始故障转移
 void sentinelFailover(sentinelRedisInstance *ri);
 // 更新实例信息
-void sentinelUpdateMasterInfo(sentinelState *sentinel, sentinelRedisInstance *ri);
+void sentinelUpdateMasterInfo(struct sentinel *sentinel, sentinelRedisInstance *ri);
 void sentinelRedisInstanceFree(sentinelRedisInstance* instance);
 
 void sentinelStateInit();

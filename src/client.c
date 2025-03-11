@@ -8,11 +8,11 @@
  * @brief 创建通用client结构，默认为普通
  * 
  * @param [in] conn 
- * @return redisClient* 
+ * @return client* 
  */
-redisClient *redisClientCreate(connection* conn)
+client *clientCreate(connection* conn)
 {
-    redisClient *c = malloc(sizeof(redisClient));
+    client *c = malloc(sizeof(client));
     c->connection = conn;
     c->flags = CLIENT_ROLE_NORMAL;
     c->readBuf = sdsempty();
@@ -30,7 +30,7 @@ redisClient *redisClientCreate(connection* conn)
  * @param [in] client 
  * @param [in] obj 
  */
-void addWrite(redisClient* client, robj* obj) 
+void addWrite(client* client, robj* obj) 
 {
     char buf[128] = {0};
     switch (obj->type)
@@ -52,7 +52,7 @@ void addWrite(redisClient* client, robj* obj)
  * @param [in] client 
  * @return 
  */
-void readToReadBuf(redisClient* client) 
+void readToReadBuf(client* client) 
 {
     char temp_buf[1]; // 逐字节读取，确保精确性
     ssize_t n;

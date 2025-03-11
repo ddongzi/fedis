@@ -42,19 +42,8 @@ struct sharedObjects {
 };
 
 
-// CMD支持服务端类型
-#define CMD_MASTER 0
-#define CMD_SLAVE 1
-#define CMD_SENTINEL 2
-typedef void redisCommandProc(redisClient* client);
-typedef struct redisCommand {
-    char* name; // 
-    redisCommandProc* proc;
-    int arity; // 参数个数. -x:表示至少X个变长参数（完整，包含操作字）
-    int flags; ///< 支持的角色， CMD_SENTINEL, CMD_COMMON
-} redisCommand;
 
-extern redisCommand commandsTable[];
+
 char* respParse(const char* resp);
 
 struct saveparam {
@@ -81,37 +70,8 @@ struct redisServer {
     list* clients;  // 客户端链表    
     list* clientsToClose;   // 待关闭客户端链表
 
-    // 数据库
-    int dbnum;  // 数据库数量
-    redisDb* db;    // 数据库数组
-    dict* commands; // 命令表: 键是字符串，值是cmd结构
-
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
-
-    // 分布式集群
-    int clusterEnabled; // 是否开启集群
-    int role; // 角色
-    redisClient* master; // （从字段）主客户端
-    char* masterhost; // （从字段）主host
-    int masterport; // （从字段）主port
-    int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
-
-    // 模块化
-
-    // 持久化
-    long long dirty; // 上次SAVE之后修改了多少次,set del 
-    time_t lastSave;    // 上次SAVE时间
-    int saveCondSize; // 
-    struct saveparam* saveParams; // SAVE条件数组
-    
-    // RDB持久化
-    int rdbfd;     ///< 不关闭rdbfd
-    char* rdbFileName; //
-    pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
-    int isBgSaving; // 正在BGSAVE
-
-    // 其他
 
 };
 

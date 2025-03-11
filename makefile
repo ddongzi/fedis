@@ -15,8 +15,9 @@ TESTS = $(BIN_DIR)/test_dict $(BIN_DIR)/test_db $(BIN_DIR)/test_sds $(BIN_DIR)/t
 REDIS_SRC = $(SRC_DIR)/ae.c $(SRC_DIR)/client.c $(SRC_DIR)/db.c $(SRC_DIR)/dict.c \
 	$(SRC_DIR)/list.c $(SRC_DIR)/log.c \
 	$(SRC_DIR)/net.c $(SRC_DIR)/rdb.c $(SRC_DIR)/server.c \
-	$(SRC_DIR)/repli.c $(SRC_DIR)/sds.c \
-	 $(SRC_DIR)/robj.c $(SRC_DIR)/rio.c  $(SRC_DIR)/util.c 
+	$(SRC_DIR)/slave.c $(SRC_DIR)/sds.c \
+	 $(SRC_DIR)/robj.c $(SRC_DIR)/rio.c  $(SRC_DIR)/util.c\
+	 $(SRC_DIR)/command.c $(SRC_DIR)/sentinel.c
 
 TEST_DICT_SRC = $(SRC_DIR)/dict.c $(TEST_DIR)/test_dict.c 
 TEST_DB_SRC = $(TEST_DIR)/test_db.c $(SRC_DIR)/db.c $(SRC_DIR)/dict.c \

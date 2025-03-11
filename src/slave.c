@@ -1,5 +1,5 @@
 /**
- * @file repli.c
+ * @file slave.c
  * @author your name (you@domain.com)
  * @brief 从特性函数
  * @version 0.1
@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
  #include "server.h"
-#include "repli.h"
+#include "slave.h"
 #include "rio.h"
 #include "log.h"
 #include "rdb.h"

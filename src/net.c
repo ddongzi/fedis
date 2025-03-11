@@ -27,7 +27,7 @@
 #include "rdb.h"
 #include "log.h"
 #include "rio.h"
-#include "repli.h"
+#include "slave.h"
 #include "net.h"
 #include "sentinel.h"
 
@@ -482,7 +482,7 @@ void connectMaster()
 
     int err = 0;
 
-    server->master = redisClientCreate(fd);
+    server->master = clientCreate(fd);
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     log_debug("Connecting Master fd %d", fd);
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。

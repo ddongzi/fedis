@@ -18,7 +18,8 @@
 #include "log.h"
 #include <errno.h>
 #include <string.h>
-sentinel* sentinel;
+
+struct sentinel* sentinel;
 
 /**
  * @brief host-1678392323-1024
@@ -78,14 +79,10 @@ void sentinelStateInit()
         .keyCompare = dictKeyCmp,
         .keyDestructor = dictKeyfree,
         .valDestructor = dictValfree,
-    }
+    };
     sentinel->instances = dictCreate(&dt, NULL);
 }
 
-// 禁用一些command
-void sentinelCommandsForbid()
-{
-}
 
 sentinelRedisInstance* sentinelRedisInstanceCreate(connection* conn)
 {

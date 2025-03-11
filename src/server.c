@@ -13,29 +13,14 @@
 #include "rdb.h"
 #include "log.h"
 #include "rio.h"
-#include "repli.h"
+#include "slave.h"
 #include "net.h"
 #include "sentinel.h"
+#include "command.h"
 
 struct redisServer* server;
 
 struct sharedObjects shared;
-
-// 预定义所有的服务端命令，包含sentinel，initserver会调用
-redisCommand commandsTable[] = {
-    {"SET", commandSetProc, -3, CMD_MASTER},
-    {"GET", commandGetProc, 2, CMD_MASTER | CMD_SLAVE},
-    {"DEL", commandDelProc, 2, CMD_MASTER},
-    {"OBJECT", commandObjectProc, 3, CMD_MASTER | CMD_SLAVE},
-    {"BYE", commandByeProc, 1, CMD_MASTER|CMD_SLAVE},
-    {"SLAVEOF", commandSlaveofProc, 3, CMD_MASTER|CMD_SLAVE},
-    {"REPLCONF", commandReplconfProc, 3, CMD_MASTER|CMD_SLAVE},
-    {"SYNC", commandSyncProc, 1, CMD_MASTER|CMD_SLAVE},
-    {"REPLACK", commandReplACKProc, 1, CMD_MASTER},
-
-    {"PING", commandPingProc, 1, CMD_MASTER|CMD_SLAVE|CMD_SENTINEL},
-
-};
 
 void _encodingStr(int encoding, char *buf, int maxlen) 
 {
@@ -54,110 +39,6 @@ void _encodingStr(int encoding, char *buf, int maxlen)
             break;
     }
 }
-
-void commandSetProc(redisClient* client)
-{
-    int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
-    if (retcode == DICT_OK) {
-        addWrite(client, shared.ok);
-        server->dirty++;
-    } else {
-        addWrite(client, shared.err);
-    }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-
-}
-void commandGetProc(redisClient* client)
-{
-    robj* res = (robj*)dbGet(client->db, client->argv[1]);
-    if (res == NULL) { 
-        addWrite(client, robjCreateStringObject("-ERR key not found"));
-    } else {
-        addWrite(client, res);
-    }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-void commandDelProc(redisClient* client)
-{
-    int retcode = dbDelete(client->db, client->argv[1]);
-    if (retcode == DICT_OK) {
-        server->dirty++;
-
-        addWrite(client, shared.ok);
-    } else {
-        addWrite(client, shared.keyNotFound);
-    }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-void commandObjectProc(redisClient* client)
-{
-    robj* key = client->argv[2];
-    robj* op = client->argv[1];
-    if (strcasecmp(((sds*)(op->ptr))->buf, "ENCODING") == 0) {
-        robj* val = dbGet(client->db, key);
-        if (val == NULL) {
-            addWrite(client, shared.keyNotFound);
-        } else {
-            // TODO maybe we should use the valEncode() function
-            char buf[1024];
-            _encodingStr(val->encoding, buf, sizeof(buf));
-
-            addWrite(client, robjCreateStringObject(buf));
-        }
-    }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-
-}
-
-void commandByeProc(redisClient* client)
-{
-
-    listAddNodeTail(server->clientsToClose, listCreateNode(client));
-    addWrite(client, shared.bye);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-
-}
-
-void commandSlaveofProc(redisClient* client)
-{
-    sds* s = (sds*)(client->argv[1]->ptr);
-    char* host = s->buf;
-    server->role = REDIS_CLUSTER_SLAVE;
-    server->masterhost = strdup(host);
-    server->masterport = (int)(client->argv[2]->ptr);
-    addWrite(client, shared.ok);
-    connectMaster();
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-
-
-void commandPingProc(redisClient* client)
-{
-    client->replState = REPL_STATE_MASTER_WAIT_PING;
-    addWrite(client, shared.pong);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-
-void commandSyncProc(redisClient* client)
-{
-    client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
-    addWrite(client, shared.sync);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-
-void commandReplconfProc(redisClient* client)
-{
-    //  暂不处理，不影响
-    addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-void commandReplACKProc(redisClient* client)
-{
-    //  ���不处理，不影响
-    addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-}
-
 
 // command dictType
 static unsigned long commandDictHashFunction(const void *key) {
@@ -262,6 +143,7 @@ void initServerConfig()
 
     if (role == SERVER_ROLE_SENTINEL) {
         server->port = REDIS_SENTINELPORT;
+        log_debug("TODO init sentinel config");
     }
 
     log_debug("√ init server config.\n");
@@ -284,7 +166,7 @@ void updateServerTime()
     server->unixtime = time(NULL);
     server->mstime = mstime();
 }
-void freeClient(redisClient* client)
+void freeClient(client* client)
 {
     log_debug("free client %d\n", client->fd);
     close(client->fd);
@@ -303,7 +185,7 @@ void closeClients()
 {
     listNode* node = listHead(server->clientsToClose);
     while (node) {
-        redisClient* client = node->value;
+        client* client = node->value;
         listDelNode(server->clientsToClose, node);
         freeClient(client);
         node = listHead(server->clientsToClose);
@@ -426,7 +308,7 @@ void acceptedCallback(void *data)
 {
     int cfd = (int)data;
     // 创建client实例
-    redisClient *client = redisClientCreate(cfd);
+    client *client = clientCreate(cfd);
     listAddNodeTail(server->clients, listCreateNode(client));
     // TODO 不需要回调
     aeEventContext* readCtx = malloc(sizeof(aeEventContext));
@@ -498,7 +380,7 @@ redisCommand* lookupCommand(dict* commands, const char* cmd)
  * 
  * @param [in] c 
  */
-void processCommand(redisClient * c)
+void processCommand(client * c)
 {
     redisCommand* cmd;
     // argv[0] 一定是字符串，sds
@@ -522,7 +404,7 @@ void processCommand(redisClient * c)
     $2\r\nv1\r\n
  * @param [in] client 
  */
-void processClientQueryBuf(redisClient* client)
+void processClientQueryBuf(client* client)
 {
     if (client->readBuf == NULL )  return;
 
@@ -561,7 +443,7 @@ void processClientQueryBuf(redisClient* client)
 // redis 使用的read到client， 但是sentinel使用的是instance，
 void readQueryFromClient(aeEventLoop *el, int fd, void *data)
 {
-    redisClient *client = data;
+    client *client = data;
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
@@ -586,7 +468,7 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *data)
  *
  * @param [in] client
  */
-void saveRDBToSlave(redisClient *client)
+void saveRDBToSlave(client *client)
 {
     struct stat st;
     long rdb_len;
@@ -646,7 +528,7 @@ void saveRDBToSlave(redisClient *client)
 
 void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
 {
-    redisClient *client = (redisClient *)privdata;
+    client *client = (client *)privdata;
     char *msg = client->writeBuf->buf;
     size_t msg_len = sdslen(client->writeBuf);
     ssize_t nwritten;
@@ -705,7 +587,7 @@ void detectClientType(struct aeEventLoop *eventLoop, int fd, void *data)
     char typeBuf[32];
     strncpy(typeBuf, buf, 32);
     char *token = strtok(typeBuf, " ");
-    redisClient* client = redisClientCreate(conn);
+    client* client = clientCreate(conn);
     if (strcasecmp(token, "SENTINEL") == 0 && server->role == SERVER_ROLE_SENTINEL) {
         token = strtok(NULL, " ");
         // 1. 普通客户端查询sentinel服务

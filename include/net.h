@@ -13,6 +13,7 @@
 #define __NET_H__
 
 #include "ae.h"
+#include "rio.h"
 
 #define INET_ADDRSTRLEN 16
 

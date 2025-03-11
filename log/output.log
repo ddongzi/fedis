@@ -174,7 +174,7 @@ $4
  (5 bytes)
 04:15:30 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
 
-04:15:38 [36mDEBUG[0m [90msrc/repli.c:79:[0m send ping to master
+04:15:38 [36mDEBUG[0m [90msrc/slave.c:79:[0m send ping to master
 04:15:45 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
 04:15:45 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
 04:15:45 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
@@ -186,7 +186,7 @@ $4
 get resp return
 read buf finished,  +PONG
 
-04:15:45 [36mDEBUG[0m [90msrc/repli.c:129:[0m receive PONG
+04:15:45 [36mDEBUG[0m [90msrc/slave.c:129:[0m receive PONG
 04:15:45 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
 
 04:15:45 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
@@ -196,7 +196,7 @@ read buf finished,  +PONG
 
 04:15:45 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
 
-04:15:48 [36mDEBUG[0m [90msrc/repli.c:83:[0m send replconf to master
+04:15:48 [36mDEBUG[0m [90msrc/slave.c:83:[0m send replconf to master
 04:15:55 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
 04:15:55 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
 04:15:55 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
@@ -208,7 +208,7 @@ read buf finished,  +PONG
 get resp return
 read buf finished,  +OK
 
-04:15:55 [36mDEBUG[0m [90msrc/repli.c:138:[0m receive REPLCONF OK
+04:15:55 [36mDEBUG[0m [90msrc/slave.c:138:[0m receive REPLCONF OK
 04:15:55 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
 
 04:15:55 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
@@ -218,7 +218,7 @@ read buf finished,  +OK
 
 04:15:55 [36mDEBUG[0m [90msrc/ae.c:355:[0m event come: fd 7, ready WRITABLE
 
-04:15:59 [36mDEBUG[0m [90msrc/repli.c:88:[0m send sync to master
+04:15:59 [36mDEBUG[0m [90msrc/slave.c:88:[0m send sync to master
 04:16:05 [36mDEBUG[0m [90msrc/redis.c:306:[0m server cron.
 04:16:05 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
 04:16:05 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
@@ -247,7 +247,7 @@ Offset | Char | Hex  | Content
     10 |   .  | 0x0a | +FULLSYNC..
        |      |      |        |      |      |        |      |      |        |      |      |        |      |      | 
 --------------------------------------------------
-04:16:05 [36mDEBUG[0m [90msrc/repli.c:149:[0m receive FULLSYNC
+04:16:05 [36mDEBUG[0m [90msrc/slave.c:149:[0m receive FULLSYNC
 04:16:05 [36mDEBUG[0m [90msrc/ae.c:94:[0m 1 events received.
 04:16:05 [36mDEBUG[0m [90msrc/ae.c:115:[0m epoll fd[7] event[READ] come.
 
@@ -268,11 +268,11 @@ Offset | Char | Hex  | Content
      3 |   .  | 0x0a | $0..
        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      |        |      |      | 
 --------------------------------------------------
-04:16:05 [36mDEBUG[0m [90msrc/repli.c:167:[0m start transfer ..., len 0
+04:16:05 [36mDEBUG[0m [90msrc/slave.c:167:[0m start transfer ..., len 0
 04:16:05 [36mDEBUG[0m [90msrc/rdb.c:330:[0m Save the RDB file success
 
-04:16:05 [36mDEBUG[0m [90msrc/repli.c:169:[0m transfer finished.
-04:16:05 [36mDEBUG[0m [90msrc/repli.c:171:[0m rdbload finished.
+04:16:05 [36mDEBUG[0m [90msrc/slave.c:169:[0m transfer finished.
+04:16:05 [36mDEBUG[0m [90msrc/slave.c:171:[0m rdbload finished.
 04:16:05 [36mDEBUG[0m [90msrc/ae.c:230:[0m EPOLL CTL fd:7, OP :mod, mask:write
 
 04:16:05 [36mDEBUG[0m [90msrc/ae.c:199:[0m ● create WRITE event for fd 7.
