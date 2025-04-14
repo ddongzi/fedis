@@ -8,6 +8,7 @@
 #include "robj.h"
 #include "client.h"
 
+
 #define REDIS_SERVERPORT 6666
 #define REDIS_SENTINELPORT 7777
 #define REDIS_DEFAULT_DBNUM 16
@@ -56,6 +57,7 @@ struct redisServer {
     int port;
     int daemonize;  // 是否守护进程
     char *configfile; // 
+    int role;
 
     // 运行时状态
     time_t unixtime;    // 当前时间, 秒进度

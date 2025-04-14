@@ -17,6 +17,7 @@
 #include "net.h"
 #include "sentinel.h"
 #include "command.h"
+#include "conf.h"
 
 struct redisServer* server;
 
@@ -115,9 +116,20 @@ static void loadCommands(int role)
  */
 void initServerConfig()
 {
+    server->configfile = "../conf/server.conf";
+    server->port = atoi(get_config(server->configfile, "port"));
+    char* role = get_config(server->configfile, "port");
+    if (strcasecmp("slave", role) == 0) {
+        server->role = SERVER_ROLE_SLAVE;
+    } else if (strcasecmp("sentinel", role) == 0) {
+        server->role = SERVER_ROLE_SENTINEL;
+    } else {
+        server->role = SERVER_ROLE_MASTER;
+    }
+
     server->maxclients = REDIS_MAX_CLIENTS;
 
-    if (role == SERVER_ROLE_MASTER) {
+    if (server->role == SERVER_ROLE_MASTER) {
         // 普通服务器：动态切换
         server->port = REDIS_SERVERPORT;
         server->dbnum = REDIS_DEFAULT_DBNUM;
@@ -141,7 +153,7 @@ void initServerConfig()
     server->commands = dictCreate(&commandDictType, NULL);
     loadCommands(server->role);    
 
-    if (role == SERVER_ROLE_SENTINEL) {
+    if (server->role == SERVER_ROLE_SENTINEL) {
         server->port = REDIS_SENTINELPORT;
         log_debug("TODO init sentinel config");
     }
@@ -621,25 +633,7 @@ int main(int argc, char **argv)
     log_debug("hello log.");
 
     server = calloc(1,sizeof(struct redisServer)); 
-    int role = SERVER_ROLE_MASTER;
-    for (int i = 0; i < argc; i++)
-    {
-        if (strcmp(argv[i], "--sentinel") == 0 && i + 1 < argc) {
-            role = SERVER_ROLE_SENTINEL;
-            break;
-        } 
-    }
-    server->role = role;
-
     initServerConfig();
-    for (int i = 0; i < argc; i++)
-    {
-        if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
-            server->port = atoi(argv[i + 1]);
-            i++;
-        } 
-    }
-
     initServer();
     aeMain(server->eventLoop);
 
