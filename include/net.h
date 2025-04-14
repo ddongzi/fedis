@@ -15,23 +15,17 @@
 #include "ae.h"
 #include "rio.h"
 
-#define INET_ADDRSTRLEN 16
 
-// 临时结构， 不明确 client还是sentinelInstance， accept创建
-typedef struct connection {
-    int cfd;
-    char ip[INET_ADDRSTRLEN];
-    int port;
-    rio* io;
-} connection;
+#define IP_MAX_STRLEN 16
+
 
 
 #define NET_OK 0
 #define NET_ERR -1
 int anetTcpServer(int port, char *bindaddr, int backlog);
 
-// 封装accept，接受TCP连接。服务器初始化时候，会将该处理程序与AE_READABLE关联。创建client实例，注册事件。
-void acceptTcpHandler(aeEventLoop *el, int fd, void* privData);
+int anetAcceptTcp(int fd, char* cip, size_t iplen ,int* port);
+
 // 封装read。
 void readQueryFromClient(aeEventLoop *el, int fd, void* privData);
 // 封装write

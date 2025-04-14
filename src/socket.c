@@ -16,8 +16,9 @@
 #include <unistd.h>
 #include "net.h"
 #include "log.h"
+#include "server.h"
 /**
- * @brief connection 的 aeFileproc
+ * @brief connection 上的mask ae事件处理
  * 
  * @param [in] el 
  * @param [in] fd 
@@ -145,11 +146,37 @@ int connSocketSetReadHandler(Connection* conn, ConnectionCallbackFunc readHandle
         aeCreateFileEvent(conn->el, conn->fd, AE_READABLE, conn->type->aeHandler, conn);
 }
 
+/**
+ * @brief 最初的accept ae事件处理proc
+ * 
+ * @param [in] eventLoop 
+ * @param [in] fd 
+ * @param [in] data 
+ */
+void connSocketAcceptHandler(struct aeEventLoop *eventLoop, int fd, void *data)
+{
+    char cip[IP_MAX_STRLEN] = {0};
+    int cfd, cport;
+    int max = server->maxclients;
+    while (max--) {
+        cfd = anetAcceptTcp(fd, cip, IP_MAX_STRLEN, &cport);
+        if (cfd == -1) {
+            log_error("accept error, %s", strerror(errno));
+        }
+        log_info("Accept client, %s:%d", cip, cport);
+    }
+    Connection* conn = connSocketCreate(eventLoop);
+    conn->fd = cfd;
+    conn->state = CONN_STATE_ACCEPTING;
+    // TODO 处理accept conn？
+}
+
 static ConnectionType CT_SOCKET = {
    /* connection type initialize & finalize & configure */
 
     /* ae  */
     .aeHandler = connSocketEventHandler,
+    .acceptHandler = connSocketAcceptHandler,
     /* create & close connection */
     .connCreate = connSocketCreate,
     .connClose = connSocketClose,

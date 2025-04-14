@@ -33,6 +33,7 @@ typedef struct ConnectionType
 
     /* ae  */
     void (*aeHandler)(aeEventLoop *el, int fd, void *clientData, int mask); // ae handler:
+    aeFileProc* acceptHandler;
 
     /* create & close connection */
     Connection *(*connCreate)(aeEventLoop *el);

@@ -279,33 +279,22 @@ connection* netCreateConnection(int cfd , const char* ip, const int port)
  * @param [in] privData
  */
 
-void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
+int anetAcceptTcp(int fd, char* cip, size_t iplen ,int* port)
 {
-    aeEventContext* acceptCtx = (aeEventContext*) data;
-
     int cfd, port;
-    char ip[128];
     struct sockaddr_storage sa;
     socklen_t salen = sizeof(sa);
     cfd = accept(fd, (struct sockaddr *)&sa, &salen);
     if (cfd == -1)
     {
-        return;
+        return NET_ERR;
     }
 
     anetNonBlock(cfd);
     anetEnableTcpNoDelay(cfd);
     anetKeepAlive(cfd, 300);
-    anetFormatPeer(cfd, ip, sizeof(ip), &port);
-
-    // TODO 需要适配sentinel， 添加回调函数，把具体逻辑给调用者。
-    // 解决：刚开始不区分，而是通过第一个命令时候才创建客户端， 现在内容通过一个类型connection临时保存
-
-    connection* conn = netCreateConnection(cfd, ip, port);
-
-    aeCreateFileEvent(el, cfd, AE_READABLE, detectClientType, conn);
-    // 注册读事件
-    log_debug("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
+    anetFormatPeer(cfd, cip, iplen, port);
+    return cfd;
 }
 
 
