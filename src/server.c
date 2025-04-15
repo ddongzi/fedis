@@ -316,17 +316,10 @@ void createSharedObjects()
  * @param [in] cfd 
  * @param [in] cfd
  */
-void acceptedCallback(void *data)
+void srvAcceptHandler(Connection* conn)
 {
-    int cfd = (int)data;
-    // 创建client实例
-    client *client = clientCreate(cfd);
+    client *client = conn->privData;
     listAddNodeTail(server->clients, listCreateNode(client));
-    // TODO 不需要回调
-    aeEventContext* readCtx = malloc(sizeof(aeEventContext));
-    readCtx->client = client;
-
-    aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, readCtx);
 }
 
 /**
@@ -366,6 +359,11 @@ void initServer()
 
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->bindaddr = NULL;
+
+
+    // TODO
+
+
     // 需要freeaddrInfo释放 
     int fd = anetTcpServer(server->port, server->bindaddr, server->maxclients);
     if (fd == -1) {
@@ -380,6 +378,14 @@ void initServer()
     log_debug("● create time event for serverCron\n");
 
     log_debug("√ init server .\n");
+}
+
+/**
+ * 目前只用2个， net socket 和 unix socket
+ */
+void initListeners()
+{
+    server->listeners[0].port
 }
 
 

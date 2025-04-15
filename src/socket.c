@@ -59,6 +59,7 @@ Connection* connSocketCreate(aeEventLoop* el)
     return connection;
 }
 
+
 void connSocketClose(Connection* conn)
 {
     if (conn->fd != -1) {
@@ -91,7 +92,13 @@ int connSocketConnect(Connection* conn, const char* host, int port, ConnectionCa
     aeCreateFileEvent(conn->el, conn->fd, AE_WRITABLE, conn->type->aeHandler, conn);
     return RET_OK;
 }
-
+/**
+ * @brief 
+ * 
+ * @param [in] conn 
+ * @param [in] acceptHandler 
+ * @return int 
+ */
 int connSocketAccept(Connection* conn, ConnectionCallbackFunc acceptHandler)
 {
     if (conn->state != CONN_STATE_ACCEPTING) {
@@ -101,6 +108,7 @@ int connSocketAccept(Connection* conn, ConnectionCallbackFunc acceptHandler)
     acceptHandler(conn);
     return RET_OK;
 }
+
 int connSocketWrite(Connection* conn, const void* data, size_t datalen)
 {
    
@@ -168,8 +176,16 @@ void connSocketAcceptHandler(struct aeEventLoop *eventLoop, int fd, void *data)
     Connection* conn = connSocketCreate(eventLoop);
     conn->fd = cfd;
     conn->state = CONN_STATE_ACCEPTING;
-    // TODO 处理accept conn？
+    // TODO
 }
+
+int connSocketListen(ConnectionListener* listener)
+{
+    // todo 为啥还要listener，直接server获取？
+    int fd = anetTcpServer(listener->port, listener->port, server->maxclients);
+    
+}
+
 
 static ConnectionType CT_SOCKET = {
    /* connection type initialize & finalize & configure */
@@ -181,9 +197,10 @@ static ConnectionType CT_SOCKET = {
     .connCreate = connSocketCreate,
     .connClose = connSocketClose,
 
-    /* connect & accept*/
+    /* connect & accept & listen*/
     .connect = connSocketConnect,
     .accept = connSocketAccept,
+    .listen = connSocketListen,
 
     /* IO */
     .write = connSocketWrite,

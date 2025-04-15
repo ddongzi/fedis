@@ -14,6 +14,7 @@
 #define REDIS_DEFAULT_DBNUM 16
 #define REDIS_MAX_CLIENTS 10000
 
+#define MAX_LISTENERS 8
 
 // 服务端三种角色：主 从 sentinel
 #define SERVER_ROLE_MASTER 0
@@ -53,8 +54,9 @@ struct redisServer {
 
     // 基础配置
     int flags;  ///< 服务器类型
-    char *bindaddr;
-    int port;
+
+    ConnectionListener listeners[MAX_LISTENERS]; // 固定个数，
+
     int daemonize;  // 是否守护进程
     char *configfile; // 
     int role;

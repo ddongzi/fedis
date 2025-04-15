@@ -25,6 +25,8 @@ typedef enum {
 
 struct Connection;
 typedef struct Connection Connection;
+struct ConnectionListener;
+typedef struct ConnectionListener ConnectionListener;
 
 typedef void (*ConnectionCallbackFunc)(Connection *conn);
 typedef struct ConnectionType
@@ -42,6 +44,7 @@ typedef struct ConnectionType
     /* connect & accept*/
     int (*connect)(Connection *conn, const char *host, int port, ConnectionCallbackFunc connectHandler);
     int (*accept)(Connection *conn, ConnectionCallbackFunc acceptHandler);
+    int (*listen)(ConnectionListener* listener);
 
     /* IO */
     int (*write)(Connection *conn, const void *data, size_t datalen);
@@ -50,6 +53,15 @@ typedef struct ConnectionType
     int (*setReadHandler)(Connection *conn, ConnectionCallbackFunc readHandler);
 
 } ConnectionType;
+
+/* 为多协议多监听扩展。 server.port只能一个*/
+// TODO 去掉server.port, 支持listener链表，多端口监听。
+struct ConnectionListener {
+    int port;
+    char* bindAddr;
+    ConnectionType *type;
+};
+
 struct Connection {
     ConnectionType *type;
     ConnectionState state;
@@ -57,7 +69,8 @@ struct Connection {
     int fd;
     aeEventLoop *el;
 
-
     ConnectionCallbackFunc writeHandler;
     ConnectionCallbackFunc readHandler;
+
+    void* privData; // client
 };

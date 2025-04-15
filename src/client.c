@@ -1,19 +1,20 @@
-#include "client.h"
+#include "Client.h"
 #include <stdlib.h>
 #include "errno.h"
 #include "server.h"
 #include "log.h"
 #include "net.h"
+#include "connection.h"
 /**
  * @brief 创建通用client结构，默认为普通
  * 
  * @param [in] conn 
- * @return client* 
+ * @return Client* 
  */
-client *clientCreate(connection* conn)
+Client *clientCreate(Connection* conn)
 {
-    client *c = malloc(sizeof(client));
-    c->connection = conn;
+    Client *c = malloc(sizeof(Client));
+    c->conn = conn;
     c->flags = CLIENT_ROLE_NORMAL;
     c->readBuf = sdsempty();
     c->writeBuf = sdsempty();
@@ -27,10 +28,10 @@ client *clientCreate(connection* conn)
 /**
  * @brief 准备buf，向client写, 后续write类handler处理
  * 
- * @param [in] client 
+ * @param [in] Client 
  * @param [in] obj 
  */
-void addWrite(client* client, robj* obj) 
+void addWrite(Client* Client, robj* obj) 
 {
     char buf[128] = {0};
     switch (obj->type)
@@ -43,39 +44,39 @@ void addWrite(client* client, robj* obj)
         break;
     }
 
-    sdscat(client->writeBuf, buf);
+    sdscat(Client->writeBuf, buf);
 }
 
 
 /**
  * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
- * @param [in] client 
+ * @param [in] Client 
  * @return 
  */
-void readToReadBuf(client* client) 
+void readToReadBuf(Client* Client) 
 {
     char temp_buf[1]; // 逐字节读取，确保精确性
     ssize_t n;
 
-    sdsclear(client->readBuf);
+    sdsclear(Client->readBuf);
 
     printf("\n to read buf\n");
     while (1) {
         // 没必要RIO，
-        n = read(client->fd, temp_buf, sizeof(temp_buf));
+        n = read(Client->fd, temp_buf, sizeof(temp_buf));
         if (n <= 0) {
             log_debug("read failed or finished");
             if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
             return;
         }
-        sdscatlen(client->readBuf, temp_buf, n);
+        sdscatlen(Client->readBuf, temp_buf, n);
 
-        ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
+        ssize_t resp_len = getRespLength(Client->readBuf->buf, sdslen(Client->readBuf));
         if (resp_len != -1) {
             // 读到一个RESP协议
             printf("get resp return");
             break;
         }
     }
-    printf("\nread buf finished,  %s\n", client->readBuf->buf);
+    printf("\nread buf finished,  %s\n", Client->readBuf->buf);
 }
