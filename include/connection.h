@@ -23,10 +23,8 @@ typedef enum {
     CONN_STATE_ERROR,
 } ConnectionState;
 
-struct Connection;
 typedef struct Connection Connection;
-struct ConnectionListener;
-typedef struct ConnectionListener ConnectionListener;
+typedef struct ConnectionListener ConnectionListener; 
 
 typedef void (*ConnectionCallbackFunc)(Connection *conn);
 typedef struct ConnectionType
@@ -54,13 +52,14 @@ typedef struct ConnectionType
 
 } ConnectionType;
 
+
 /* 为多协议多监听扩展。 server.port只能一个*/
 // TODO 去掉server.port, 支持listener链表，多端口监听。
 struct ConnectionListener {
     int port;
-    char* bindAddr;
+    char* bindaddr;
     ConnectionType *type;
-};
+} ;
 
 struct Connection {
     ConnectionType *type;
@@ -74,3 +73,9 @@ struct Connection {
 
     void* privData; // client
 };
+
+
+// 通用listen
+int connListen(ConnectionListener* listener);
+// 能通用吗？？？
+int connAccept(Connection* conn, ConnectionCallbackFunc callback);

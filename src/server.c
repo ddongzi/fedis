@@ -18,6 +18,7 @@
 #include "sentinel.h"
 #include "command.h"
 #include "conf.h"
+#include "socket.h"
 
 struct redisServer* server;
 
@@ -318,6 +319,7 @@ void createSharedObjects()
  */
 void srvAcceptHandler(Connection* conn)
 {
+    // TODO 
     client *client = conn->privData;
     listAddNodeTail(server->clients, listCreateNode(client));
 }
@@ -359,7 +361,7 @@ void initServer()
 
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->bindaddr = NULL;
-
+    
 
     // TODO
 
@@ -371,7 +373,6 @@ void initServer()
     }
     log_debug("● create server, listening.....");
     
-    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
     log_debug("● create file event for ACCEPT, listening.....\n");
     // 注册定时任务
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
@@ -385,7 +386,23 @@ void initServer()
  */
 void initListeners()
 {
-    server->listeners[0].port
+    // 0：TCP
+    ConnectionListener tcpListener = server->listeners[0];
+    tcpListener.port = REDIS_SERVERPORT;
+    tcpListener.bindAddr = NULL; // 之后会分配， 考虑copy?
+    tcpListener.type = CT_SOCKET;
+
+    // 1：unix socket
+    // 2. TLS socket
+
+    for (size_t i = 0; i < MAX_TYPE_LISTENERS; i++){
+        if (server->listeners[i].type == NULL) {
+            continue;
+        }
+        if (connListen(server->listeners[i]) == RET_ERR) {
+            log_error("Listen failed");
+        }
+    }
 }
 
 
@@ -639,8 +656,13 @@ int main(int argc, char **argv)
     log_debug("hello log.");
 
     server = calloc(1,sizeof(struct redisServer)); 
+    // 1. 基本静态配置
     initServerConfig();
+    // 2. 动态结构
     initServer();
+    // 3. 创建服务器
+    initListeners();
+
     aeMain(server->eventLoop);
 
     return 0;

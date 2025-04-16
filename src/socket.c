@@ -93,7 +93,7 @@ int connSocketConnect(Connection* conn, const char* host, int port, ConnectionCa
     return RET_OK;
 }
 /**
- * @brief 
+ * @brief 处理到来的accept
  * 
  * @param [in] conn 
  * @param [in] acceptHandler 
@@ -153,6 +153,21 @@ int connSocketSetReadHandler(Connection* conn, ConnectionCallbackFunc readHandle
     else 
         aeCreateFileEvent(conn->el, conn->fd, AE_READABLE, conn->type->aeHandler, conn);
 }
+/**
+ * @brief 创建一个已经accept的socket连接
+ * 
+ * @param [in] el 
+ * @return Connection* 
+ */
+Connection* connAcceptedSocketCreate(aeEventLoop* el)
+{
+    Connection* connection = calloc(1, sizeof(Connection));
+    connection->type = &CT_SOCKET;
+    connection->state = CONN_STATE_ACCEPTING;
+    connection->fd = -1;
+    connection->el = el;
+    return connection;
+}
 
 /**
  * @brief 最初的accept ae事件处理proc
@@ -172,22 +187,35 @@ void connSocketAcceptHandler(struct aeEventLoop *eventLoop, int fd, void *data)
             log_error("accept error, %s", strerror(errno));
         }
         log_info("Accept client, %s:%d", cip, cport);
+
+        Connection* conn = connAcceptedSocketCreate(eventLoop);
+        conn->fd = cfd;
+        
     }
-    Connection* conn = connSocketCreate(eventLoop);
-    conn->fd = cfd;
-    conn->state = CONN_STATE_ACCEPTING;
+
     // TODO
 }
-
+/**
+ * @brief connection 创建服务器
+ * 
+ * @param [in] listener 
+ * @return int [RET_ERR,RET_OK]
+ */
 int connSocketListen(ConnectionListener* listener)
 {
-    // todo 为啥还要listener，直接server获取？
-    int fd = anetTcpServer(listener->port, listener->port, server->maxclients);
-    
+    // todo server->maxclients TCP属性是吧？
+    int fd = anetTcpServer(listener->port, listener->bindaddr, server->maxclients);
+    if (fd < 0) {
+        log_error("create server failed");
+        return RET_ERR;
+    }
+    // 注册accpet事件
+    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, connSocketAcceptHandler, NULL);
+    return RET_OK;
 }
 
 
-static ConnectionType CT_SOCKET = {
+ConnectionType CT_SOCKET = {
    /* connection type initialize & finalize & configure */
 
     /* ae  */

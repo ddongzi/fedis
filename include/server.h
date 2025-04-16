@@ -7,6 +7,7 @@
 #include "dict.h"
 #include "robj.h"
 #include "client.h"
+#include "connection.h"
 
 
 #define REDIS_SERVERPORT 6666
@@ -14,7 +15,7 @@
 #define REDIS_DEFAULT_DBNUM 16
 #define REDIS_MAX_CLIENTS 10000
 
-#define MAX_LISTENERS 8
+#define MAX_TYPE_LISTENERS 3
 
 // 服务端三种角色：主 从 sentinel
 #define SERVER_ROLE_MASTER 0
@@ -55,7 +56,7 @@ struct redisServer {
     // 基础配置
     int flags;  ///< 服务器类型
 
-    ConnectionListener listeners[MAX_LISTENERS]; // 固定个数，
+    ConnectionListener listeners[MAX_TYPE_LISTENERS]; // 固定个数，不同协议类型
 
     int daemonize;  // 是否守护进程
     char *configfile; // 

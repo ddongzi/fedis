@@ -160,13 +160,21 @@ static int anetKeepAlive(int fd, int interval)
 }
 
 /**
- * @brief 创建TCP服务器
- * 封装了socket，bind，listen
+ * @brief 
  * @param [in] err 错误信息
  * @param [in] port
  * @param [in] bindaddr 内部分配
  * @return int 监听fd
  */
+
+ /**
+  * @brief 创建TCP服务器 封装了socket，bind，listen, 
+  * 
+  * @param [in] port 
+  * @param [in] bindaddr 
+  * @param [in] backlog 
+  * @return int 
+  */
 int anetTcpServer(int port, char *bindaddr, int backlog)
 {
     int sockfd, rv;
