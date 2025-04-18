@@ -11,6 +11,14 @@
 #ifndef MASTER_H
 #define MASTER_H
 #include "command.h"
+#include "rdb.h"
+#include <time.h>
+#include <unistd.h>
+
+struct saveparam {
+    time_t seconds; // 保存条件：秒
+    int changes; // 保存条件：修改数
+};
 extern struct Master *master;
 struct Master {
 
@@ -29,13 +37,13 @@ struct Master {
     int saveCondSize; // 
     struct saveparam* saveParams; // SAVE条件数组
     
-    // RDB持久化
-    int rdbfd;     ///< 不关闭rdbfd
-    char* rdbFileName; //
-    pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
-    int isBgSaving; // 正在BGSAVE
+    // RDB持久化 TODO
+    int rdbfd;
+    int rdbChildPid;
+    char* rdbFilename;
+    int isBgSaving;
 };
-// 连接到对端master
-void connectMaster();
+void masterRDBToSlave(Connection* conn);
+void bgSaveIfNeeded();
 
 #endif

@@ -21,144 +21,107 @@
 #include "socket.h"
 #include "client.h"
 
-struct redisServer* server;
+struct redisServer *server;
 
 struct sharedObjects shared;
 
-void _encodingStr(int encoding, char *buf, int maxlen) 
+void _encodingStr(int encoding, char *buf, int maxlen)
 {
-    switch (encoding) {
-        case REDIS_ENCODING_EMBSTR:
-            strncpy(buf, "embstr", maxlen - 1);
-            break;
-        case REDIS_ENCODING_INT:
-            strncpy(buf, "int", maxlen - 1);
-            break;
-        case REDIS_ENCODING_RAW:
-            strncpy(buf, "raw", maxlen - 1);
-            break;
-        default:
-            strncpy(buf, "unknown", maxlen - 1);
-            break;
+    switch (encoding)
+    {
+    case REDIS_ENCODING_EMBSTR:
+        strncpy(buf, "embstr", maxlen - 1);
+        break;
+    case REDIS_ENCODING_INT:
+        strncpy(buf, "int", maxlen - 1);
+        break;
+    case REDIS_ENCODING_RAW:
+        strncpy(buf, "raw", maxlen - 1);
+        break;
+    default:
+        strncpy(buf, "unknown", maxlen - 1);
+        break;
     }
-}
-
-// command dictType
-static unsigned long commandDictHashFunction(const void *key) {
-    unsigned long hash = 5381;
-    const char *str = key;
-    while (*str) {
-        hash = ((hash << 5) + hash) + *str; // hash * 33 + c
-        str++;
-    }
-    return hash;
-}
-static int commandDictKeyCompare(void* privdata, const void* key1, const void* key2)
-{
-    return strcmp((char*)key1, (char*)key2);
-}
-static void commandDictKeyDestructor(void* privdata, void* key)
-{
-}
-static void commandDictValDestructor(void* privdata, void* val)
-{
-    free((redisCommand*)val);
-}
-static void* commandDictKeyDup(void* privdata, const void* key)
-{
-    if (key == NULL) {
-        return NULL;
-    }
-    size_t size = strlen((char*)key);
-    char* res = malloc(size + 1);
-    strcpy(res, key);
-    return (void*)res;
-}
-static void* commandDictValDup(void* privdata, const void* obj)
-{
-    if (obj == NULL) {
-        return NULL;
-    }
-    redisCommand* res = malloc(sizeof(redisCommand));
-    memcpy(res, obj, sizeof(redisCommand));
-    return (void*)res;
-}
-
-
-
-
-void appendServerSaveParam(time_t sec, int changes)
-{
-    server->saveParams = realloc(server->saveParams, sizeof(struct saveparam) * (server->saveCondSize + 1));
-    server->saveParams[server->saveCondSize].seconds = sec;
-    server->saveParams[server->saveCondSize].changes = changes;
-    server->saveCondSize++;
 }
 
 static void loadCommands(int role)
 {
-    for (int i = 0; i < sizeof(commandsTable); i++) {
-        if (commandsTable[i].flags & CMD_MASTER && role == CMD_MASTER) {
-            dictAdd(server->commands, commandsTable[i].name, commandsTable[i]);
-        }
-        // CMD_MASTER | CMD_SLAVE 重复add没问题，不覆盖
-        if (commandsTable[i].flags & CMD_SLAVE && role == CMD_SLAVE) {
-            dictAdd(server->commands, commandsTable[i].name, commandsTable[i]);
-        }
-        if (commandsTable[i].flags & CMD_SENTINEL && role == CMD_SENTINEL) {
-            dictAdd(server->commands, commandsTable[i].name, commandsTable[i]);
-        }
+    // TODO
+
+    int tablelen = 0;
+    redisCommand *table = NULL;
+    switch (role)
+    {
+    case SERVER_ROLE_MASTER:
+        table = commandsMasterTable;
+        tablelen = sizeof(commandsMasterTable);
+        break;
+    case SERVER_ROLE_SLAVE:
+        table = commandsSlaveTable;
+        tablelen = sizeof(commandsSlaveTable);
+        break;
+    case SERVER_ROLE_SENTINEL:
+        table = commandsSentinelTable;
+        tablelen = sizeof(commandsSentinelTable);
+        break;
+
+    default:
+        break;
+    }
+    for (int i = 0; i < tablelen; i++)
+    {
+        dictAdd(server->commands, table[i].name, table[i]);
     }
 }
 
 /**
  * @brief 初始化服务器配置, 这里只能是主、sentinel。  从角色由运行动态切换而来
- * 
+ *
  * @param [in] role [SERVER_ROLE_MASTER, SERVER_ROLE_SENTINEL]
  */
 void serverInitConfig()
 {
     server->configfile = "../conf/server.conf";
     int port = get_config(server->configfile, "port");
-    char* role = get_config(server->configfile, "role");
-    if (strcasecmp("slave", role) == 0) {
+    char *role = get_config(server->configfile, "role");
+    if (strcasecmp("slave", role) == 0)
+    {
         server->role = SERVER_ROLE_SLAVE;
-    } else if (strcasecmp("sentinel", role) == 0) {
+    }
+    else if (strcasecmp("sentinel", role) == 0)
+    {
         server->role = SERVER_ROLE_SENTINEL;
-    } else {
+    }
+    else
+    {
         server->role = SERVER_ROLE_MASTER;
     }
-    server->maxclients = REDIS_MAX_CLIENTS; # TCP类属性
+    server->maxclients = REDIS_MAX_CLIENTS; // TCP类属性
 
-    if (server->role == SERVER_ROLE_MASTER) {
+    if (server->role == SERVER_ROLE_MASTER)
+    {
         masterInitConfig();
     }
-    if (server->role == SERVER_ROLE_SLAVE) {
+    if (server->role == SERVER_ROLE_SLAVE)
+    {
         log_info("TODO Slave server init");
     }
-    if (server->role == SERVER_ROLE_SENTINEL) {
+    if (server->role == SERVER_ROLE_SENTINEL)
+    {
         sentinelStateInitConfig();
     }
-    // 加载命令表
-    dictType commandDictType = {
-        .hashFunction = commandDictHashFunction,
-        .keyCompare = commandDictKeyCompare,
-        .keyDup =  commandDictKeyDup,
-        .valDup =  commandDictValDup,
-        .keyDestructor = commandDictKeyDestructor,
-        .valDestructor = commandDictValDestructor
-    };
-    server->commands = dictCreate(&commandDictType, NULL);
-    loadCommands(server->role);    
-}
 
+    server->commands = dictCreate(&commandDictType, NULL);
+    loadCommands(server->role);
+}
 
 /**
  * @brief 返回当前ms级时间戳
- * 
- * @return long long 
+ *
+ * @return long long
  */
-long long mstime(void) {
+long long mstime(void)
+{
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return ((long long)tv.tv_sec) * 1000 + (tv.tv_usec / 1000);
@@ -169,16 +132,22 @@ void updateServerTime()
     server->unixtime = time(NULL);
     server->mstime = mstime();
 }
-void freeClient(client* client)
+void freeClient(Client *client)
 {
-    log_debug("free client %d\n", client->fd);
-    close(client->fd);
-    // TODO 如果 query reply buf还有怎么办？
+    log_debug("free client %d", client->conn->fd);
+    // 关闭连接, privdata清除
+    connClose(client->conn);
+    if (client->privdata)
+        free(client->privdata);
+
+    close(conn->fd);
     sdsfree(client->readBuf);
     sdsfree(client->writeBuf);
     // 正常情况，每次执行完命令argv就destroy了，临时
-    if (client->argv) {
-        for(int i = 0; i < client->argc; i++) {
+    if (client->argv)
+    {
+        for (int i = 0; i < client->argc; i++)
+        {
             robjDestroy(client->argv[i]);
         }
     }
@@ -186,46 +155,53 @@ void freeClient(client* client)
 }
 void closeClients()
 {
-    listNode* node = listHead(server->clientsToClose);
-    while (node) {
-        client* client = node->value;
+    listNode *node = listHead(server->clientsToClose);
+    while (node)
+    {
+        Client *client = node->value;
         listDelNode(server->clientsToClose, node);
         freeClient(client);
         node = listHead(server->clientsToClose);
     }
-
 }
 void prepareShutdown()
 {
-    bgSaveIfNeeded();
+    if (server->role == SERVER_ROLE_MASTER)
+    {
+        bgSaveIfNeeded();
+    }
 
-    // TODO : 
+    // TODO :
 
     // 4. 自动释放部分文件、网络资源
     exit(0);
 }
+
 /**
  * @brief 定时任务
- * 
- * @param [in] eventLoop 
- * @param [in] id 
- * @param [in] clientData 
+ *
+ * @param [in] eventLoop
+ * @param [in] id
+ * @param [in] clientData
  * @return int 周期时间
  */
-int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
+int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
 {
     log_debug("server cron.");
 
-    // 检查SAVE条件，执行BGSAVE    
-    bgSaveIfNeeded();
-
+    if (server->role == SERVER_ROLE_MASTER)
+    {
+        // 检查SAVE条件，执行BGSAVE
+        bgSaveIfNeeded();
+    }
     // 更新server时间
     updateServerTime();
 
     // 关闭clients
     closeClients();
 
-    if (server->shutdownAsap) {
+    if (server->shutdownAsap)
+    {
         // 检测到需要关闭。在shutdown中exit。
         prepareShutdown();
     }
@@ -233,18 +209,15 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     return 3000;
 }
 
-
-
-
-
 /**
  * @brief Create a Shared Objects object
- * 
+ *
  */
 void createSharedObjects()
 {
     // 1. 0-999整数
-    for (int i = 0; i < REDIS_SHAREAD_MAX_INT; i++) {
+    for (int i = 0; i < REDIS_SHAREAD_MAX_INT; i++)
+    {
         char buf[5];
         snprintf(buf, 4, "%d", i);
         buf[4] = '\0';
@@ -262,16 +235,14 @@ void createSharedObjects()
     shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
 }
 
-
-
 /**
  * @brief server收到accept
- * 
- * @param [in] conn 
+ *
+ * @param [in] conn
  */
-void srvAcceptHandler(Connection* conn)
+void srvAcceptHandler(Connection *conn)
 {
-    client *client = clientCreate(conn);
+    Client *client = clientCreate(conn);
     listAddNodeTail(server->clients, listCreateNode(client));
     // 注册读事件处理器
     conn->privData = client;
@@ -279,8 +250,8 @@ void srvAcceptHandler(Connection* conn)
 }
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void serverInit()
 {
@@ -320,21 +291,23 @@ void initListeners()
     // 0：TCP
     ConnectionListener tcpListener = server->listeners[0];
     tcpListener.port = REDIS_SERVERPORT;
-    tcpListener.bindAddr = NULL; // 之后会分配， 考虑copy?
+    tcpListener.bindaddr = NULL; // 之后会分配， 考虑copy?
     tcpListener.type = connGetConnType(TYPE_SOCKET);
 
     // 1：unix socket
     // 2. TLS socket
 
-    for (size_t i = 0; i < MAX_TYPE_LISTENERS; i++){
-        if (server->listeners[i].type == NULL) {
+    for (size_t i = 0; i < MAX_TYPE_LISTENERS; i++)
+    {
+        if (server->listeners[i].type == NULL)
+        {
             continue;
         }
-        if (connListen(server->listeners[i]) == RET_ERR) {
+        if (connListen(&server->listeners[i]) == RET_ERR)
+        {
             log_error("Listen failed");
         }
     }
-
 }
 void initTimers()
 {
@@ -343,28 +316,29 @@ void initTimers()
     log_debug("● create time event for serverCron\n");
 }
 
-
-redisCommand* lookupCommand(dict* commands, const char* cmd)
+redisCommand *lookupCommand(dict *commands, const char *cmd)
 {
     return dictFetchValue(commands, cmd);
 }
 /**
  * @brief 调用执行命令。已有argc,argv[]
- * 
- * @param [in] c 
+ *
+ * @param [in] c
  */
-void processCommand(client * c)
+void processCommand(Client *c)
 {
-    redisCommand* cmd;
+    redisCommand *cmd;
     // argv[0] 一定是字符串，sds
-    cmd = lookupCommand(server->commands, ((sds*)(c->argv[0]->ptr))->buf);
-    if (cmd == NULL) {
+    cmd = lookupCommand(server->commands, ((sds *)(c->argv[0]->ptr))->buf);
+    if (cmd == NULL)
+    {
         addWrite(c, shared.invalidCommand);
         return;
     }
     cmd->proc(c);
     c->argc = 0;
-    for (int i = 0; i < c->argc; i++) {
+    for (int i = 0; i < c->argc; i++)
+    {
         robjDestroy(c->argv[i]);
     }
     c->argv = NULL;
@@ -375,30 +349,35 @@ void processCommand(client * c)
     $3\r\nSET\r\n
     $2\r\nk1\r\n
     $2\r\nv1\r\n
- * @param [in] client 
+ * @param [in] client
  */
-void processClientQueryBuf(client* client)
+void processClientQueryBuf(Client *client)
 {
-    if (client->readBuf == NULL )  return;
+    if (client->readBuf == NULL)
+        return;
 
-    sds* s = (sds*)(client->readBuf);
-    while (sdslen(s)) {
+    sds *s = (sds *)(client->readBuf);
+    while (sdslen(s))
+    {
         // 预期：只有一行，一轮
-        if (client->argc  == 0) {
+        if (client->argc == 0)
+        {
             // 解析 argc
-            if (*(s->buf) != '*') {
+            if (*(s->buf) != '*')
+            {
                 return; // 非预期
             }
-            char* p = strchr(s->buf, '\n');
+            char *p = strchr(s->buf, '\n');
             client->argc = atoi(s->buf + 1);
-            sdsrange(s, p - s->buf + 1, s->len - 1);    // 移除argc行，处理完
+            sdsrange(s, p - s->buf + 1, s->len - 1); // 移除argc行，处理完
         }
         int remain = client->argc;
         client->argv = calloc(client->argc, sizeof(robj *));
-        while (remain> 0) {
-            char* p = strchr(s->buf, '\n') ; 
+        while (remain > 0)
+        {
+            char *p = strchr(s->buf, '\n');
             int len = atoi(s->buf + 1);
-            sdsrange(s, p -s->buf + 1, s->len - 1); // 移除len字段
+            sdsrange(s, p - s->buf + 1, s->len - 1); // 移除len字段
             p = strchr(s->buf, '\r');
             *p = '\0';
 
@@ -413,9 +392,9 @@ void processClientQueryBuf(client* client)
     processCommand(client);
 }
 
-void readQueryFromClient(Connection* conn)
+void readQueryFromClient(Connection *conn)
 {
-    client *client = conn->privData;
+    Client *client = conn->privData;
     char buf[1024] = {0};
 
     size_t nread = conn->type->read(conn, buf, sizeof(buf));
@@ -428,87 +407,21 @@ void readQueryFromClient(Connection* conn)
     // 写事件转移到各命令 自注册
 }
 
-/**
- * @brief 主读取RDB文件发送到slave, 切换fd写事件处理为 sendRDB
- *
- * @param [in] client
- */
-void saveRDBToSlave(client *client)
+void sendReplyToClient(Connection *conn)
 {
-    struct stat st;
-    long rdb_len;
-    char length_buf[64];
-    size_t length_len;
-    rio sio;
-    size_t nwritten = 0;
-
-    if (server->rdbfd == -1)
-    {
-        server->rdbfd = open(server->rdbFileName, O_RDONLY);
-        if (server->rdbfd == -1)
-        {
-            log_error("Open RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
-            return;
-        }
-    }
-    if (fstat(server->rdbfd, &st) == -1)
-    {
-        log_error("Stat RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
-        return;
-    }
-
-    rdb_len = st.st_size;
-    log_debug("Stat RDB file , size: %d", st.st_size);
-
-    // 发送 $length\r\n
-    sprintf(length_buf, "$%lu\r\n", rdb_len);
-    length_len = strlen(length_buf);
-    rioInitWithSocket(&sio, client->fd);
-    nwritten = rioWrite(&sio, length_buf, length_len);
-    log_debug("send RDB length: %s", length_buf);
-    if (nwritten == 0 && sio.error)
-    {
-        close(client->fd);
-        return;
-    }
-    if (nwritten != length_len)
-    {
-        log_error("nwritten != length_len");
-        return;
-    }
-
-    // 发送 RDB 数据, 通过sendfile,
-    off_t offset = 0;
-    ssize_t sent = sendfile(client->fd, server->rdbfd, &offset, rdb_len);
-    if (sent < 0)
-    {
-        log_error("Failed to send RDB FILE to client %d: %s", client->fd, strerror(errno));
-        return;
-    }
-
-    // 发送完毕转换状态,  不等client响应？
-    client->replState = REPL_STATE_MASTER_CONNECTED;
-    log_debug("RDB sent to slave %d， size:%lld", client->fd, rdb_len);
-}
-
-void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
-{
-    client *client = (client *)privdata;
+    Client *client = conn->privData;
     char *msg = client->writeBuf->buf;
     size_t msg_len = sdslen(client->writeBuf);
-    ssize_t nwritten;
+    int nwritten;
 
-    rio sio;
-    rioInitWithSocket(&sio, fd);
-    nwritten = rioWrite(&sio, msg, msg_len);
-    if (nwritten == 0 && sio.error)
+    nwritten = connWrite(conn, msg, msg_len);
+    if (nwritten <= 0)
     {
-        close(fd);
-        log_error("error writing %d ", fd);
+        log_error("write error!");
         return;
     }
 
-    log_debug("reply to client %d, %.*s (%zd bytes)", client->fd, (int)nwritten, msg, nwritten);
+    log_debug("reply to client %d, %.*s (%zd bytes)", conn->fd, (int)nwritten, msg, nwritten);
 
     // 更新缓冲区
     if (nwritten == msg_len)
@@ -522,65 +435,23 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
         return; // 等待下次写事件发送剩余数据
     }
 
-    // 写完FULLSYNC之后触发状态转移
-    if (client->replState == REPL_STATE_MASTER_WAIT_SEND_FULLSYNC)
+    // TODO 写到master
+    if (CLIENT_IS_SLAVE(client))
     {
-        client->replState = REPL_STATE_MASTER_SEND_RDB;
-        saveRDBToSlave(client); // 发送 RDB
-    }
-    aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
-}
-
-
-/**
- * @brief 第一次read，
- * 
- * @param [in] eventLoop 
- * @param [in] fd 
- * @param [in] data 
- */
-void detectClientType(struct aeEventLoop *eventLoop, int fd, void *data)
-{
-    // 第一次命令读取， 创建client或者sentinelInstance
-    connection * conn = data;
-    char buf[1024] = {0};
-    size_t nread = rioRead(conn->io, buf, sizeof(buf));
-    if (nread == 0 && conn->io->error) {
-        log_error("Error reading");
-        netCloseConnection(conn);
-    }
-    char typeBuf[32];
-    strncpy(typeBuf, buf, 32);
-    char *token = strtok(typeBuf, " ");
-    client* client = clientCreate(conn);
-    if (strcasecmp(token, "SENTINEL") == 0 && server->role == SERVER_ROLE_SENTINEL) {
-        token = strtok(NULL, " ");
-        // 1. 普通客户端查询sentinel服务
-        if (strcasecmp(token, "hello") == 0) {
-            client->flags = CLIENT_ROLE_NORMAL;
-        } else {
-        // 2. 服务器查询sentinel服务
-            client->flags = CLIENT_ROLE_SENTINEL;
-            SentinelClientInstance* instance = SentinelClientInstanceCreate(conn);
-            dictAdd(sentinel->instaces, instance->name, instance);
+        SlaveClientInstance *instance = client->privdata;
+        // 写完FULLSYNC之后触发状态转移
+        if (instance->replState == REPL_STATE_MASTER_WAIT_SEND_FULLSYNC)
+        {
+            instance->replState = REPL_STATE_MASTER_SEND_RDB;
+            masterRDBToSlave(conn); // 发送RDB
         }
-    
-    } else if (strcasecmp(token, "REPLCONF") == 0) {
-        // 1. 从服务器请求
-        client->flags = CLIENT_ROLE_SLAVE;
-    } else {
-        // 2. 普通客户端
-        client->flags = CLIENT_ROLE_NORMAL;
     }
-    listAddNodeTail(server->clients, listCreateNode(client));
-    sdscat(client->readBuf, buf);
-    // 不论什么类型客户端，都是resp格式
-    processClientQueryBuf(client);
+
+    connSetWriteHandler(conn, NULL);
 }
 
 void initExtra()
 {
-
 }
 
 int main(int argc, char **argv)
@@ -589,12 +460,14 @@ int main(int argc, char **argv)
     log_set_level(LOG_DEBUG);
     log_debug("hello log.");
 
-    server = calloc(1,sizeof(struct redisServer)); 
+    server = calloc(1, sizeof(struct redisServer));
     serverInit();
-   
+
     serverInitConfig();
-    for (size_t i = 0; i < argc; i++) {
-        if (strcasecmp(argv[i], "-p") == 0) {
+    for (size_t i = 0; i < argc; i++)
+    {
+        if (strcasecmp(argv[i], "-p") == 0)
+        {
             server->port = atoi(argv[++i]);
         }
     }

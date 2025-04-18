@@ -227,7 +227,7 @@ ConnectionType CT_SOCKET = {
     /* ae  */
     .aeHandler = connSocketEventHandler,
     .acceptHandler = connSocketAcceptHandler,
-    /* create & close connection */
+    /* create & close Connection*/
     .connCreate = connSocketCreate,
     .connClose = connSocketClose,
 

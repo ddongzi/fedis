@@ -13,8 +13,7 @@
 #define __NET_H__
 
 #include "ae.h"
-#include "rio.h"
-
+#include "connection.h"
 
 #define IP_MAX_STRLEN 16
 
@@ -26,10 +25,8 @@ int anetTcpServer(int port, char *bindaddr, int backlog);
 
 int anetAcceptTcp(int fd, char* cip, size_t iplen ,int* port);
 
-// 封装read。
-void readQueryFromClient(aeEventLoop *el, int fd, void* privData);
-// 封装write
-void sendReplyToClient(aeEventLoop *el, int fd, void *privdata);
+void readQueryFromClient(Connection* conn);
+void sendReplyToClient(Connection* conn);
 
 int anetTcpConnect( const char* host, int port);
 ssize_t getRespLength(const char* buf, size_t len) ;

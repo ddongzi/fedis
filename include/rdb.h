@@ -17,9 +17,15 @@
 #define RDB_SELECTDB 0xFE   // 与INT32不冲突
 
 
+// rdb信息，回调给上级
+typedef struct  {
+    int pid;
+    int state;
+} RdbInfo;
+typedef void (*RdbCallBackFunc)(RdbInfo* rdbinfo);
 
-void bgSaveIfNeeded();
-void rdbLoad();
-void receiveRDBfile(char* buf, int n);
+void rdbLoad(redisDb* db, int dbnum, char* rdbfilename);
+
+void receiveRDBfile(const char* rdbFileName, char* buf, int n);
 
 #endif

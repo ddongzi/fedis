@@ -72,10 +72,10 @@ void sentinelStateInitConfig()
 {
     char* monitor_master = get_config(server->configfile,"sentinel-monitor");
     char* name = strtok(monitor_master, ",");
-    char* ip = strtok(strtok(NULL, ","));
+    char* ip = strtok(NULL, ",");
     int port = atoi(strtok(NULL, ","));
 
-    dictAdd(sentinel->instances, name, SentinelClientInstanceCreate(name, ip, port));
+    dictAdd(sentinel->instances, name, sentinelClientInstanceCreate(name, ip, port));
 
 }
 
@@ -110,7 +110,7 @@ static void sentinelConnectHandler(Connection* conn)
  * @param [in] port 
  * @return SentinelClientInstance* 
  */
-SentinelClientInstance* SentinelClientInstanceCreate(const char* name, const char* ip, const int port)
+SentinelClientInstance* sentinelClientInstanceCreate(const char* name, const char* ip, const int port);
 {
     if (!ip || !port) return;
     SentinelClientInstance* instance = (SentinelClientInstance*)malloc(sizeof(SentinelClientInstance));

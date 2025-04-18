@@ -1,4 +1,4 @@
-#include "Client.h"
+#include "client.h"
 #include <stdlib.h>
 #include "errno.h"
 #include "server.h"
@@ -31,7 +31,7 @@ Client *clientCreate(Connection* conn)
  * @param [in] Client 
  * @param [in] obj 
  */
-void addWrite(Client* Client, robj* obj) 
+void addWrite(Client* client, robj* obj) 
 {
     char buf[128] = {0};
     switch (obj->type)
@@ -44,7 +44,7 @@ void addWrite(Client* Client, robj* obj)
         break;
     }
 
-    sdscat(Client->writeBuf, buf);
+    sdscat(client->writeBuf, buf);
 }
 
 
@@ -53,30 +53,29 @@ void addWrite(Client* Client, robj* obj)
  * @param [in] Client 
  * @return 
  */
-void readToReadBuf(Client* Client) 
+void readToReadBuf(Client* client) 
 {
     char temp_buf[1]; // 逐字节读取，确保精确性
     ssize_t n;
 
-    sdsclear(Client->readBuf);
+    sdsclear(client->readBuf);
 
     printf("\n to read buf\n");
     while (1) {
-        // 没必要RIO，
-        n = read(Client->fd, temp_buf, sizeof(temp_buf));
+        n = read(client->conn->fd, temp_buf, sizeof(temp_buf));
         if (n <= 0) {
             log_debug("read failed or finished");
             if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
             return;
         }
-        sdscatlen(Client->readBuf, temp_buf, n);
+        sdscatlen(client->readBuf, temp_buf, n);
 
-        ssize_t resp_len = getRespLength(Client->readBuf->buf, sdslen(Client->readBuf));
+        ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
         if (resp_len != -1) {
             // 读到一个RESP协议
             printf("get resp return");
             break;
         }
     }
-    printf("\nread buf finished,  %s\n", Client->readBuf->buf);
+    printf("\nread buf finished,  %s\n", client->readBuf->buf);
 }

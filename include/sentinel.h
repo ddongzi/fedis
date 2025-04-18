@@ -42,7 +42,7 @@ void sentinelUpdateMasterInfo(struct Sentinel *sentinel, SentinelClientInstance 
 void SentinelClientInstanceFree(SentinelClientInstance* instance);
 
 void sentinelStateInit();
-SentinelClientInstance* SentinelClientInstanceCreate(Connection* conn);
+SentinelClientInstance* sentinelClientInstanceCreate(const char* name, const char* ip, const int port);
 void sentinelInitExtra();
 
 #endif

@@ -15,6 +15,61 @@
 #include "server.h"
 #include "slave.h"
 
+
+
+// command dictType
+static unsigned long commandDictHashFunction(const void *key) {
+    unsigned long hash = 5381;
+    const char *str = key;
+    while (*str) {
+        hash = ((hash << 5) + hash) + *str; // hash * 33 + c
+        str++;
+    }
+    return hash;
+}
+static int commandDictKeyCompare(void* privdata, const void* key1, const void* key2)
+{
+    return strcmp((char*)key1, (char*)key2);
+}
+static void commandDictKeyDestructor(void* privdata, void* key)
+{
+}
+static void commandDictValDestructor(void* privdata, void* val)
+{
+    free((redisCommand*)val);
+}
+static void* commandDictKeyDup(void* privdata, const void* key)
+{
+    if (key == NULL) {
+        return NULL;
+    }
+    size_t size = strlen((char*)key);
+    char* res = malloc(size + 1);
+    strcpy(res, key);
+    return (void*)res;
+}
+static void* commandDictValDup(void* privdata, const void* obj)
+{
+    if (obj == NULL) {
+        return NULL;
+    }
+    redisCommand* res = malloc(sizeof(redisCommand));
+    memcpy(res, obj, sizeof(redisCommand));
+    return (void*)res;
+}
+
+// 加载命令表
+dictType commandDictType = {
+    .hashFunction = commandDictHashFunction,
+    .keyCompare = commandDictKeyCompare,
+    .keyDup =  commandDictKeyDup,
+    .valDup =  commandDictValDup,
+    .keyDestructor = commandDictKeyDestructor,
+    .valDestructor = commandDictValDestructor
+};
+
+// ?TODO 只在初始化用， 给server.commands
+
 redisCommand commandsMasterTable[] = {
     {"SET", commandSetProc, -3},
     {"GET", commandGetProc, 2},
@@ -44,7 +99,7 @@ redisCommand commandsSentinelTable[] = {
 
 
 
-void commandSetProc(client* client)
+void commandSetProc(Client* client)
 {
     int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
     if (retcode == DICT_OK) {
@@ -53,11 +108,9 @@ void commandSetProc(client* client)
     } else {
         addWrite(client, shared.err);
     }
-    // TODO 通过set writeHandler设置， 并且command表应该是回调
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
-
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
-void commandGetProc(client* client)
+void commandGetProc(Client* client)
 {
     robj* res = (robj*)dbGet(client->db, client->argv[1]);
     if (res == NULL) { 
@@ -65,9 +118,9 @@ void commandGetProc(client* client)
     } else {
         addWrite(client, res);
     }
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
-void commandDelProc(client* client)
+void commandDelProc(Client* client)
 {
     int retcode = dbDelete(client->db, client->argv[1]);
     if (retcode == DICT_OK) {
@@ -77,9 +130,9 @@ void commandDelProc(client* client)
     } else {
         addWrite(client, shared.keyNotFound);
     }
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
-void commandObjectProc(client* client)
+void commandObjectProc(Client* client)
 {
     robj* key = client->argv[2];
     robj* op = client->argv[1];
@@ -95,17 +148,15 @@ void commandObjectProc(client* client)
             addWrite(client, robjCreateStringObject(buf));
         }
     }
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
-
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
 
-void commandByeProc(client* client)
+void commandByeProc(Client* client)
 {
 
     listAddNodeTail(server->clientsToClose, listCreateNode(client));
     addWrite(client, shared.bye);
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
-
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
 
 /**
@@ -113,7 +164,7 @@ void commandByeProc(client* client)
  * 
  * @param [in] client 
  */
-void commandSlaveofProc(client* client)
+void commandSlaveofProc(Client* client)
 {
     // TODO 主切从要切换state
     sds* s = (sds*)(client->argv[1]->ptr);
@@ -124,8 +175,13 @@ void commandSlaveofProc(client* client)
     slave->masterport = (int)(client->argv[2]->ptr);
 
     addWrite(client, shared.ok);
-    connectMaster();
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+    
+    // 创建新连接连接master
+    Connection* conn = connCreate(server->eventLoop, TYPE_SOCKET);
+    connConnect(conn, slave->masterhost, slave->masterport, slaveConnectMasterHandler);
+
+    connSetWriteHandler(client->conn, sendReplyToClient);
+
 }
 
 /**
@@ -133,25 +189,22 @@ void commandSlaveofProc(client* client)
  * 
  * @param [in] client 
  */
-void commandPingMasterProc(client *c) {
+void commandPingMasterProc(Client* c) {
     switch (c->flags) {
         case CLIENT_ROLE_NORMAL:
-            addReply(c, shared.pong);
-            aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
-            break;
         case CLIENT_ROLE_MASTER:
             addReply(c, shared.pong);
-            aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+            connSetWriteHandler(client->conn, sendReplyToClient);
             break;
         case CLIENT_ROLE_SLAVE:
-            if (c->replState == REPL_STATE_CONNECTED)
+            SlaveClientInstance* instance = c->privdata;
+            if (instance->replState == REPL_STATE_SLAVE_CONNECTING)
                 addReply(c, shared.pong);
             else
-                addReply(c, shared.syncing);
+                addReply(c, shared.syncing); // todo
             break;
         case CLIENT_ROLE_SENTINEL:
-            if (c->sentinelState)
-                updateSentinelState(c);
+            // TODO
             addReply(c, shared.pong);
             break;
         default:
@@ -166,31 +219,32 @@ void commandPingMasterProc(client *c) {
  * @param [in] client 
  * @return * void 
  */
-void commandSyncProc(client* client)
+void commandSyncProc(Client* client)
 {
     assert(CLIENT_IS_SLAVE(client));
-    slaveInstance* instance = (slaveInstance*)client->instance;
+    SlaveClientInstance* instance = client->privdata;
     instance->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
     addWrite(client, shared.sync);
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
 
-void commandReplconfProc(client* client)
+void commandReplconfProc(Client* client)
 {
     //  暂不处理，不影响
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
-void commandReplACKProc(client* client)
+void commandReplACKProc(Client* client)
 {
     //  暂不处理，不影响
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
+    connSetWriteHandler(client->conn, sendReplyToClient);
 }
 
 
-void commandSentinelProc(client* client)
+void commandSentinelProc(Client* client)
 {
-    // TODO
-    log_debug("commandSentinel proc!");
+    log_debug("commandSentinel proc TODO!");
+
 }
+

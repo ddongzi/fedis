@@ -42,9 +42,9 @@ struct ConnectionType // TODO 连接分客户服务吗？
     void (*aeHandler)(aeEventLoop *el, int fd, void *clientData, int mask); // ae handler:
     aeFileProc* acceptHandler;
 
-    /* create & close connection */
+    /* create & close Connection*/
     Connection *(*connCreate)(aeEventLoop *el);
-    void (*connClose)(struct Connection *conn);
+    void (*connClose)(Connection *conn);
 
     /* connect & accept*/
     int (*connect)(Connection *conn, const char *host, int port, ConnectionCallbackFunc connectHandler);
@@ -93,5 +93,9 @@ int connListen(ConnectionListener* listener);
 Connection* connCreate(aeEventLoop* el, int type);
 int connConnect(Connection* conn, char* ip, char* port, ConnectionCallbackFunc callback);
 int connSetReadHandler(Connection* conn, ConnectionCallbackFunc callback);
+int connSetWriteHandler(Connection* conn, ConnectionCallbackFunc callback);
+int connWrite(Connection* conn, const void* data, size_t datalen);
+int connRead(Connection* conn, void* buf, size_t buflen);
+void connClose(Connection* conn);
 
 #endif

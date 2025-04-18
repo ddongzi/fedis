@@ -19,24 +19,18 @@
 #include "robj.h"
 #include "net.h"
 #include "connection.h"
+
 typedef struct Client Client;
-/**
- * @brief // TODO 改名
- * 
- * @struct client
- * @brief  client 对端状态结构，通用，1. 偏向于io, 2. resp解析响应
- * 
- */
 struct Client {
     Connection* conn;
-    int flags;  ///< 通过flags找到具体对应的实例状态。 可能不需要
+    int flags;  ///< 通过flags找到具体对应的实例状态。 表明对端是什么。
     sds* readBuf;
     sds* writeBuf;
     int dbid;   // TODO 这里sentinel不涉及的。
     redisDb* db;
     int argc;   ///< 参数个数
     robj** argv;    ///< 参数数组
-    void* instance; ///< 具体各类实例
+    void* privdata; ///< 其他数据
 } ;
 Client *clientCreate(Connection* conn);
 

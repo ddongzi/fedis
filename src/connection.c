@@ -15,11 +15,19 @@ int connListen(ConnectionListener *listener)
 {
     return listener->type->listen(listener);
 }
+int connRead(Connection* conn, void* buf, size_t buflen)
+{
+    return conn->type->read(conn, buf, buflen);
+}
+int connWrite(Connection* conn, const void* data, size_t datalen)
+{
+    return conn->type->write(conn, data, datalen);
+}
 ConnectionType* connGetConnType(int type)
 {
     switch (type)
     {
-    case SOCKET:
+    case TYPE_SOCKET:
         return &CT_SOCKET;
         break;
     
@@ -38,15 +46,30 @@ int connConnect(Connection* conn, char* ip, char* port, ConnectionCallbackFunc c
 {
     return conn->type->connect(conn, ip, port, callback);
 }
-
+/**
+ * @brief 如果callback空，那就是 delete
+ * 
+ * @param [in] conn 
+ * @param [in] writeHandler 
+ * @return int 
+ */
+int connSetWriteHandler(Connection* conn, ConnectionCallbackFunc writeHandler)
+{
+    return conn->type->setWriteHandler(conn, writeHandler);
+}
 /**
  * @brief 
  * 
  * @param [in] conn 
- * @param [in] callback 
+ * @param [in] readHandler 
  * @return int 
  */
-int connSetReadHandler(Connection* conn, ConnectionCallbackFunc callback)
+int connSetReadHandler(Connection* conn, ConnectionCallbackFunc readHandler)
 {
-    return conn->type->setReadHandler(conn, callback);
+    return conn->type->setReadHandler(conn, readHandler);
+}
+
+void connClose(Connection* conn)
+{
+    conn->type->connClose(conn);
 }

@@ -97,14 +97,19 @@ void _rdbSaveObject(FILE* fp, robj *obj)
         break;
     }
 }
-
-// 全量保存
-void rdbSave()
+/**
+ * @brief 将db保存到file中
+ * 
+ * @param [in] filename 
+ * @param [in] db 
+ * @param [in] dbnum 
+ */
+void rdbSave(char* filename, redisDb* db, int dbnum)
 {
     log_debug("======RDB Save(child:%u)======\n", getpid());
     int nwritten = 0;
     int nread = 0;
-    FILE* fp = fopen(server->rdbFileName, "w");
+    FILE* fp = fopen(fileName, "w");
     if (!fp) {
         perror("rdbSave can't open file"); 
         return;
@@ -115,8 +120,8 @@ void rdbSave()
         return;
     }
 
-    for (int i = 0; i < server->dbnum; i++) {
-        redisDb* db = server->db + i;
+    for (int i = 0; i < dbnum; i++) {
+        redisDb* db = db + i;
         if (dictIsEmpty(db->dict)) continue;
 
         _rdbSaveType(fp, RDB_SELECTDB); // 1字节
@@ -145,39 +150,7 @@ void rdbSave()
     log_debug("Save the RDB file success\n");
 }
 
-void bgsave()
-{
-    pid_t pid = fork();
-    if (pid == 0) {
-        rdbSave();
-        exit(0);
-    } else if (pid < 0) {
-        log_debug("Error: fork failed");
-    }
-    // 父亲进程continue
-    server->rdbChildPid = pid;
-    server->isBgSaving = 1;
-}
 
-void bgSaveIfNeeded()
-{
-    // 检查是否在BGSAVE
-    if (server->isBgSaving) {
-        log_debug("BGSAVE is running, no need....\n");
-        return;
-    }
-
-    for(int i = 0; i < server->saveCondSize; i++) {
-        time_t interval = time(NULL) - server->lastSave;
-        if (interval >= server->saveParams[i].seconds && 
-            server->dirty >= server->saveParams[i].changes
-        ) {
-            log_debug("CHECK BGSAVE OK, %d, %d\n", interval, server->dirty);
-            bgsave();
-            break;
-        }
-    }
-}
 
 int eof(FILE* fp)
 {
@@ -278,10 +251,13 @@ robj* _rdbLoadObject(FILE* fp, unsigned char type)
 /**
  * @brief 将本地.rdb加载到数据库
  * 
+ * @param [in] db 
+ * @param [in] dbnum 
+ * @param [in] rdbfilename 
  */
-void rdbLoad()
+void rdbLoad(redisDb* db, int dbnum, char* rdbfilename)
 {
-    FILE *fp = fopen(server->rdbFileName, "r");
+    FILE *fp = fopen(rdbfilename, "r");
     if (fp == NULL) return;
     
     // 1. read magic
@@ -310,17 +286,20 @@ void rdbLoad()
         // 键值对
         robj* key = _rdbLoadStringObject(fp);
         robj* val = _rdbLoadObject(fp, type);
-        dbAdd(server->db + dbid, key, val);
+        dbAdd(db + dbid, key, val);
     }
 }
 
 /**
- * @brief 将主的RDB文件复制为自己的RDB
+ * @brief 将buf写入RDB
  * 
+ * @param [in] filename 
+ * @param [in] buf 
+ * @param [in] n 
  */
-void receiveRDBfile(char* buf, int n)
+void receiveRDBfile(const char* rdbFileName, char* buf, int n)
 {
-    FILE* fp = fopen(server->rdbFileName, "w");
+    FILE* fp = fopen(rdbFileName, "w");
     if (fp == NULL) {
         perror("saveRdbFile can't open file");
         return;

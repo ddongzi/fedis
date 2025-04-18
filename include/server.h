@@ -46,10 +46,7 @@ struct sharedObjects {
 
 char* respParse(const char* resp);
 
-struct saveparam {
-    time_t seconds; // 保存条件：秒
-    int changes; // 保存条件：修改数
-};
+
 
 struct redisServer {
 
@@ -75,16 +72,12 @@ struct redisServer {
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
+    dict* commands;
+
     // TODO server作为抽象类，提供基本的参数，state为具体role实现
     void* state; ///< 具体server实例
     
 };
-
-
-
-void initServerConfig();
-
-
 void srvAcceptHandler(Connection* conn);
 
 #endif
