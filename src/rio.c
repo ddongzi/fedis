@@ -1,7 +1,8 @@
 /**
  * @file rio.c
  * @author your name (you@domain.com)
- * @brief 统一 I/O 抽象，支持文件、内存、网络
+ * @brief 统一 I/O 抽象，支持文件、内存、网络.
+ * @deprecated 可能会迁移到connection, 现在不使用了。
  * @version 0.1
  * @date 2025-02-25
  * 

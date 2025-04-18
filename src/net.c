@@ -258,28 +258,6 @@ int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
     return NET_OK;
 }
 
-
-/**
- * @brief 关闭连接
- * 
- * @param [in] conn 
- */
-void netCloseConnection(connection *conn)
-{
-    close(conn->io->fd);
-}
-
-connection* netCreateConnection(int cfd , const char* ip, const int port)
-{
-    connection *conn = (connection *)malloc(sizeof(connection));
-    conn->cfd = cfd;
-    conn->ip = ip;
-    conn->port = port;
-    rio* io = (rio*)malloc(sizeof(rio));
-    conn->io = rioInitWithSocket(io, cfd);
-    return conn;
-}
-
 /**
  * @brief 封装accept，接受TCP连接。
  * @param [in] el
@@ -561,3 +539,5 @@ char * respFormat(int argc, char** argv)
 
     return resp_cmd;
 }
+
+

@@ -19,6 +19,7 @@
 #include "command.h"
 #include "conf.h"
 #include "socket.h"
+#include "client.h"
 
 struct redisServer* server;
 
@@ -115,11 +116,11 @@ static void loadCommands(int role)
  * 
  * @param [in] role [SERVER_ROLE_MASTER, SERVER_ROLE_SENTINEL]
  */
-void initServerConfig()
+void serverInitConfig()
 {
     server->configfile = "../conf/server.conf";
-    server->port = atoi(get_config(server->configfile, "port"));
-    char* role = get_config(server->configfile, "port");
+    int port = get_config(server->configfile, "port");
+    char* role = get_config(server->configfile, "role");
     if (strcasecmp("slave", role) == 0) {
         server->role = SERVER_ROLE_SLAVE;
     } else if (strcasecmp("sentinel", role) == 0) {
@@ -127,22 +128,18 @@ void initServerConfig()
     } else {
         server->role = SERVER_ROLE_MASTER;
     }
-
-    server->maxclients = REDIS_MAX_CLIENTS;
+    server->maxclients = REDIS_MAX_CLIENTS; # TCP类属性
 
     if (server->role == SERVER_ROLE_MASTER) {
-        // 普通服务器：动态切换
-        server->port = REDIS_SERVERPORT;
-        server->dbnum = REDIS_DEFAULT_DBNUM;
-        server->saveCondSize = 0;
-        server->saveParams = NULL;
-        appendServerSaveParam(900, 1);
-        appendServerSaveParam(300, 10000);
-        appendServerSaveParam(10, 1);
-        server->rdbFileName = "/home/dong/fedis/data/1.rdb";
+        masterInitConfig();
     }
-
-    // 
+    if (server->role == SERVER_ROLE_SLAVE) {
+        log_info("TODO Slave server init");
+    }
+    if (server->role == SERVER_ROLE_SENTINEL) {
+        sentinelStateInitConfig();
+    }
+    // 加载命令表
     dictType commandDictType = {
         .hashFunction = commandDictHashFunction,
         .keyCompare = commandDictKeyCompare,
@@ -153,13 +150,6 @@ void initServerConfig()
     };
     server->commands = dictCreate(&commandDictType, NULL);
     loadCommands(server->role);    
-
-    if (server->role == SERVER_ROLE_SENTINEL) {
-        server->port = REDIS_SENTINELPORT;
-        log_debug("TODO init sentinel config");
-    }
-
-    log_debug("√ init server config.\n");
 }
 
 
@@ -244,45 +234,8 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 }
 
 
-void sigChildHandler(int sig)
-{
-    pid_t pid;
-    int stat;
-    // 匹配任意子进程结束
-    while ((pid = waitpid(-1, &stat, WNOHANG)) > 0) {
-        if (server->rdbChildPid == pid) {
-            // 检查退出状态
-            if (WIFEXITED(stat) && WEXITSTATUS(stat) == 0) {
-                server->lastSave = server->unixtime;
-                log_debug("server know %d finished\n", pid);
-            }
-            server->rdbChildPid = -1;
-            server->dirty = 0;
-            server->isBgSaving = 0;
-        }
-    }
-}
-/**
- * @brief CTRL C 处理。
- * 
- * @param [in] sig 
- * @note 第一次 持久化、关闭资源
- *  第二次 强制退出
- */
-void sigIntHandler(int sig)
-{
-    // TODO: 效果不一致？
-    if (server->shutdownAsap == 0) {
-        server->shutdownAsap = 1;
-    } else if (server->shutdownAsap == 1) {
-        exit(1);
-    }
-}
-void initServerSignalHandlers()
-{
-    signal(SIGCHLD, sigChildHandler);
-    signal(SIGINT, sigIntHandler);
-}
+
+
 
 /**
  * @brief Create a Shared Objects object
@@ -312,46 +265,26 @@ void createSharedObjects()
 
 
 /**
- * @brief net accept到请求，回调redis处理
+ * @brief server收到accept
  * 
- * @param [in] cfd 
- * @param [in] cfd
+ * @param [in] conn 
  */
 void srvAcceptHandler(Connection* conn)
 {
-    // TODO 
-    client *client = conn->privData;
+    client *client = clientCreate(conn);
     listAddNodeTail(server->clients, listCreateNode(client));
+    // 注册读事件处理器
+    conn->privData = client;
+    connSetReadHandler(conn, readQueryFromClient);
 }
 
 /**
  * @brief 
  * 
  */
-void initServer()
+void serverInit()
 {
-    initServerSignalHandlers();
-    
     createSharedObjects();
-
-    if (server->role == SERVER_ROLE_MASTER) {
-        server->db = calloc(server->dbnum, sizeof(redisDb));
-        for (int i = 0; i < server->dbnum; i++) {
-            dbInit(server->db + i, i);
-        }
-        server->dirty = 0;
-        server->lastSave = server->unixtime;
-    
-        server->rdbChildPid = -1;
-        server->isBgSaving = 0;
-        server->rdbfd = -1; //
-        log_debug("● load rdb from %s", server->rdbFileName);
-        rdbLoad();
-    }
-
-    if (server->role == SERVER_ROLE_SENTINEL) {
-        sentinelStateInit();
-    }
 
     server->unixtime = time(NULL);
     server->mstime = mstime();
@@ -361,24 +294,22 @@ void initServer()
 
     server->eventLoop = aeCreateEventLoop(server->maxclients);
     server->bindaddr = NULL;
-    
 
-    // TODO
-
-
-    // 需要freeaddrInfo释放 
-    int fd = anetTcpServer(server->port, server->bindaddr, server->maxclients);
-    if (fd == -1) {
-        exit(1);
+    switch (server->role)
+    {
+    case SERVER_ROLE_MASTER:
+        master = calloc(1, sizeof(struct Master));
+        masterInit();
+        break;
+    case SERVER_ROLE_SENTINEL:
+        sentinel = calloc(1, sizeof(struct Sentinel));
+        sentinelStateInit();
+        break;
+    case SERVER_ROLE_SLAVE:
+        break;
+    default:
+        break;
     }
-    log_debug("● create server, listening.....");
-    
-    log_debug("● create file event for ACCEPT, listening.....\n");
-    // 注册定时任务
-    aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
-    log_debug("● create time event for serverCron\n");
-
-    log_debug("√ init server .\n");
 }
 
 /**
@@ -390,7 +321,7 @@ void initListeners()
     ConnectionListener tcpListener = server->listeners[0];
     tcpListener.port = REDIS_SERVERPORT;
     tcpListener.bindAddr = NULL; // 之后会分配， 考虑copy?
-    tcpListener.type = CT_SOCKET;
+    tcpListener.type = connGetConnType(TYPE_SOCKET);
 
     // 1：unix socket
     // 2. TLS socket
@@ -403,6 +334,13 @@ void initListeners()
             log_error("Listen failed");
         }
     }
+
+}
+void initTimers()
+{
+    // 注册定时任务
+    aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
+    log_debug("● create time event for serverCron\n");
 }
 
 
@@ -475,20 +413,12 @@ void processClientQueryBuf(client* client)
     processCommand(client);
 }
 
-// redis 使用的read到client， 但是sentinel使用的是instance，
-void readQueryFromClient(aeEventLoop *el, int fd, void *data)
+void readQueryFromClient(Connection* conn)
 {
-    client *client = data;
+    client *client = conn->privData;
     char buf[1024] = {0};
-    rio r;
-    rioInitWithFD(&r, fd);
-    size_t nread = rioRead(&r, buf, sizeof(buf));
-    if (nread == 0)
-    {
-        if (r.error)
-            close(fd);
-        return;
-    }
+
+    size_t nread = conn->type->read(conn, buf, sizeof(buf));
     log_debug("deal query from client, %s", respParse(buf));
 
     sdscat(client->readBuf, buf);
@@ -631,7 +561,7 @@ void detectClientType(struct aeEventLoop *eventLoop, int fd, void *data)
         } else {
         // 2. 服务器查询sentinel服务
             client->flags = CLIENT_ROLE_SENTINEL;
-            sentinelRedisInstance* instance = sentinelRedisInstanceCreate(conn);
+            SentinelClientInstance* instance = SentinelClientInstanceCreate(conn);
             dictAdd(sentinel->instaces, instance->name, instance);
         }
     
@@ -648,6 +578,10 @@ void detectClientType(struct aeEventLoop *eventLoop, int fd, void *data)
     processClientQueryBuf(client);
 }
 
+void initExtra()
+{
+
+}
 
 int main(int argc, char **argv)
 {
@@ -656,13 +590,21 @@ int main(int argc, char **argv)
     log_debug("hello log.");
 
     server = calloc(1,sizeof(struct redisServer)); 
-    // 1. 基本静态配置
-    initServerConfig();
-    // 2. 动态结构
-    initServer();
-    // 3. 创建服务器
-    initListeners();
+    serverInit();
+   
+    serverInitConfig();
+    for (size_t i = 0; i < argc; i++) {
+        if (strcasecmp(argv[i], "-p") == 0) {
+            server->port = atoi(argv[++i]);
+        }
+    }
+    // TODO init config 和init顺序？
 
+    initListeners();
+    initTimers();
+
+    initExtra(); // 特性部分
+    log_debug("√ init server .\n");
     aeMain(server->eventLoop);
 
     return 0;

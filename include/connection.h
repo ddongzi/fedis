@@ -1,5 +1,7 @@
+#ifndef CONNECTION_H
+#define CONNECTION_H
 /**
- * @file connection.h head-only
+ * @file Connection.h head-only
  * @author your name (you@domain.com)
  * @brief For different connection type, such as socket,unix socket,tls. They have different dealing methods.
  * @version 0.1
@@ -14,6 +16,10 @@
 #define RET_OK 0
 #define RET_ERR -1
 
+#define TYPE_SOCKET 0
+#define TYPE_UNIXSOCKET 1
+#define TYPE_TLS 2
+
 typedef enum {
     CONN_STATE_NONE = 0,
     CONN_STATE_CONNECTING , // 主动connect触发
@@ -25,9 +31,10 @@ typedef enum {
 
 typedef struct Connection Connection;
 typedef struct ConnectionListener ConnectionListener; 
+typedef struct ConnectionType  ConnectionType;
 
 typedef void (*ConnectionCallbackFunc)(Connection *conn);
-typedef struct ConnectionType
+struct ConnectionType // TODO 连接分客户服务吗？
 {
     /* connection type initialize & finalize & configure */
 
@@ -50,7 +57,7 @@ typedef struct ConnectionType
     int (*setWriteHandler)(Connection *conn, ConnectionCallbackFunc writeHandler);
     int (*setReadHandler)(Connection *conn, ConnectionCallbackFunc readHandler);
 
-} ConnectionType;
+} ;
 
 
 /* 为多协议多监听扩展。 server.port只能一个*/
@@ -74,8 +81,17 @@ struct Connection {
     void* privData; // client
 };
 
+// 包含connection.h 的几个源文件会实现
+extern ConnectionType CT_SOCKET;
+extern ConnectionType CT_UNIXSOCKET;
+extern ConnectionType CT_TLS;
+
+ConnectionType* connGetConnType(int type);
 
 // 通用listen
 int connListen(ConnectionListener* listener);
-// 能通用吗？？？
-int connAccept(Connection* conn, ConnectionCallbackFunc callback);
+Connection* connCreate(aeEventLoop* el, int type);
+int connConnect(Connection* conn, char* ip, char* port, ConnectionCallbackFunc callback);
+int connSetReadHandler(Connection* conn, ConnectionCallbackFunc callback);
+
+#endif

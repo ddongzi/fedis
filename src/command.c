@@ -53,6 +53,7 @@ void commandSetProc(client* client)
     } else {
         addWrite(client, shared.err);
     }
+    // TODO 通过set writeHandler设置， 并且command表应该是回调
     aeCreateFileEvent(server->eventLoop, client->connection->cfd, AE_WRITABLE, sendReplyToClient, client);
 
 }

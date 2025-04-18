@@ -1,4 +1,3 @@
-// TODO 可以放在cns中
 
 #ifndef CLIENT_H
 #define CLIENT_H
@@ -20,22 +19,25 @@
 #include "robj.h"
 #include "net.h"
 #include "connection.h"
+typedef struct Client Client;
 /**
+ * @brief // TODO 改名
+ * 
  * @struct client
  * @brief  client 对端状态结构，通用，1. 偏向于io, 2. resp解析响应
  * 
  */
-typedef struct Client {
+struct Client {
     Connection* conn;
-    int flags;  ///< 通过flags找到具体对应的实例状态
+    int flags;  ///< 通过flags找到具体对应的实例状态。 可能不需要
     sds* readBuf;
     sds* writeBuf;
-    int dbid;
+    int dbid;   // TODO 这里sentinel不涉及的。
     redisDb* db;
     int argc;   ///< 参数个数
     robj** argv;    ///< 参数数组
     void* instance; ///< 具体各类实例
-} Client;
+} ;
 Client *clientCreate(Connection* conn);
 
 void addWrite(Client* client, robj* obj) ;

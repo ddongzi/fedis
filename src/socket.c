@@ -17,6 +17,8 @@
 #include "net.h"
 #include "log.h"
 #include "server.h"
+
+
 /**
  * @brief connection 上的mask ae事件处理
  * 
@@ -190,10 +192,12 @@ void connSocketAcceptHandler(struct aeEventLoop *eventLoop, int fd, void *data)
 
         Connection* conn = connAcceptedSocketCreate(eventLoop);
         conn->fd = cfd;
-        
+        // 需要交给server创建client
+
+        srvAcceptHandler(conn);
     }
 
-    // TODO
+    // 
 }
 /**
  * @brief connection 创建服务器
@@ -209,6 +213,8 @@ int connSocketListen(ConnectionListener* listener)
         log_error("create server failed");
         return RET_ERR;
     }
+    log_info("Server listening on %s:%d", listener->bindaddr, listener->port);
+
     // 注册accpet事件
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, connSocketAcceptHandler, NULL);
     return RET_OK;
@@ -227,7 +233,6 @@ ConnectionType CT_SOCKET = {
 
     /* connect & accept & listen*/
     .connect = connSocketConnect,
-    .accept = connSocketAccept,
     .listen = connSocketListen,
 
     /* IO */

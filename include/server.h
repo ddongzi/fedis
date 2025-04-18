@@ -54,9 +54,9 @@ struct saveparam {
 struct redisServer {
 
     // 基础配置
-    int flags;  ///< 服务器类型
-
     ConnectionListener listeners[MAX_TYPE_LISTENERS]; // 固定个数，不同协议类型
+    int port; // 配置使用属性TCP类
+    char* bindaddr; // 配置使用的属性
 
     int daemonize;  // 是否守护进程
     char *configfile; // 
@@ -75,14 +75,16 @@ struct redisServer {
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
+    // TODO server作为抽象类，提供基本的参数，state为具体role实现
     void* state; ///< 具体server实例
     
 };
 
 
 
-void initServer();
 void initServerConfig();
 
+
+void srvAcceptHandler(Connection* conn);
 
 #endif

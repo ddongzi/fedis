@@ -1,7 +1,7 @@
 /**
  * @file sentinel.c
  * @author your name (you@domain.com)
- * @brief 
+ * @brief sentinel 本身都是作为client 区connect  实例对象的
  * @version 0.1
  * @date 2025-02-28
  * 
@@ -18,8 +18,10 @@
 #include "log.h"
 #include <errno.h>
 #include <string.h>
-
-struct sentinel* sentinel;
+#include "conf.h"
+#include "string.h"
+#include "socket.h"
+struct Sentinel* sentinel;
 
 /**
  * @brief host-1678392323-1024
@@ -58,16 +60,29 @@ static void dictKeyfree(void* data, void* key)
 }
 static void dictValfree(void* data, void* val)
 {
-    sentinelRedisInstanceFree((sentinelRedisInstance*) val);
+    SentinelClientInstanceFree((SentinelClientInstance*) val);
 }
 
-void sentinelRedisInstanceFree(sentinelRedisInstance* instance)
+void SentinelClientInstanceFree(SentinelClientInstance* instance)
 {
     // TODO
 }
 
+void sentinelStateInitConfig()
+{
+    char* monitor_master = get_config(server->configfile,"sentinel-monitor");
+    char* name = strtok(monitor_master, ",");
+    char* ip = strtok(strtok(NULL, ","));
+    int port = atoi(strtok(NULL, ","));
+
+    dictAdd(sentinel->instances, name, SentinelClientInstanceCreate(name, ip, port));
+
+}
+
+
 void sentinelStateInit()
 {
+
     int maxIdlen = 64;  // 
     sentinel->id = calloc(1, sizeof(char) * maxIdlen);
     generateSentinelID(sentinel->id, maxIdlen);
@@ -83,29 +98,29 @@ void sentinelStateInit()
     sentinel->instances = dictCreate(&dt, NULL);
 }
 
-
-sentinelRedisInstance* sentinelRedisInstanceCreate(connection* conn)
+static void sentinelConnectHandler(Connection* conn)
 {
-    sentinelRedisInstance* instance = (sentinelRedisInstance*)malloc(sizeof(sentinelRedisInstance));
-    instance->conn= conn;
-    instance->name = calloc(1, SENTINEL_INSTANCE_MAXNAMELEN);
-    sprintf(instance->name, SENTINEL_INSTANCE_MAXNAMELEN - 1,"%s:%d", conn->ip, conn->port);
+    log_debug("Sentinel callback for connect TODO");
 }
-
-
-void parseConfIntoSentinel()
+/**
+ * @brief 创建client，connect
+ * 
+ * @param [in] name 
+ * @param [in] ip 
+ * @param [in] port 
+ * @return SentinelClientInstance* 
+ */
+SentinelClientInstance* SentinelClientInstanceCreate(const char* name, const char* ip, const int port)
 {
-    FILE* fp = fopen("/home/dong/fedis/conf/sentinel.conf", "r");
-    if (fp == NULL) {
-        log_error("Couldn't open sentinel.conf, %s", strerror(errno));
-        exit(1);
-    }
+    if (!ip || !port) return;
+    SentinelClientInstance* instance = (SentinelClientInstance*)malloc(sizeof(SentinelClientInstance));
+    if (!name) instance->name = calloc(1, SENTINEL_INSTANCE_MAXNAMELEN);
+    else instance->name = strdup(name);
+    sprintf(instance->name, SENTINEL_INSTANCE_MAXNAMELEN - 1,"%s:%d", ip, port);
 
-    char line[1024];
-    
-    while (fgets(line, sizeof(line), fp)) {
-        if (line[0] == '#' || line[0] == '\n') continue;
-        // TODO
-    }
+    Connection* conn = connCreate(server->eventLoop, TYPE_SOCKET);
+    int ret = connConnect(conn, ip, port, sentinelConnectHandler);
+    instance->client = clientCreate(conn);
 
+    return instance;
 }

@@ -11,8 +11,8 @@
 #ifndef MASTER_H
 #define MASTER_H
 #include "command.h"
-extern struct master *master;
-struct master {
+extern struct Master *master;
+struct Master {
 
     // 数据库
     int dbnum;  // 数据库数量
