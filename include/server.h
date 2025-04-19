@@ -37,6 +37,7 @@ struct sharedObjects {
     robj* bye;
     robj* invalidCommand;
     robj* sync;
+    
 
     // RESP request
     robj* ping;

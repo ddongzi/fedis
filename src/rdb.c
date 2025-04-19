@@ -109,7 +109,7 @@ void rdbSave(char* filename, redisDb* db, int dbnum)
     log_debug("======RDB Save(child:%u)======\n", getpid());
     int nwritten = 0;
     int nread = 0;
-    FILE* fp = fopen(fileName, "w");
+    FILE* fp = fopen(filename, "w");
     if (!fp) {
         perror("rdbSave can't open file"); 
         return;
@@ -277,7 +277,7 @@ void rdbLoad(redisDb* db, int dbnum, char* rdbfilename)
             // 读取数据库num
             robj* obj = _rdbLoadStringObject(fp);
             dbid = (int)(obj->ptr);
-            if (dbid < 0 || dbid > server->dbnum) {
+            if (dbid < 0 || dbid > dbnum) {
                 log_debug("Error loading dbid %d\n", dbid);;
                 exit(1);
             }

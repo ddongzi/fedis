@@ -40,7 +40,7 @@ struct Master {
     // RDB持久化 TODO
     int rdbfd;
     int rdbChildPid;
-    char* rdbFilename;
+    char* rdbFileName;
     int isBgSaving;
 };
 void masterRDBToSlave(Connection* conn);

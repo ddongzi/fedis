@@ -110,7 +110,7 @@ static void sentinelConnectHandler(Connection* conn)
  * @param [in] port 
  * @return SentinelClientInstance* 
  */
-SentinelClientInstance* sentinelClientInstanceCreate(const char* name, const char* ip, const int port);
+SentinelClientInstance* sentinelClientInstanceCreate(const char* name, const char* ip, const int port)
 {
     if (!ip || !port) return;
     SentinelClientInstance* instance = (SentinelClientInstance*)malloc(sizeof(SentinelClientInstance));

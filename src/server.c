@@ -46,29 +46,24 @@ void _encodingStr(int encoding, char *buf, int maxlen)
 
 static void loadCommands(int role)
 {
-    // TODO
 
-    int tablelen = 0;
     redisCommand *table = NULL;
     switch (role)
     {
     case SERVER_ROLE_MASTER:
         table = commandsMasterTable;
-        tablelen = sizeof(commandsMasterTable);
         break;
     case SERVER_ROLE_SLAVE:
         table = commandsSlaveTable;
-        tablelen = sizeof(commandsSlaveTable);
         break;
     case SERVER_ROLE_SENTINEL:
         table = commandsSentinelTable;
-        tablelen = sizeof(commandsSentinelTable);
         break;
 
     default:
         break;
     }
-    for (int i = 0; i < tablelen; i++)
+    for (int i = 0; table[i] != NULL; i++)
     {
         dictAdd(server->commands, table[i].name, table[i]);
     }
@@ -140,7 +135,6 @@ void freeClient(Client *client)
     if (client->privdata)
         free(client->privdata);
 
-    close(conn->fd);
     sdsfree(client->readBuf);
     sdsfree(client->writeBuf);
     // 正常情况，每次执行完命令argv就destroy了，临时

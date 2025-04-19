@@ -6,14 +6,15 @@
 
 // 主从复制状态
 enum REPL_STATE {
-    // 从服务器server.replState 字段
+    // 从服务器slave.replState 字段
     REPL_STATE_SLAVE_NONE,          // (从）未启用复制
     REPL_STATE_SLAVE_CONNECTING,    // 正在连接主服务器
     REPL_STATE_SLAVE_SEND_REPLCONF,   // 发送port号
     REPL_STATE_SLAVE_SEND_SYNC,    // 发送SYNC请求
     REPL_STATE_SLAVE_TRANSFER,      // 接收RDB文件
     REPL_STATE_SLAVE_CONNECTED,      // 正常复制中
-    // 主服务器维护主向从的状态。
+
+    // 主服务器维护主向从的状态。salveclient.replstate.  给主服务器使用
     REPL_STATE_MASTER_NONE,     //
     REPL_STATE_MASTER_WAIT_PING,    // 正在等待PING
     REPL_STATE_MASTER_WAIT_SEND_FULLSYNC,  // 等待FULLSYNC发送

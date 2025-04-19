@@ -267,7 +267,7 @@ int anetFormatPeer(int fd, char *ip, size_t ip_len, int *port)
 
 int anetAcceptTcp(int fd, char* cip, size_t iplen ,int* port)
 {
-    int cfd, port;
+    int cfd;
     struct sockaddr_storage sa;
     socklen_t salen = sizeof(sa);
     cfd = accept(fd, (struct sockaddr *)&sa, &salen);

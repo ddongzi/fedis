@@ -18,6 +18,7 @@ Client *clientCreate(Connection* conn)
     c->flags = CLIENT_ROLE_NORMAL;
     c->readBuf = sdsempty();
     c->writeBuf = sdsempty();
+    // TODO 
     c->dbid = 0;
     c->db = &server->db[c->dbid];
     c->argc = 0;

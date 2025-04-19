@@ -13,17 +13,17 @@ void sigChildHandler(int sig)
     // 匹配任意子进程结束
     while ((pid = waitpid(-1, &stat, WNOHANG)) > 0)
     {
-        if (server->rdbChildPid == pid)
+        if (master->rdbChildPid == pid)
         {
             // 检查退出状态
             if (WIFEXITED(stat) && WEXITSTATUS(stat) == 0)
             {
-                server->lastSave = server->unixtime;
+                master->lastSave = server->unixtime;
                 log_debug("server know %d finished\n", pid);
             }
-            server->rdbChildPid = -1;
-            server->dirty = 0;
-            server->isBgSaving = 0;
+            master->rdbChildPid = -1;
+            master->dirty = 0;
+            master->isBgSaving = 0;
         }
     }
 }
@@ -56,18 +56,18 @@ void masterInit()
 {
     initServerSignalHandlers();
 
-    server->db = calloc(server->dbnum, sizeof(redisDb));
-    for (int i = 0; i < server->dbnum; i++)
+    master->db = calloc(master->dbnum, sizeof(redisDb));
+    for (int i = 0; i < master->dbnum; i++)
     {
-        dbInit(server->db + i, i);
+        dbInit(master->db + i, i);
     }
-    server->dirty = 0;
-    server->lastSave = server->unixtime;
+    master->dirty = 0;
+    master->lastSave = server->unixtime;
 
-    server->rdbChildPid = -1;
-    server->isBgSaving = 0;
-    server->rdbfd = -1; //
-    log_debug("● load rdb from %s", server->rdbFileName);
+    master->rdbChildPid = -1;
+    master->isBgSaving = 0;
+    master->rdbfd = -1; //
+    log_debug("● load rdb from %s", master->rdbFileName);
     rdbLoad(master->db, master->dbnum, master->rdbFileName);
 }
 // master才支持bgsave
@@ -86,7 +86,7 @@ void masterInitConfig()
     appendServerSaveParam(900, 1);
     appendServerSaveParam(300, 10000);
     appendServerSaveParam(10, 1);
-    server->rdbFileName = "/home/dong/fedis/data/1.rdb";
+    master->rdbFileName = "/home/dong/fedis/data/1.rdb";
 }
 
 void bgsave()

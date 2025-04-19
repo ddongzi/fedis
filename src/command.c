@@ -81,6 +81,7 @@ redisCommand commandsMasterTable[] = {
     {"SYNC", commandSyncProc, 1},
     {"REPLACK", commandReplACKProc, 1},
     {"PING", commandPingMasterProc, 1},
+    NULL
 };
 redisCommand commandsSlaveTable[] = {
     {"GET", commandGetProc, 2},
@@ -90,11 +91,13 @@ redisCommand commandsSlaveTable[] = {
     {"REPLCONF", commandReplconfProc, 3},
     {"REPLACK", commandReplACKProc, 1},
     {"PING", commandPingSlaveProc, 1},
+    NULL
 };
 redisCommand commandsSentinelTable[] = {
     {"PING", commandPingSentinelProc, 1},
     {"SENTINEL", commandSentinelProc, -2},  // Sentinel 相关命令
     {"BYE", commandByeProc, 1},
+    NULL
 };
 
 
@@ -197,18 +200,15 @@ void commandPingMasterProc(Client* c) {
             connSetWriteHandler(client->conn, sendReplyToClient);
             break;
         case CLIENT_ROLE_SLAVE:
-            SlaveClientInstance* instance = c->privdata;
-            if (instance->replState == REPL_STATE_SLAVE_CONNECTING)
-                addReply(c, shared.pong);
-            else
-                addReply(c, shared.syncing); // todo
+            SlaveClientInstance* instance = c->privdata; // TODO
+            addReply(c, shared.pong);
             break;
         case CLIENT_ROLE_SENTINEL:
             // TODO
             addReply(c, shared.pong);
             break;
         default:
-            addReply(c, shared.unknown);
+            addReply(c, shared.err);
             break;
     }
 }
