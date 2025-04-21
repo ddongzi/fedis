@@ -96,14 +96,14 @@ struct redisServer {
     int saveCondSize; // 
     struct saveparam* saveParams; // SAVE条件数组
     
-    // RDB持久化
+    // RDB持久化 (Master)
     int rdbfd;     ///< 不关闭rdbfd
     char* rdbFileName; //
     pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
     int isBgSaving; // 正在BGSAVE
 
-    // 其他
-
+    // sentinel 服务器特性
+    dict* sentinels; // 监控的sentinel列表
 };
 
 

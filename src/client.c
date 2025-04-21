@@ -4,7 +4,8 @@
 #include "redis.h"
 #include "log.h"
 #include "net.h"
-redisClient *redisClientCreate(int fd)
+#include <string.h>
+redisClient *redisClientCreate(int fd, char* ip, int port)
 {
     redisClient *c = malloc(sizeof(redisClient));
     c->fd = fd;
@@ -15,6 +16,11 @@ redisClient *redisClientCreate(int fd)
     c->db = &server->db[c->dbid];
     c->argc = 0;
     c->argv = NULL;
+
+    c->ip = strdup(ip);
+    c->port = port;
+
+    log_debug("create client %s:%d, fd %d", ip, port, fd);
     return c;
 
 }

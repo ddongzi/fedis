@@ -272,7 +272,7 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
     anetKeepAlive(cfd, 300);
     anetFormatPeer(cfd, ip, sizeof(ip), &port);
     // 创建client实例
-    redisClient *client = redisClientCreate(cfd);
+    redisClient *client = redisClientCreate(cfd, ip, port);
     listAddNodeTail(server->clients, listCreateNode(client));
 
     log_debug("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
@@ -455,7 +455,7 @@ void connectMaster()
 
     int err = 0;
 
-    server->master = redisClientCreate(fd);
+    server->master = redisClientCreate(fd, server->masterhost, server->masterport);
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     log_debug("Connecting Master fd %d", fd);
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
