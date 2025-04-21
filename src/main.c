@@ -15,14 +15,21 @@ int main(int argc, char **argv)
 
     log_set_level(LOG_DEBUG);
     log_debug("hello log.");
-
+    server = calloc(1,sizeof(struct redisServer));
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--sentinel") == 0) {
+            server->role = REDIS_CLIENT_SENTINEL;
+            break;
+        }
+    }
     initServerConfig();
 
     for (int i = 0; i < argc; i++)
     {
         if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
             server->port = atoi(argv[i + 1]);
-            i++;
+            break;
         }
     }
     

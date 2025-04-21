@@ -12,8 +12,9 @@
 #define REDIS_DEFAULT_DBNUM 16
 #define REDIS_MAX_CLIENTS 10000
 
-#define REDIS_CLUSTER_MASTER 0x01
-#define REDIS_CLUSTER_SLAVE 0x10
+#define REDIS_CLUSTER_MASTER 0
+#define REDIS_CLUSTER_SLAVE 1
+#define REDIS_CLUSTER_SENTINEL 2
 
 extern struct redisServer* server;
 extern struct sharedObjects shared;
@@ -80,9 +81,9 @@ struct redisServer {
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
-    // 分布式集群
-    int clusterEnabled; // 是否开启集群
-    int role; // 角色
+    int role; // 角色 REDIS_CLUSTER_
+
+    // 主从复制 (Slave)
     redisClient* master; // （从字段）主客户端
     char* masterhost; // （从字段）主host
     int masterport; // （从字段）主port

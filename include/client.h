@@ -35,7 +35,7 @@ typedef struct redisClient {
     robj** argv;    ///< 参数数组
 
     // repli复制特性
-    int replState; ///< 用于主服务器维护某个从服务器同步状态。
+    int replState; ///< 对端同步状态。
 
     // sentinel 客户实例特性
     char* name; // 对端名称

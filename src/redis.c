@@ -214,7 +214,6 @@ void appendServerSaveParam(time_t sec, int changes)
  */
 void initServerConfig()
 {
-    server = calloc(1,sizeof(struct redisServer));
     server->port = REDIS_SERVERPORT;
     server->dbnum = REDIS_DEFAULT_DBNUM;
     server->saveCondSize = 0;
@@ -427,7 +426,7 @@ void initServer()
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
     log_debug("● create time event for serverCron\n");
 
-    log_debug("√ init server .\n");
+    log_info("√ server init finished.  %d.", server->role);
 }
 
 
