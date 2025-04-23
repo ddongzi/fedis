@@ -15,6 +15,9 @@
 #include "rio.h"
 #include "repli.h"
 #include "net.h"
+#include "conf.h"
+
+
 struct redisServer* server;
 
 struct sharedObjects shared;
@@ -97,7 +100,6 @@ void commandByeProc(redisClient* client)
     listAddNodeTail(server->clientsToClose, listCreateNode(client));
     addWrite(client, shared.bye);
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
-
 }
 
 void commandSlaveofProc(redisClient* client)
@@ -115,6 +117,7 @@ void commandSlaveofProc(redisClient* client)
 
 void commandPingProc(redisClient* client)
 {
+    // todo replstate要小心设置。
     client->replState = REPL_STATE_MASTER_WAIT_PING;
     addWrite(client, shared.pong);
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
@@ -258,6 +261,8 @@ void initServerConfig()
         }
     }
     log_debug("server. commands role %d: %zu", server->role, dictSize(server->commands));
+
+
 
     log_debug("√ init server config.\n");
 }
@@ -440,6 +445,9 @@ void initServer()
     if (fd == -1) {
         exit(1);
     }
+
+
+
     log_debug("● create server, listening.....\n");
     
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
@@ -447,8 +455,35 @@ void initServer()
     // 注册定时任务
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
     log_debug("● create time event for serverCron\n");
-
+    
     log_info("√ server init finished.  %d.", server->role);
+
+
+    // sentinel特性，
+    if (server->role == REDIS_CLUSTER_SENTINEL) {
+        char* monitor = get_config(server->configfile, "monitor");
+        assert(monitor != NULL);
+        dictType commandDictType = {
+            .hashFunction = commandDictHashFunction,
+            .keyCompare = commandDictKeyCompare,
+            .keyDup =  commandDictKeyDup,
+            .valDup =  commandDictValDup,
+            .keyDestructor = commandDictKeyDestructor,
+            .valDestructor = commandDictValDestructor
+        };
+        server->instances = dictCreate(&commandDictType, NULL); // 键是名字，值是client
+        char* name = strtok(monitor, ",");
+        char* host = strtok(NULL, ",");
+        char* port = strtok(NULL, ",");
+        int fd = anetTcpConnect(host, atoi(port));
+        assert(fd);
+        redisClient* client = redisClientCreate(fd, host, atoi(port));
+        client->name = strdup(name);
+        client->flags = REDIS_CLIENT_MASTER;
+        listAddNodeTail(server->clients, client);
+        log_info("sentinel monitor connect ok, %s:%s", host, port);
+        aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, readQueryFromClient, client);
+    }
 }
 
 

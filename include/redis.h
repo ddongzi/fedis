@@ -110,7 +110,8 @@ struct redisServer {
     int isBgSaving; // 正在BGSAVE
 
     // sentinel 服务器特性
-    dict* sentinels; // 监控的sentinel列表
+
+    dict* instances; // 监控的sentinel列表
 };
 
 

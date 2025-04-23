@@ -10,6 +10,10 @@
  */
 #include "redis.h"
 #include "log.h"
+// todo
+#define BASE_DIR "/home/dong/fedis"
+
+
 int main(int argc, char **argv)
 {
 
@@ -21,11 +25,12 @@ int main(int argc, char **argv)
     {
         if (strcmp(argv[i], "--sentinel") == 0) {
             server->role = REDIS_CLUSTER_SENTINEL;
-            break;
         }
         if (strcmp(argv[i], "--slave") == 0) {
             server->role = REDIS_CLUSTER_SLAVE;
-            break;
+        }
+        if (strcmp(argv[i],"--config") == 0 && i + 1 < argc) {
+            server->configfile = argv[i + 1];
         }
     }
     initServerConfig();
