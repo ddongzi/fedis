@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include "log.h"
 #include "rio.h"
+#include <errno.h>
+
 /* 基于文件io函数 */
 ssize_t rioReadFromFile(rio* rio, void* buf, size_t len)
 {
@@ -160,14 +162,17 @@ void rioInitWithFD(rio *r, int fd) {
  */
 size_t rioWrite(rio *r, const void *buf, size_t len)
 {
+    log_debug("rioWrite go  %d", len);   
     if (r == NULL || buf == NULL) {
+        log_error("rioWrite NULL pointer！！");
         return 0;
     }
     ssize_t nwritten = r->write(r, buf, len);
     if (nwritten == -1) {
-        log_error("rioWrite error");
+        log_error("rioWrite error %s", strerror(errno));
         return 0; 
     }
+    log_debug("rioWrite %zu bytes", nwritten);
     return (size_t)nwritten;
 }
 /**

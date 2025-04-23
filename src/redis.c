@@ -145,9 +145,9 @@ void commandReplACKProc(redisClient* client)
 void commandInfoProc(redisClient* client)
 {
     char* argv[] = {"test_run_id:aaaaa", "role:master","slave0:ip=127.0.0.1,port=11,state=online"};
-    char* res = respFormat(3, argv);
+    char* res = resp_encode(3, argv);
     log_debug("INFO PROC: res : %s", res);
-    addWrite(client, res);
+    addWrite(client, robjCreateStringObject(res));
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 // 全局命令表，包含sentinel等所有命令
@@ -162,7 +162,7 @@ redisCommand commandsTable[] = {
     {CMD_SLAVE,                 "REPLCONF", commandReplconfProc, 3},
     {CMD_SLAVE,                 "SYNC", commandSyncProc, 1},
     {CMD_SLAVE,                 "REPLACK", commandReplACKProc, 1},
-    {CMD_ALL,                   "REPLACK", commandInfoProc, 1},
+    {CMD_ALL,                   "INFO", commandInfoProc, 1},
 };
 
 
@@ -541,7 +541,6 @@ redisCommand* lookupCommand( const char* name)
     while((entry = dictIterNext(iter)) != NULL) {
         redisCommand* cmd = entry->v.val;
         assert(cmd);
-        log_debug("looKUP command %s", cmd->name);
         if (strcasecmp(cmd->name, name) == 0) {
             dictReleaseIterator(iter);
             return cmd;
@@ -698,7 +697,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
     if (nwritten == 0 && sio.error)
     {
         close(fd);
-        log_error("error writing %d ", fd);
+        log_error("error writing %d , nwritten %d , error %d", fd, nwritten, sio.error);
         return;
     }
 
