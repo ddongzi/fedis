@@ -140,17 +140,18 @@ void commandReplACKProc(redisClient* client)
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
+// 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
-    {"SET", commandSetProc, -3},
-    {"GET", commandGetProc, 2},
-    {"DEL", commandDelProc, 2},
-    {"OBJECT", commandObjectProc, 3},
-    {"BYE", commandByeProc, 1},
-    {"SLAVEOF", commandSlaveofProc, 3},
-    {"PING", commandPingProc, 1},
-    {"REPLCONF", commandReplconfProc, 3},
-    {"SYNC", commandSyncProc, 1},
-    {"REPLACK", commandReplACKProc, 1}
+    {CMD_MASTER,                "SET", commandSetProc, -3},
+    {CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
+    {CMD_MASTER,                "DEL", commandDelProc, 2},
+    {CMD_MASTER | CMD_SLAVE,    "OBJECT", commandObjectProc, 3},
+    {CMD_ALL,                   "BYE", commandByeProc, 1},
+    {CMD_MASTER | CMD_SLAVE,    "SLAVEOF", commandSlaveofProc, 3},
+    {CMD_ALL,                   "PING", commandPingProc, 1},
+    {CMD_SLAVE,                 "REPLCONF", commandReplconfProc, 3},
+    {CMD_SLAVE,                 "SYNC", commandSyncProc, 1},
+    {CMD_SLAVE,                 "REPLACK", commandReplACKProc, 1}
 };
 
 
@@ -236,6 +237,27 @@ void initServerConfig()
     };
 
     server->commands = dictCreate(&commandDictType, NULL);
+    for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
+        if (server->role == REDIS_CLUSTER_MASTER && (commandsTable[i].flags & CMD_MASTER)) {
+            redisCommand* cmd = malloc(sizeof(redisCommand));
+            memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
+            dictAdd(server->commands, cmd->name, cmd);
+            continue;
+        }
+        if (server->role == REDIS_CLUSTER_SLAVE && (commandsTable[i].flags & CMD_SLAVE)) {
+            redisCommand* cmd = malloc(sizeof(redisCommand));
+            memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
+            dictAdd(server->commands, cmd->name, cmd);
+            continue;
+        }
+        if (server->role == REDIS_CLUSTER_SENTINEL && (commandsTable[i].flags & CMD_SENTINEL)) {
+            redisCommand* cmd = malloc(sizeof(redisCommand));
+            memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
+            dictAdd(server->commands, cmd->name, cmd);
+            continue;
+        }
+    }
+    log_debug("server. commands role %d: %zu", server->role, dictSize(server->commands));
 
     log_debug("√ init server config.\n");
 }
@@ -430,7 +452,7 @@ void initServer()
 }
 
 
-redisCommand* lookupCommand(const char* cmd)
+redisCommand* lookupCommand(redisCommand* cmds, const char* cmd)
 {
     for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
         if (strcasecmp(commandsTable[i].name, cmd) == 0) {
@@ -448,7 +470,7 @@ void processCommand(redisClient * c)
 {
     redisCommand* cmd;
     // argv[0] 一定是字符串，sds
-    cmd = lookupCommand(((sds*)(c->argv[0]->ptr))->buf);
+    cmd = lookupCommand(server->commands, ((sds*)(c->argv[0]->ptr))->buf);
     if (cmd == NULL) {
         addWrite(c, shared.invalidCommand);
         return;

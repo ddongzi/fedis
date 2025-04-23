@@ -38,13 +38,19 @@ struct sharedObjects {
     robj* integers[1000];
 };
 
-
+// 命令标志：命令-服务器角色
+#define CMD_MASTER 0x01
+#define CMD_SENTINEL 0x10
+#define CMD_SLAVE 0x100
+#define CMD_ALL (CMD_MASTER | CMD_SLAVE | CMD_SENTINEL)
+typedef struct redisCommand redisCommand;
 typedef void redisCommandProc(redisClient* client);
-typedef struct redisCommand {
+struct redisCommand {
+    int flags;  // CMD_
     char* name; // 
     redisCommandProc* proc;
     int arity; // 参数个数. -x:表示至少X个变长参数（完整，包含操作字）
-} redisCommand;
+} ;
 
 extern redisCommand commandsTable[];
 char* respParse(const char* resp);
@@ -76,7 +82,7 @@ struct redisServer {
     // 数据库
     int dbnum;  // 数据库数量
     redisDb* db;    // 数据库数组
-    dict* commands; // 命令表: 键是字符串，值是cmd结构
+    dict* commands; // 命令表: 键是字符串, 命令名，值是cmd结构
 
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环

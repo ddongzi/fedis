@@ -569,3 +569,8 @@ int dictIsEmpty(dict* dict)
 {
     return dict->ht[0].used == 0;
 }
+
+size_t dictSize(dict* dict)
+{
+    return dict->ht[0].used + dict->ht[1].used;
+}

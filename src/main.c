@@ -16,10 +16,15 @@ int main(int argc, char **argv)
     log_set_level(LOG_DEBUG);
     log_debug("hello log.");
     server = calloc(1,sizeof(struct redisServer));
+    server->role = REDIS_CLUSTER_MASTER; // 默认角色
     for (int i = 0; i < argc; i++)
     {
         if (strcmp(argv[i], "--sentinel") == 0) {
-            server->role = REDIS_CLIENT_SENTINEL;
+            server->role = REDIS_CLUSTER_SENTINEL;
+            break;
+        }
+        if (strcmp(argv[i], "--slave") == 0) {
+            server->role = REDIS_CLUSTER_SLAVE;
             break;
         }
     }

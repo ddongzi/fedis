@@ -54,6 +54,7 @@ void dictRelease(dict* dict);   // 释放字典及键值对
 
 dictEntry* dictAddRaw(dict* dict, const void* key);
 dictEntry* dictFind(dict* dict, const void* key);
+size_t dictSize(dict* dict);
 
 
 /* dict iterator*/
