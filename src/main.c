@@ -46,6 +46,5 @@ int main(int argc, char **argv)
     initServer();
     aeMain(server->eventLoop);
 
-
     return 0;
 }

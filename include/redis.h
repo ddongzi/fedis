@@ -34,6 +34,7 @@ struct sharedObjects {
 
     // RESP request
     robj* ping;
+    robj* info;
     
     robj* integers[1000];
 };
@@ -63,7 +64,7 @@ struct saveparam {
 struct redisServer {
 
     // 基础配置
-
+    int id; // TODO 
     char *bindaddr;
     int port;
     int daemonize;  // 是否守护进程

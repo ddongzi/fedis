@@ -536,8 +536,14 @@ char* respParse(const char* resp) {
 }
 
 
-
-char * respFormat(int argc, char** argv)
+/**
+ * @brief 构造resp格式
+ * 
+ * @param [in] argc 
+ * @param [in] argv 
+ * @return char* 
+ */
+char* respFormat(int argc, char** argv)
 {
     // 计算 RESP 总长度
     size_t total_len = 0;
@@ -560,4 +566,63 @@ char * respFormat(int argc, char** argv)
     }
 
     return resp_cmd;
+}
+
+/**
+ * @brief 编码：argv[] -> RESP 格式字符串
+ * 
+ * @param [in] argc 
+ * @param [in] argv 
+ * @return char* 
+ */
+char* resp_encode(int argc, char* argv[])
+ {
+    size_t cap = 1024;
+    char *buf = malloc(cap);
+    size_t len = 0;
+
+    len += snprintf(buf + len, cap - len, "*%d\r\n", argc);
+    for (int i = 0; i < argc; ++i) {
+        int arglen = strlen(argv[i]);
+        len += snprintf(buf + len, cap - len, "$%d\r\n", arglen);
+        if (len + arglen + 2 >= cap) {
+            cap *= 2;
+            buf = realloc(buf, cap);
+        }
+        memcpy(buf + len, argv[i], arglen);
+        len += arglen;
+        memcpy(buf + len, "\r\n", 2);
+        len += 2;
+    }
+    buf[len] = '\0';
+    return buf;
+}
+/**
+ * @brief 从resp字符串解析
+ * 
+ * @param [in] resp 
+ * @param [out] argc_out 
+ * @param [out] argv_out 
+ * @return int 
+ */
+int resp_decode(const char *resp, int *argc_out, char** argv_out[]) {
+    if (*resp != '*') return -1;
+    int argc;
+    sscanf(resp + 1, "%d", &argc);
+    *argc_out = argc;
+    *argv_out = malloc(sizeof(char*) * argc);
+
+    const char *p = strchr(resp, '\n') + 1;
+    for (int i = 0; i < argc; ++i) {
+        if (*p != '$') return -1;
+        int len;
+        sscanf(p + 1, "%d", &len);
+        p = strchr(p, '\n') + 1;
+
+        (*argv_out)[i] = malloc(len + 1);
+        memcpy((*argv_out)[i], p, len);
+        (*argv_out)[i][len] = '\0';
+        p += len + 2; // skip "\r\n"
+    }
+    return 0;
 }

@@ -10,6 +10,8 @@
 #include "db.h"
 #include "robj.h"
 
+#define CLIENT_NAME_MAX 32
+
 /**
  * @struct redisClient
  * @brief  client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。

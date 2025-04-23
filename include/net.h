@@ -14,6 +14,8 @@
 
 #include "ae.h"
 
+#define IP_ADDR_MAX 64
+
 
 #define NET_OK 0
 #define NET_ERR -1
@@ -30,6 +32,10 @@ int anetTcpConnect( const char* host, int port);
 void connectMaster();
 ssize_t getRespLength(const char* buf, size_t len) ;
 char * respFormat(int argc, char** argv);
+
+
+char* resp_encode(int argc, char* argv[]);
+int resp_decode(const char *resp, int *argc_out, char** argv_out[]);
 
 #endif
 

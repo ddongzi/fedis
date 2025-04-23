@@ -1,5 +1,5 @@
-#include "client.h"
 #include <stdlib.h>
+#include "client.h"
 #include "errno.h"
 #include "redis.h"
 #include "log.h"
@@ -16,11 +16,11 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     c->db = &server->db[c->dbid];
     c->argc = 0;
     c->argv = NULL;
-
-    c->ip = strdup(ip);
+    c->ip = calloc(1, IP_ADDR_MAX);
+    strcpy(c->ip, ip);
     c->port = port;
-
-    log_debug("create client %s:%d, fd %d", ip, port, fd);
+    c->name = calloc(1, CLIENT_NAME_MAX);
+    log_debug("create client %s:%d, fd %d", c->ip, c->port, c->fd);
     return c;
 
 }

@@ -142,7 +142,14 @@ void commandReplACKProc(redisClient* client)
     addWrite(client, shared.ok);
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
-
+void commandInfoProc(redisClient* client)
+{
+    char* argv[] = {"test_run_id:aaaaa", "role:master","slave0:ip=127.0.0.1,port=11,state=online"};
+    char* res = respFormat(3, argv);
+    log_debug("INFO PROC: res : %s", res);
+    addWrite(client, res);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+}
 // 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
     {CMD_MASTER,                "SET", commandSetProc, -3},
@@ -154,7 +161,8 @@ redisCommand commandsTable[] = {
     {CMD_ALL,                   "PING", commandPingProc, 1},
     {CMD_SLAVE,                 "REPLCONF", commandReplconfProc, 3},
     {CMD_SLAVE,                 "SYNC", commandSyncProc, 1},
-    {CMD_SLAVE,                 "REPLACK", commandReplACKProc, 1}
+    {CMD_SLAVE,                 "REPLACK", commandReplACKProc, 1},
+    {CMD_ALL,                   "REPLACK", commandInfoProc, 1},
 };
 
 
@@ -260,6 +268,7 @@ void initServerConfig()
             continue;
         }
     }
+    
     log_debug("server. commands role %d: %zu", server->role, dictSize(server->commands));
 
 
@@ -319,8 +328,34 @@ void prepareShutdown()
     // 4. 自动释放部分文件、网络资源
     exit(0);
 }
+
 /**
- * @brief 定时任务
+ * @brief sentinel定时任务10s
+ * 
+ * @param [in] eventLoop 
+ * @param [in] id 
+ * @param [in] clientData 
+ */
+int sentinelInfoCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
+{
+    log_info("sentinel info cron.");
+    if (server->role == REDIS_CLUSTER_SENTINEL) {
+        // 定时发送info命令到monitor
+        listNode* node = listHead(server->clients);
+        
+        while (node) {
+            redisClient* client = node->value;
+            assert(client);
+            log_debug("ready info to %s:%d", client->ip, client->port);
+            addWrite(node->value, shared.info);
+            aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+            node = node->next;
+        }
+    }
+    return 10000;
+}
+/**
+ * @brief 定时任务 1s
  * 
  * @param [in] eventLoop 
  * @param [in] id 
@@ -331,8 +366,11 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
     log_debug("server cron.");
 
-    // 检查SAVE条件，执行BGSAVE    
-    bgSaveIfNeeded();
+    if (server->role == REDIS_CLUSTER_MASTER) {
+        // 检查SAVE条件，执行BGSAVE    
+        bgSaveIfNeeded();
+    }
+
 
     // 更新server时间
     updateServerTime();
@@ -411,7 +449,9 @@ void createSharedObjects()
     shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
     shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
 
+    // REQUEST
     shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
+    shared.info = robjCreateStringObject("*1\r\n$4\r\nINFO\r\n");
 }
 
 void initServer()
@@ -419,6 +459,8 @@ void initServer()
     initServerSignalHandlers();
     
     createSharedObjects();
+
+    server->id = getpid();
 
     server->unixtime = time(NULL);
     server->mstime = mstime();
@@ -478,22 +520,34 @@ void initServer()
         int fd = anetTcpConnect(host, atoi(port));
         assert(fd);
         redisClient* client = redisClientCreate(fd, host, atoi(port));
-        client->name = strdup(name);
         client->flags = REDIS_CLIENT_MASTER;
-        listAddNodeTail(server->clients, client);
-        log_info("sentinel monitor connect ok, %s:%s", host, port);
+        strcpy(client->name, name);
+
+        log_info("sentinel monitor connect ok, %s-%s:%d", client->name, client->ip, client->port);
+        listAddNodeTail(server->clients, listCreateNode(client));
         aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, readQueryFromClient, client);
+        // 注册info定时任务
+        aeCreateTimeEvent(server->eventLoop, 10000, sentinelInfoCron, NULL);
+    
     }
+
 }
 
 
-redisCommand* lookupCommand(redisCommand* cmds, const char* cmd)
+redisCommand* lookupCommand( const char* name)
 {
-    for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
-        if (strcasecmp(commandsTable[i].name, cmd) == 0) {
-            return &commandsTable[i];
+    dictIterator* iter = dictGetIterator(server->commands);
+    dictEntry* entry;
+    while((entry = dictIterNext(iter)) != NULL) {
+        redisCommand* cmd = entry->v.val;
+        assert(cmd);
+        log_debug("looKUP command %s", cmd->name);
+        if (strcasecmp(cmd->name, name) == 0) {
+            dictReleaseIterator(iter);
+            return cmd;
         }
     }
+    dictReleaseIterator(iter);
     return NULL;
 }
 /**
@@ -505,7 +559,8 @@ void processCommand(redisClient * c)
 {
     redisCommand* cmd;
     // argv[0] 一定是字符串，sds
-    cmd = lookupCommand(server->commands, ((sds*)(c->argv[0]->ptr))->buf);
+
+    cmd = lookupCommand(((sds*)(c->argv[0]->ptr))->buf);
     if (cmd == NULL) {
         addWrite(c, shared.invalidCommand);
         return;
@@ -519,7 +574,7 @@ void processCommand(redisClient * c)
 }
 /**
  * @brief 解析协议到 argc, argv[]
- *  *3\r\n
+    *1\r\n$4\r\nping\r\n
     $3\r\nSET\r\n
     $2\r\nk1\r\n
     $2\r\nv1\r\n
@@ -530,34 +585,17 @@ void processClientQueryBuf(redisClient* client)
     if (client->readBuf == NULL )  return;
 
     sds* s = (sds*)(client->readBuf);
-    while (sdslen(s)) {
-        // 预期：只有一行，一轮
-        if (client->argc  == 0) {
-            // 解析 argc
-            if (*(s->buf) != '*') {
-                return; // 非预期
-            }
-            char* p = strchr(s->buf, '\n');
-            client->argc = atoi(s->buf + 1);
-            sdsrange(s, p - s->buf + 1, s->len - 1);    // 移除argc行，处理完
-        }
-        int remain = client->argc;
-        client->argv = calloc(client->argc, sizeof(robj *));
-        while (remain> 0) {
-            char* p = strchr(s->buf, '\n') ; 
-            int len = atoi(s->buf + 1);
-            sdsrange(s, p -s->buf + 1, s->len - 1); // 移除len字段
-            p = strchr(s->buf, '\r');
-            *p = '\0';
-
-            log_debug("%s, argv: %s\n", __func__, s->buf);
-            client->argv[client->argc - remain] = robjCreateStringObject(s->buf);
-            // 处理完一行
-            sdsrange(s, p - s->buf + 2, s->len - 1);
-            remain--;
-        }
+    int argc;
+    char** argv;
+    int ret = resp_decode(s->buf, &argc, &argv);
+    assert(ret == 0);
+    for(int i = 0; i < argc; i++) {
+        robj* obj = robjCreateStringObject(argv[i]);
+        client->argv = realloc(client->argv, sizeof(robj*) * (client->argc + 1));
+        client->argv[client->argc] = obj;
+        client->argc++;
     }
-    // sdsclear(client->readBuf); // 不需要，过程中已经读取完了
+    sdsclear(client->readBuf); // 不需要，过程中已经读取完了
     processCommand(client);
 }
 
@@ -648,6 +686,7 @@ void saveRDBToSlave(redisClient *client)
 
 void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
 {
+    
     redisClient *client = (redisClient *)privdata;
     char *msg = client->writeBuf->buf;
     size_t msg_len = sdslen(client->writeBuf);

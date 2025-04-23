@@ -289,7 +289,7 @@ static int processTimeEvents(aeEventLoop* eventLoop)
     long long now_sec, now_ms;
 
     te = eventLoop->timeEventHead;
-
+    // TODO 
     while (te) {
         aeGetTime(&now_sec, &now_ms);
         if (now_sec > te->when || (now_sec == te->when && now_ms >= te->when_ms)) {
@@ -319,7 +319,6 @@ static int processTimeEvents(aeEventLoop* eventLoop)
  */
 static int aeProcessEvents(aeEventLoop* loop, int flags)
 {
-
     int numevents;
     struct timeval tv, *tvp, now;
 

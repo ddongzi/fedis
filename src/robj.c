@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "redis.h"
 #include <limits.h>
+#include "log.h"
 /* string object*/
 /**
  * @brief 根据encoding类型调用释放
@@ -144,14 +145,14 @@ robj* robjCreateStringObject(const char*s)
     int succeed = 0;
     int value = _string2i(s, &succeed);
     if (succeed) {
-        // log_debug("CreateStringObj , INT, %d\n", value);
+        log_debug("CreateStringObj , INT, %d\n", value);
         return _createIntString(value);
     }
     if (strlen(s) < 32) {
-        // log_debug("CreateStringObj , EMBSTR, %s\n", s);
+        log_debug("CreateStringObj , EMBSTR, %s\n", s);
         return _createEmbeddedString(s);
     }
-    // log_debug("CreateStringObj , RAW, %s\n", s);
+    log_debug("CreateStringObj , RAW, %s\n", s);
     return _createRawString(s);
 }
 
