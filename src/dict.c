@@ -140,7 +140,7 @@ static void _dictRehashStep(dict *dict)
         dict->ht[0] = dict->ht[1];
         _dictReset(&dict->ht[1]);
         dict->rehashidx = -1;
-        log_debug("rehash 完成\n");
+        // log_debug("rehash 完成\n");
         log_debug("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d\n",
             dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size
         );
@@ -206,7 +206,7 @@ static int dictExpandIfNeed(dict *dict)
     }
 
     // 小于0.1缩容
-    log_debug("Ratio : used %d, size %d\n", dict->ht[0].used, dict->ht[0].size);
+    // log_debug("Ratio : used %d, size %d\n", dict->ht[0].used, dict->ht[0].size);
     if ((double)dict->ht[0].used / (double)dict->ht[0].size < DICT_LOAD_RATIO)
     {
         log_debug("开始缩容\n");

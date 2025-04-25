@@ -16,12 +16,16 @@
 #define REDIS_CLUSTER_SLAVE 1
 #define REDIS_CLUSTER_SENTINEL 2
 
+
 extern struct redisServer* server;
 extern struct sharedObjects shared;
 
 struct redisCommand;
 
 #define REDIS_SHAREAD_MAX_INT 999
+
+#define REDIS_MAX_STRING 128
+
 struct sharedObjects {
     // RESP res
     robj *ok;

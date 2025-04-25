@@ -37,8 +37,10 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < argc; i++)
     {
+        log_debug("arg %d: %s", i, argv[i]);
         if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
             server->port = atoi(argv[i + 1]);
+            log_info("ARG port:%d", server->port);
             break;
         }
     }

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <stdlib.h>
@@ -102,13 +103,16 @@ void commandByeProc(redisClient* client)
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
+// 127.0.0.1:6668
 void commandSlaveofProc(redisClient* client)
 {
     sds* s = (sds*)(client->argv[1]->ptr);
-    char* host = s->buf;
+    char* hp = s->buf;
     server->role = REDIS_CLUSTER_SLAVE;
-    server->masterhost = strdup(host);
-    server->masterport = (int)(client->argv[2]->ptr);
+    server->masterhost = strtok(hp, ":");
+    server->masterport = atoi(strtok(NULL, ":"));
+    log_debug("CMD slaveof %s:%d", server->masterhost, server->masterport);
+
     addWrite(client, shared.ok);
     connectMaster();
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
@@ -142,10 +146,90 @@ void commandReplACKProc(redisClient* client)
     addWrite(client, shared.ok);
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
+
+char* getRoleStr(int role)
+{
+    char* buf = calloc(1, 16);
+    switch (role)
+    {
+    case REDIS_CLUSTER_MASTER:
+        sprintf(buf, "master");
+        break;
+    case REDIS_CLUSTER_SENTINEL:
+        sprintf(buf, "sentinel");
+        break;
+    case REDIS_CLUSTER_SLAVE:
+        sprintf(buf, "slave");
+        break;
+    default:
+        sprintf(buf, "unknown");
+        break;
+    }
+    return buf;
+}
+
+
+void generateInfoRespContent(int *argc, char** argv[])
+{
+    assert(server->role == REDIS_CLUSTER_MASTER);
+    listNode* node;
+    redisClient* c;
+
+    *argc = 2; // runid, role
+    // slaves
+    node = listHead(server->clients);
+    while(node != NULL) {
+        c = node->value;
+        if (c->flags == REDIS_CLIENT_SLAVE) {
+            *argc += 1;
+        }
+        node = node->next;
+    }
+
+    *argv = malloc(*argc * sizeof(char*));
+    char buf[REDIS_MAX_STRING] = {0};
+    size_t len = 0;
+    int argi = 0;
+    // 1.runid
+    len = snprintf(buf, REDIS_MAX_STRING, "run_id:%d", server->id);
+    (*argv)[argi] = malloc(len + 1);
+    strncpy((*argv)[argi], buf, len + 1);
+    memset(buf, 0, REDIS_MAX_STRING);
+    argi++;
+
+    // 2. role
+    char* rolestr = getRoleStr(server->role);
+    len = snprintf(buf, REDIS_MAX_STRING, "role:%s", rolestr);
+    (*argv)[argi] = malloc(len + 1);
+    strncpy((*argv)[argi], buf, len + 1);
+    memset(buf, 0, REDIS_MAX_STRING);
+    argi++;
+
+    // 3. slaves
+    int slavei = 0;
+    node = listHead(server->clients);
+    while(node != NULL) {
+        c = node->value;
+        if (c->flags == REDIS_CLIENT_SLAVE) {
+            len = snprintf(buf, REDIS_MAX_STRING, "slave%d:ip=%s,port=%d,state=online",
+                slavei, c->ip, c->port
+            );
+            (*argv)[argi] = malloc(len + 1);
+            strncpy((*argv)[argi], buf, len + 1);
+            memset(buf, 0, REDIS_MAX_STRING);
+            argi++;    
+            slavei++;
+        }
+        node = node->next;
+    }
+}
+
 void commandInfoProc(redisClient* client)
 {
-    char* argv[] = {"test_run_id:aaaaa", "role:master","slave0:ip=127.0.0.1,port=11,state=online"};
-    char* res = resp_encode(3, argv);
+    char** argv;
+    int argc;
+    generateInfoRespContent(&argc, &argv);
+    char* res = resp_encode(argc, argv);
     log_debug("INFO PROC: res : %s", res);
     addWrite(client, robjCreateStringObject(res));
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
@@ -159,9 +243,9 @@ redisCommand commandsTable[] = {
     {CMD_ALL,                   "BYE", commandByeProc, 1},
     {CMD_MASTER | CMD_SLAVE,    "SLAVEOF", commandSlaveofProc, 3},
     {CMD_ALL,                   "PING", commandPingProc, 1},
-    {CMD_SLAVE,                 "REPLCONF", commandReplconfProc, 3},
-    {CMD_SLAVE,                 "SYNC", commandSyncProc, 1},
-    {CMD_SLAVE,                 "REPLACK", commandReplACKProc, 1},
+    {CMD_MASTER | CMD_SLAVE,    "REPLCONF", commandReplconfProc, 3},
+    {CMD_SLAVE | CMD_MASTER,    "SYNC", commandSyncProc, 1},
+    {CMD_SLAVE | CMD_MASTER,    "REPLACK", commandReplACKProc, 1},
     {CMD_ALL,                   "INFO", commandInfoProc, 1},
 };
 
@@ -377,7 +461,7 @@ int sentinelInfoCron(struct aeEventLoop* eventLoop, long long id, void* clientDa
             node = node->next;
         }
     }
-    return 10000;
+    return 5000;
 }
 /**
  * @brief 定时任务 1s
@@ -523,7 +607,6 @@ void initServer()
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
     log_debug("● create time event for serverCron\n");
     
-    log_info("√ server init finished.  %d.", server->role);
 
 
     // sentinel特性，
@@ -552,13 +635,16 @@ void initServer()
         listAddNodeTail(server->clients, listCreateNode(client));
         // 注册info定时任务
         aeCreateTimeEvent(server->eventLoop, 10000, sentinelInfoCron, NULL);
-    
     }
+
+
+    log_info("√ server init finished.  ROLE:%s.", getRoleStr(server->role));
+
 
 }
 
 
-redisCommand* lookupCommand( const char* name)
+redisCommand* lookupCommand(const char* name)
 {
     dictIterator* iter = dictGetIterator(server->commands);
     dictEntry* entry;
@@ -582,9 +668,11 @@ void processCommand(redisClient * c)
 {
     redisCommand* cmd;
     // argv[0] 一定是字符串，sds
-
-    cmd = lookupCommand(((sds*)(c->argv[0]->ptr))->buf);
+    char* cmdname = ((sds*)(c->argv[0]->ptr))->buf;
+    log_debug("process CMD %s", cmdname);
+    cmd = lookupCommand(cmdname);
     if (cmd == NULL) {
+        log_error("process CMD null!");
         addWrite(c, shared.invalidCommand);
         return;
     }

@@ -29,7 +29,7 @@ void sendPingToMaster()
 void sendSyncToMaster()
 {
     char* argv[] = {"SYNC"};
-    char* buf = respFormat(1, argv);
+    char* buf = resp_encode(1, argv);
     //  SYNC
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
@@ -38,7 +38,7 @@ void sendSyncToMaster()
 void sendReplAckToMaster()
 {
     char* argv[] = {"REPLACK"};
-    char* buf = respFormat(1, argv);
+    char* buf = resp_encode(1, argv);
     //  REPLCONF ACK <从dbid>
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
@@ -47,9 +47,16 @@ void sendReplAckToMaster()
 void sendReplconfToMaster()
 {
     //  REPLCONF listening-port <从监听port>
-    char* argv[] = {"REPLCONF", "listen-port", "6666"};
-    char* buf = respFormat(3, argv);
+    log_debug("sendReplconf port: %d", server->port);
+    char* portstr = calloc(1, REDIS_MAX_STRING);
+    sprintf(portstr, "%d", server->port);
+    char* argv[] = {"REPLCONF", "listen-port", portstr};
+    char* buf = resp_encode(3, argv);
+    log_debug("sendReplconf content : %s", buf);
     addWrite(server->master, robjCreateStringObject(buf));
+    log_debug("addwrite ok");
+    // TODO Buf free
+    free(portstr);
     free(buf);
 }
 /**
@@ -72,26 +79,25 @@ void handleCommandPropagate()
  */
 void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
 {
-    log_debug("1.start, master.writeBuf len = %d", sdslen(server->master->writeBuf));
     switch (server->replState)
     {
     case REPL_STATE_SLAVE_CONNECTING:
         sendPingToMaster();
-        log_debug("send ping to master");
+        log_debug("<<== 1. [REPL_STATE_SLAVE_CONNECTING] send ping to master");
         break;
     case REPL_STATE_SLAVE_SEND_REPLCONF:
         sendReplconfToMaster();
-        log_debug("send replconf to master");
+        log_debug("<<== 2. [REPL_STATE_SLAVE_SEND_REPLCONF] send replconf to master");
         break;
     case REPL_STATE_SLAVE_SEND_SYNC:
         //  发送SYNC
         sendSyncToMaster();
-        log_debug("send sync to master");
+        log_debug("<<== 3. [REPL_STATE_SLAVE_SEND_SYNC] send sync to master");
         break;
     case REPL_STATE_SLAVE_CONNECTED:
         //  发送REPLCONF ACK
         sendReplAckToMaster();
-        log_debug("send REPLACK to master");
+        log_debug("<<== 4. [REPL_STATE_SLAVE_CONNECTED] send REPLACK to master");
         break;
     default:
         break;
@@ -113,9 +119,7 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
         close(fd);
         return;
     }
-    // TODO 默认全部写完  
     sdsclear(server->master->writeBuf);
-    log_debug("2. after clear .master.writeBuf len = %d", sdslen(server->master->writeBuf));
 
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
 }
@@ -129,7 +133,8 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             if (strstr(server->master->readBuf->buf, "PONG") != NULL) {
                 // 收到PONG, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
-                log_debug("receive PONG");
+                log_debug("==>> 1. [REPL_STATE_SLAVE_CONNECTING] receive pong. => [REPL_STATE_SLAVE_SEND_REPLCONF]");
+
             }
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
@@ -138,7 +143,8 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             if (strstr(server->master->readBuf->buf, "+OK")!= NULL) {
                 // 收到REPLCONF OK, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_SYNC;
-                log_debug("receive REPLCONF OK");
+                log_debug("==>> 2. [REPL_STATE_SLAVE_SEND_REPLCONF] receive REPLCONF OK. => [REPL_STATE_SLAVE_SEND_SYNC]");
+
             }
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
@@ -150,6 +156,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
                 server->replState = REPL_STATE_SLAVE_TRANSFER;
                 log_debug("receive FULLSYNC");
+                log_debug("==>> 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_TRANSFER]");
             }
             break;
         case REPL_STATE_SLAVE_TRANSFER:
@@ -173,12 +180,15 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             rdbLoad();
             log_debug("rdbload finished.");
             server->replState = REPL_STATE_SLAVE_CONNECTED;
+            log_debug("==>> 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
             break;
         case REPL_STATE_SLAVE_CONNECTED:
             readToReadBuf(server->master);
             if (strstr(server->master->readBuf->buf, "+OK") != NULL) {
                 log_debug("replication connection established.");
+                log_debug("==>> 5. [REPL_STATE_SLAVE_CONNECTED] receive ok. √");
+
                 handleCommandPropagate();
             }
             break;

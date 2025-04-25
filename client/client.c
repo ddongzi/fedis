@@ -70,10 +70,21 @@ int read_response(int sock) {
     return 0;  // 0表示正常读取，1表示断开连接
 }
 
-int main() {
-    const char *redis_host = "127.0.0.1";
-    int redis_port = 6666;
+// ./a.out --port 6667
+int main(int argc, char* argv[]) {
+    const char* redis_host = "127.0.0.1";
+    int redis_port ;
+
+    for (size_t i = 0; i < argc; i++)
+    {
+        if (strcasecmp("--port", argv[i]) == 0 && i + 1 < argc ) {
+            redis_port = atoi( argv[i+1]);
+            break;
+        }
+    }
+    printf("Connect-> %s:%d\n", redis_host, redis_port);
     
+
     int sock = connect_to_redis(redis_host, redis_port);
     if (sock < 0) return 1;
     
