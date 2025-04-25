@@ -328,6 +328,29 @@ void prepareShutdown()
     // 4. 自动释放部分文件、网络资源
     exit(0);
 }
+/**
+ * @brief INfo命令回复
+ * 
+ * @param [in] el 
+ * @param [in] fd 
+ * @param [in] privdata 
+ */
+void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
+{
+    redisClient *client = (redisClient *)privdata;
+    char buf[1024] = {0};
+    rio r;
+    rioInitWithFD(&r, fd);
+    size_t nread = rioRead(&r, buf, sizeof(buf));
+    if (nread == 0)
+    {
+        if (r.error)
+            close(fd);
+        return;
+    }
+    sdscat(client->readBuf, buf);
+    log_debug("Sentinel read info : %s", buf);
+}
 
 /**
  * @brief sentinel定时任务10s
@@ -348,6 +371,8 @@ int sentinelInfoCron(struct aeEventLoop* eventLoop, long long id, void* clientDa
             assert(client);
             log_debug("ready info to %s:%d", client->ip, client->port);
             addWrite(node->value, shared.info);
+            // 对于主动消息，我们通过自己创建读事件处理器来
+            aeCreateFileEvent(server->eventLoop, client->fd, AE_READABLE, sentinelReadInfo, client);
             aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
             node = node->next;
         }
@@ -525,7 +550,6 @@ void initServer()
 
         log_info("sentinel monitor connect ok, %s-%s:%d", client->name, client->ip, client->port);
         listAddNodeTail(server->clients, listCreateNode(client));
-        aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, readQueryFromClient, client);
         // 注册info定时任务
         aeCreateTimeEvent(server->eventLoop, 10000, sentinelInfoCron, NULL);
     
@@ -595,9 +619,18 @@ void processClientQueryBuf(redisClient* client)
         client->argc++;
     }
     sdsclear(client->readBuf); // 不需要，过程中已经读取完了
+
+    // 不一定是query 因为client是对端，可能是响应。
     processCommand(client);
 }
 
+/**
+ * @brief 读取处理客户端命令
+ * 
+ * @param [in] el 
+ * @param [in] fd 
+ * @param [in] privData 
+ */
 void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
 {
     redisClient *client = (redisClient *)privData;
@@ -614,6 +647,8 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
     log_debug("deal query from client, %s", respParse(buf));
 
     sdscat(client->readBuf, buf);
+
+
     log_debug(" processing query from client, %s", buf);
     processClientQueryBuf(client);
     log_debug(" processed query from client");
