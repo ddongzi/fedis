@@ -105,7 +105,7 @@ void rdbSave()
     log_debug("======RDB Save(child:%u)======\n", getpid());
     int nwritten = 0;
     int nread = 0;
-    FILE* fp = fopen(server->rdbFileName, "w");
+    FILE* fp = fopen(server->rdbFileName, "w+");
     if (!fp) {
         perror("rdbSave can't open file"); 
         return;
@@ -144,9 +144,9 @@ void rdbSave()
     // 4. 校验和 
     char buf[RDB_MAX_SIZE] = {0};
     nread = fread(buf,1, RDB_MAX_SIZE, fp);
+    assert(nread > 0);
     char hash[RDB_CHECKSUM_LEN];
     compute_sha256(buf, nread, hash); 
-    log_debug("rdb hash256!");
     
     int ret = verify_sha256(buf, nread, hash);
     if (ret == 1) log_debug("Verify success!");
@@ -309,6 +309,7 @@ void rdbLoad()
     int dbid;
     while (1) {
         unsigned char type = _rdbLoadType(fp); // 
+        
         if (type == RDB_EOF) break;
 
         if (type == RDB_SELECTDB) {
@@ -327,6 +328,22 @@ void rdbLoad()
         robj* val = _rdbLoadObject(fp, type);
         dbAdd(server->db + dbid, key, val);
     }
+
+    // 校验
+    size_t nread = 0;
+    size_t datalen = ftell(fp); // 当前长度
+    // 读取校验码
+    unsigned char hash[RDB_CHECKSUM_LEN] = {0};
+    nread = fread(hash, 1, RDB_CHECKSUM_LEN, fp);
+    assert(RDB_CHECKSUM_LEN == nread);
+
+    fseek(fp, 0, SEEK_SET);
+    char data[RDB_MAX_SIZE];
+    nread = fread(data, 1, datalen, fp);
+    assert(nread == datalen);
+    
+    int ret = verify_sha256(data, datalen, hash);
+    assert(ret == 1);
 }
 
 /**
