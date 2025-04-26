@@ -51,6 +51,7 @@ void addWrite(redisClient* client, robj* obj)
  * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。
  * @param [in] client 
  * @return 
+ * @deprecated 使用sdscatlen就行！
  */
 void readToReadBuf(redisClient* client) 
 {

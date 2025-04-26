@@ -123,7 +123,6 @@ void commandSlaveofProc(redisClient* client)
     int port =  atoi(strtok(NULL, ":"));
     masterToSlave(ip, port);
 
-
     addWrite(client, shared.ok);
     connectMaster();
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
@@ -154,6 +153,7 @@ void commandReplconfProc(redisClient* client)
 void commandReplACKProc(redisClient* client)
 {
     //  ���不处理，不影响
+    client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
     addWrite(client, shared.ok);
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
@@ -698,22 +698,25 @@ void commandPropagate(sds* s)
 {
     log_debug("Command propagate !");
     assert(s);
-    assert(s->buf);
+    assert(server);
     assert(server->role == REDIS_CLUSTER_MASTER);
     redisClient* c;
-
+    int slaves = 0;
     listNode* node = listHead(server->clients);
     while (node) {
         c = node->value;
         assert(c);
         if (c->flags == REDIS_CLIENT_SLAVE) {
+            slaves++;
             // 对端是slave
-            assert(c->writeBuf);
+            log_debug("Propagate to %d slave, [%d]-%s:%d", slaves, c->fd, c->ip, c->port);
             sdscat(c->writeBuf, s->buf);
+            aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readRespFromClient, c);
             aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendReplyToClient, c);
         }
         node = node->next;
     }
+    log_debug("Count propagate %d slaves.", slaves);
 }
 /**
  * @brief 调用执行命令。已有argc,argv[]
@@ -773,10 +776,32 @@ void processClientQueryBuf(redisClient* client)
     }
     // 不一定是query 因为client是对端，可能是响应。
     processCommand(client);
+    sdsfree(scpy);
 }
-
 /**
- * @brief 读取处理客户端命令
+ * @brief 读取+OK, -ERR 格式
+ * 
+ * @param [in] el 
+ * @param [in] fd 
+ * @param [in] privData 
+ */
+void readRespFromClient(aeEventLoop *el, int fd, void *privData)
+{
+    redisClient *client = (redisClient *)privData;
+    char buf[1024] = {0};
+    rio r;
+    rioInitWithFD(&r, fd);
+    size_t nread = rioRead(&r, buf, sizeof(buf));
+    if (nread == 0)
+    {
+        if (r.error)
+            close(fd);
+        return;
+    }
+    log_info("Get RESP from client %s", buf);    
+}
+/**
+ * @brief 读取命令，*2\r\n$3\r\nget\r\n$3\r\nfoo\r\n
  * 
  * @param [in] el 
  * @param [in] fd 
@@ -795,15 +820,11 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
             close(fd);
         return;
     }
-    log_debug("deal query from client, %s", respParse(buf));
-
     sdscat(client->readBuf, buf);
 
-
-    log_debug(" processing query from client, %s", buf);
+    log_debug(" processing query from client, %s, Client buf: %s", buf, client->readBuf->buf);
     processClientQueryBuf(client);
     log_debug(" processed query from client");
-    // 写事件转移到各命令 自注册
 }
 
 /**
@@ -869,7 +890,6 @@ void saveRDBToSlave(redisClient *client)
 
 void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
 {
-    
     redisClient *client = (redisClient *)privdata;
     char *msg = client->writeBuf->buf;
     size_t msg_len = sdslen(client->writeBuf);
@@ -907,3 +927,4 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
     }
     aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
 }
+

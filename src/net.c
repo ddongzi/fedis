@@ -456,6 +456,7 @@ void connectMaster()
     int err = 0;
 
     server->master = redisClientCreate(fd, server->masterhost, server->masterport);
+    server->master->flags = REDIS_CLIENT_MASTER;
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     log_debug("Connecting Master fd %d", fd);
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
@@ -569,7 +570,7 @@ char* respFormat(int argc, char** argv)
 }
 
 /**
- * @brief 编码：argv[] -> RESP 格式字符串
+ * @brief 编码：argv[] -> RESP 批量数组字符串
  * 
  * @param [in] argc 
  * @param [in] argv 
@@ -598,15 +599,18 @@ char* resp_encode(int argc, char* argv[])
     return buf;
 }
 /**
- * @brief 从resp字符串解析
+ * @brief 从resp字符串解析: 批量数组字符串
  * 
- * @param [in] resp 
+ * @param [in] resp 多条批量字符串格式
  * @param [out] argc_out 
  * @param [out] argv_out 
  * @return int 
  */
 int resp_decode(const char *resp, int *argc_out, char** argv_out[]) {
-    if (*resp != '*') return -1;
+    if (*resp != '*') {
+        log_error("RESP head isn't *. , got %c", *resp);
+        return -1;
+    }
     int argc;
     sscanf(resp + 1, "%d", &argc);
     *argc_out = argc;
@@ -614,7 +618,10 @@ int resp_decode(const char *resp, int *argc_out, char** argv_out[]) {
 
     const char *p = strchr(resp, '\n') + 1;
     for (int i = 0; i < argc; ++i) {
-        if (*p != '$') return -1;
+        if (*p != '$') {
+            log_error("RESP $.");
+            return -1;
+        }
         int len;
         sscanf(p + 1, "%d", &len);
         p = strchr(p, '\n') + 1;

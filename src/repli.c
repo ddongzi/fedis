@@ -125,13 +125,13 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
     rioInitWithSocket(&sio, fd);
     char buf[NET_BUF_MAX_SIZE];
     size_t nread = rioRead(&sio, buf, NET_BUF_MAX_SIZE);
-    if (nread == 0) 
-        log_error("repli read failed");
+    assert(nread > 0);
     sdscatlen(c->readBuf, buf, nread);
+    
     // buf内容一定与下面的case开头匹配
     switch (server->replState) {
         case REPL_STATE_SLAVE_CONNECTING:
-            if (strstr(server->master->readBuf->buf, "PONG") != NULL) {
+            if (strstr(c->readBuf->buf, "PONG") != NULL) {
                 // 收到PONG, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
                 log_debug("==>> 1. [REPL_STATE_SLAVE_CONNECTING] receive pong. => [REPL_STATE_SLAVE_SEND_REPLCONF]");
@@ -180,12 +180,14 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             server->replState = REPL_STATE_SLAVE_CONNECTED;
             log_debug("==>> 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c);
+            sdsclear(c->readBuf);
             break;
         case REPL_STATE_SLAVE_CONNECTED:
-            if (strstr(server->master->readBuf->buf, "+OK") != NULL) {
+            if (strstr(c->readBuf->buf, "+OK") != NULL) {
                 log_debug("==>> 5. [REPL_STATE_SLAVE_CONNECTED] receive ok.  Normally slave !! √");
                 aeCreateFileEvent(el, fd, AE_READABLE, readQueryFromClient, c);
             }
+            sdsclear(c->readBuf);
             break;
         default:
             break;
