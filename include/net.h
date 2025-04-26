@@ -16,6 +16,7 @@
 
 #define IP_ADDR_MAX 64
 
+#define NET_BUF_MAX_SIZE 1024
 
 #define NET_OK 0
 #define NET_ERR -1

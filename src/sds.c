@@ -70,6 +70,13 @@ void sdsclear(sds* ss)
     ss->len = 0;
 }
 
+/**
+ * @brief 添加一些buf, 二进制数组
+ * 
+ * @param [in] dest 
+ * @param [in] buf 
+ * @param [in] n 
+ */
 void sdscatlen(sds* dest, const char* buf, int n)
 {
     if (dest == NULL) return;
@@ -92,6 +99,13 @@ void sdscatlen(sds* dest, const char* buf, int n)
     }
 }
 
+
+/**
+ * @brief 
+ * 
+ * @param [in] dest 
+ * @param [in] s 字符串
+ */
 void sdscat(sds* dest, const char* s)
 {
     if (s == NULL) return;
@@ -122,6 +136,11 @@ void sdscatsds(sds* dest, sds* src)
     src->len = 0;
     src->buf[0] = '\0';
 }
+/**
+ * @brief char*字符串  到dest 
+ * @param [in] dest 
+ * @param [in] s 
+ */
 void sdscpy(sds* dest, const char* s)
 {
     sdsclear(dest);
@@ -152,10 +171,11 @@ void sdsgrowzero(sds* ss, int newlen)
 
 /**
  * @brief 裁剪保留[start, end] 
- * 
+ *  "helloworld"
+ *  [2,10]
  * @param [in] ss 
- * @param [in] start 
- * @param [in] end 
+ * @param [in] start 下标索引 
+ * @param [in] end 下标索引
  * @return void
  * 
  * @note 如果 start>end, 成为空字符串

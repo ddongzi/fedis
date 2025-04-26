@@ -459,8 +459,8 @@ void connectMaster()
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     log_debug("Connecting Master fd %d", fd);
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
-    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, NULL);
-    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, NULL);
+    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master);
+    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, server->master);
 }
 
 

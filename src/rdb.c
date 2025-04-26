@@ -320,6 +320,7 @@ void rdbLoad()
  */
 void receiveRDBfile(char* buf, int n)
 {
+    log_debug("Receive RDB to: %s", server->rdbFileName);
     FILE* fp = fopen(server->rdbFileName, "w");
     if (fp == NULL) {
         perror("saveRdbFile can't open file");

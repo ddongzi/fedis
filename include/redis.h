@@ -22,6 +22,9 @@ extern struct sharedObjects shared;
 
 struct redisCommand;
 
+#define RDB_FILENAME_1 "/home/dong/fedis/data/1.rdb"
+#define RDB_FILENAME_2 "/home/dong/fedis/data/2.rdb"
+
 #define REDIS_SHAREAD_MAX_INT 999
 
 #define REDIS_MAX_STRING 128

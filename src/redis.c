@@ -109,6 +109,7 @@ void commandSlaveofProc(redisClient* client)
     sds* s = (sds*)(client->argv[1]->ptr);
     char* hp = s->buf;
     server->role = REDIS_CLUSTER_SLAVE;
+    server->rdbFileName = RDB_FILENAME_2;
     server->masterhost = strtok(hp, ":");
     server->masterport = atoi(strtok(NULL, ":"));
     log_debug("CMD slaveof %s:%d", server->masterhost, server->masterport);
@@ -317,8 +318,8 @@ void initServerConfig()
     appendServerSaveParam(900, 1);
     appendServerSaveParam(300, 10000);
     appendServerSaveParam(10, 1);
-
-    server->rdbFileName = "/home/dong/fedis/data/1.rdb";
+    
+    server->rdbFileName = RDB_FILENAME_1;
     
     server->maxclients = REDIS_MAX_CLIENTS;
 

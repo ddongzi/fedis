@@ -54,23 +54,30 @@ void addWrite(redisClient* client, robj* obj)
  */
 void readToReadBuf(redisClient* client) 
 {
+    // todo有问题 ！！
     char temp_buf[1]; // 逐字节读取，确保精确性
     ssize_t n;
 
     sdsclear(client->readBuf);
+    log_debug(" 0000000011 %d", sdslen(server->master->writeBuf));
 
     printf("\n to read buf\n");
     while (1) {
         // 没必要RIO，
         n = read(client->fd, temp_buf, sizeof(temp_buf));
+        log_debug(" 0000000021 %d", sdslen(server->master->writeBuf));
+
         if (n <= 0) {
-            log_debug("read failed or finished");
+            log_error("read failed or finished %s", strerror(errno));
             if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return;
             return;
         }
         sdscatlen(client->readBuf, temp_buf, n);
+        log_debug(" 0000000031 %d", sdslen(server->master->writeBuf));
 
         ssize_t resp_len = getRespLength(client->readBuf->buf, sdslen(client->readBuf));
+        log_debug(" 0000000041 %d", sdslen(server->master->writeBuf));
+        
         if (resp_len != -1) {
             // 读到一个RESP协议
             printf("get resp return");
