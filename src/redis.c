@@ -103,16 +103,26 @@ void commandByeProc(redisClient* client)
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 
+void masterToSlave(const char* ip, int port)
+{
+    log_info("Master => Slave");
+    server->role = REDIS_CLUSTER_SLAVE;
+    server->rdbFileName = RDB_FILENAME_2;
+    // TODO 能否直接=
+    server->masterhost = ip;
+    server->masterport = port;
+    loadCommands();    
+}
+
 // 127.0.0.1:6668
 void commandSlaveofProc(redisClient* client)
 {
     sds* s = (sds*)(client->argv[1]->ptr);
     char* hp = s->buf;
-    server->role = REDIS_CLUSTER_SLAVE;
-    server->rdbFileName = RDB_FILENAME_2;
-    server->masterhost = strtok(hp, ":");
-    server->masterport = atoi(strtok(NULL, ":"));
-    log_debug("CMD slaveof %s:%d", server->masterhost, server->masterport);
+    char* ip = strtok(hp, ":");
+    int port =  atoi(strtok(NULL, ":"));
+    masterToSlave(ip, port);
+
 
     addWrite(client, shared.ok);
     connectMaster();
@@ -291,7 +301,14 @@ static void* commandDictValDup(void* privdata, const void* obj)
     memcpy(res, obj, sizeof(redisCommand));
     return (void*)res;
 }
-
+dictType commandDictType = {
+    .hashFunction = commandDictHashFunction,
+    .keyCompare = commandDictKeyCompare,
+    .keyDup =  commandDictKeyDup,
+    .valDup =  commandDictValDup,
+    .keyDestructor = commandDictKeyDestructor,
+    .valDestructor = commandDictValDestructor
+};
 
 
 
@@ -303,35 +320,15 @@ void appendServerSaveParam(time_t sec, int changes)
     server->saveCondSize++;
 }
 
-
 /**
- * @brief 初始化服务器配置
+ * @brief 根据角色设置command
  * 
- * @param [in] server 
  */
-void initServerConfig()
+void loadCommands()
 {
-    server->port = REDIS_SERVERPORT;
-    server->dbnum = REDIS_DEFAULT_DBNUM;
-    server->saveCondSize = 0;
-    server->saveParams = NULL;
-    appendServerSaveParam(900, 1);
-    appendServerSaveParam(300, 10000);
-    appendServerSaveParam(10, 1);
-    
-    server->rdbFileName = RDB_FILENAME_1;
-    
-    server->maxclients = REDIS_MAX_CLIENTS;
-
-    dictType commandDictType = {
-        .hashFunction = commandDictHashFunction,
-        .keyCompare = commandDictKeyCompare,
-        .keyDup =  commandDictKeyDup,
-        .valDup =  commandDictValDup,
-        .keyDestructor = commandDictKeyDestructor,
-        .valDestructor = commandDictValDestructor
-    };
-
+    if (server->commands != NULL) {
+        dictRelease(server->commands);
+    }
     server->commands = dictCreate(&commandDictType, NULL);
     for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
         if (server->role == REDIS_CLUSTER_MASTER && (commandsTable[i].flags & CMD_MASTER)) {
@@ -353,7 +350,30 @@ void initServerConfig()
             continue;
         }
     }
+    char* rolestr = getRoleStr(server->role);
+    log_info("Load commands for role %s", rolestr);
+    free(rolestr);
+}
+
+/**
+ * @brief 初始化服务器配置
+ * 
+ * @param [in] server 
+ */
+void initServerConfig()
+{
+    server->port = REDIS_SERVERPORT;
+    server->dbnum = REDIS_DEFAULT_DBNUM;
+    server->saveCondSize = 0;
+    server->saveParams = NULL;
+    appendServerSaveParam(900, 1);
+    appendServerSaveParam(300, 10000);
+    appendServerSaveParam(10, 1);
     
+    server->rdbFileName = RDB_FILENAME_1;
+    
+    server->maxclients = REDIS_MAX_CLIENTS;
+    loadCommands();
     log_debug("server. commands role %d: %zu", server->role, dictSize(server->commands));
 
 
@@ -673,11 +693,11 @@ void processCommand(redisClient * c)
     log_debug("process CMD %s", cmdname);
     cmd = lookupCommand(cmdname);
     if (cmd == NULL) {
-        log_error("process CMD null!");
         addWrite(c, shared.invalidCommand);
-        return;
+        aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendReplyToClient, c);
+    } else {
+        cmd->proc(c);
     }
-    cmd->proc(c);
     c->argc = 0;
     for (int i = 0; i < c->argc; i++) {
         robjDestroy(c->argv[i]);
