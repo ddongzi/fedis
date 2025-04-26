@@ -1,5 +1,10 @@
 #ifndef RDB_H
 #define RDB_H
+#include "crypto.h"
+
+#define RDB_MAX_SIZE 4096
+#define RDB_CHECKSUM_LEN SHA256_DIGEST_LENGTH
+
 
 #define RDB_MAGIC "REDIS"
 #define RDB_VERSION "0001"

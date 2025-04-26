@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "crypto.h"
 /**
  * @brief 对象类型、RDB操作符
  * 
@@ -137,9 +138,23 @@ void rdbSave()
     // 3. 写入EOF
     _rdbSaveType(fp, RDB_EOF); // 1字节
 
-    // 4. 校验和 TODO
-    uint64_t crc = 0;
-    fwrite(&crc, sizeof(uint64_t), 1, fp);
+    fflush(fp); // 确保写入文件
+    fseek(fp, 0, SEEK_SET); // 移动到开头
+
+    // 4. 校验和 
+    char buf[RDB_MAX_SIZE] = {0};
+    nread = fread(buf,1, RDB_MAX_SIZE, fp);
+    char hash[RDB_CHECKSUM_LEN];
+    compute_sha256(buf, nread, hash); 
+    log_debug("rdb hash256!");
+    
+    int ret = verify_sha256(buf, nread, hash);
+    if (ret == 1) log_debug("Verify success!");
+    else log_error("Verify failed!!");
+
+    fseek(fp, 0, SEEK_END); // 移动到末尾写入
+    fwrite(hash, 1, RDB_CHECKSUM_LEN, fp);
+
     fflush(fp);
     fclose(fp);
     log_debug("Save the RDB file success\n");
