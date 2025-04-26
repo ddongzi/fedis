@@ -246,18 +246,19 @@ void commandInfoProc(redisClient* client)
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
 // 全局命令表，包含sentinel等所有命令
+
 redisCommand commandsTable[] = {
-    {CMD_MASTER,                "SET", commandSetProc, -3},
-    {CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
-    {CMD_MASTER,                "DEL", commandDelProc, 2},
-    {CMD_MASTER | CMD_SLAVE,    "OBJECT", commandObjectProc, 3},
-    {CMD_ALL,                   "BYE", commandByeProc, 1},
-    {CMD_MASTER | CMD_SLAVE,    "SLAVEOF", commandSlaveofProc, 3},
-    {CMD_ALL,                   "PING", commandPingProc, 1},
-    {CMD_MASTER | CMD_SLAVE,    "REPLCONF", commandReplconfProc, 3},
-    {CMD_SLAVE | CMD_MASTER,    "SYNC", commandSyncProc, 1},
-    {CMD_SLAVE | CMD_MASTER,    "REPLACK", commandReplACKProc, 1},
-    {CMD_ALL,                   "INFO", commandInfoProc, 1},
+    {CMD_WRITE | CMD_MASTER,                "SET", commandSetProc, -3},
+    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
+    {CMD_WRITE |CMD_MASTER,                "DEL", commandDelProc, 2},
+    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "OBJECT", commandObjectProc, 3},
+    {CMD_RED | CMD_ALL,                   "BYE", commandByeProc, 1},
+    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "SLAVEOF", commandSlaveofProc, 3},
+    {CMD_RED |CMD_ALL,                   "PING", commandPingProc, 1},
+    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "REPLCONF", commandReplconfProc, 3},
+    {CMD_RED |CMD_SLAVE | CMD_MASTER,    "SYNC", commandSyncProc, 1},
+    {CMD_RED |CMD_SLAVE | CMD_MASTER,    "REPLACK", commandReplACKProc, 1},
+    {CMD_RED |CMD_ALL,                   "INFO", commandInfoProc, 1},
 };
 
 
@@ -321,7 +322,7 @@ void appendServerSaveParam(time_t sec, int changes)
 }
 
 /**
- * @brief 根据角色设置command
+ * @brief 添加全局命令表， 如果命令不支持，在处理时候禁止
  * 
  */
 void loadCommands()
@@ -331,24 +332,9 @@ void loadCommands()
     }
     server->commands = dictCreate(&commandDictType, NULL);
     for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
-        if (server->role == REDIS_CLUSTER_MASTER && (commandsTable[i].flags & CMD_MASTER)) {
-            redisCommand* cmd = malloc(sizeof(redisCommand));
-            memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
-            dictAdd(server->commands, cmd->name, cmd);
-            continue;
-        }
-        if (server->role == REDIS_CLUSTER_SLAVE && (commandsTable[i].flags & CMD_SLAVE)) {
-            redisCommand* cmd = malloc(sizeof(redisCommand));
-            memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
-            dictAdd(server->commands, cmd->name, cmd);
-            continue;
-        }
-        if (server->role == REDIS_CLUSTER_SENTINEL && (commandsTable[i].flags & CMD_SENTINEL)) {
-            redisCommand* cmd = malloc(sizeof(redisCommand));
-            memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
-            dictAdd(server->commands, cmd->name, cmd);
-            continue;
-        }
+        redisCommand* cmd = malloc(sizeof(redisCommand));
+        memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
+        dictAdd(server->commands, cmd->name, cmd);
     }
     char* rolestr = getRoleStr(server->role);
     log_info("Load commands for role %s", rolestr);
@@ -374,9 +360,6 @@ void initServerConfig()
     
     server->maxclients = REDIS_MAX_CLIENTS;
     loadCommands();
-    log_debug("server. commands role %d: %zu", server->role, dictSize(server->commands));
-
-
 
     log_debug("√ init server config.\n");
 }
@@ -663,22 +646,74 @@ void initServer()
 
 
 }
-
-
-redisCommand* lookupCommand(const char* name)
+/**
+ * @brief 1. 从服务器拒绝执行来自普通客户端的写命令
+ * 
+ * @param [in] cmd 
+ * @return int 
+ */
+int isSupportedCmd(redisClient* c, redisCommand* cmd)
 {
+    assert(c);
+    assert(cmd);
+    if (server->role == REDIS_CLUSTER_SLAVE &&
+        c->flags == REDIS_CLIENT_NORMAL &&
+        cmd->flags & CMD_WRITE
+    ) {
+        log_debug("UNsupported cmd %s", cmd->name);
+        return 0;
+    }
+    
+    return 1;
+
+}
+
+redisCommand* lookupCommand(redisClient* c, const char* name)
+{
+    assert(c);
+    assert(name);
+    assert(server->commands);
     dictIterator* iter = dictGetIterator(server->commands);
     dictEntry* entry;
     while((entry = dictIterNext(iter)) != NULL) {
         redisCommand* cmd = entry->v.val;
         assert(cmd);
-        if (strcasecmp(cmd->name, name) == 0) {
+        if (isSupportedCmd(c, cmd) && strcasecmp(cmd->name, name) == 0) {
+            log_debug("FIND cmd %s", name);
             dictReleaseIterator(iter);
             return cmd;
         }
     }
+    log_debug("cant lookup cmd ! %s", name);
     dictReleaseIterator(iter);
     return NULL;
+}
+
+/**
+ * @brief 原封不动的sds , resp字符串
+ * 
+ * @param [in] s 
+ */
+void commandPropagate(sds* s)
+{
+    log_debug("Command propagate !");
+    assert(s);
+    assert(s->buf);
+    assert(server->role == REDIS_CLUSTER_MASTER);
+    redisClient* c;
+
+    listNode* node = listHead(server->clients);
+    while (node) {
+        c = node->value;
+        assert(c);
+        if (c->flags == REDIS_CLIENT_SLAVE) {
+            // 对端是slave
+            assert(c->writeBuf);
+            sdscat(c->writeBuf, s->buf);
+            aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendReplyToClient, c);
+        }
+        node = node->next;
+    }
 }
 /**
  * @brief 调用执行命令。已有argc,argv[]
@@ -688,16 +723,24 @@ redisCommand* lookupCommand(const char* name)
 void processCommand(redisClient * c)
 {
     redisCommand* cmd;
+    assert(c);
     // argv[0] 一定是字符串，sds
     char* cmdname = ((sds*)(c->argv[0]->ptr))->buf;
     log_debug("process CMD %s", cmdname);
-    cmd = lookupCommand(cmdname);
+    cmd = lookupCommand(c, cmdname);
     if (cmd == NULL) {
+        log_debug("Will ret invalid!");
         addWrite(c, shared.invalidCommand);
         aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendReplyToClient, c);
     } else {
         cmd->proc(c);
     }
+
+    if ( cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER) {
+        commandPropagate(c->readBuf);
+    }
+    log_debug("Process ok , clear!");
+    sdsclear(c->readBuf);
     c->argc = 0;
     for (int i = 0; i < c->argc; i++) {
         robjDestroy(c->argv[i]);
@@ -715,11 +758,12 @@ void processCommand(redisClient * c)
 void processClientQueryBuf(redisClient* client)
 {
     if (client->readBuf == NULL )  return;
-
+    // TODO 后续命令传播需要，命令处理完再清除
     sds* s = (sds*)(client->readBuf);
+    sds* scpy = sdsdump(s);
     int argc;
     char** argv;
-    int ret = resp_decode(s->buf, &argc, &argv);
+    int ret = resp_decode(scpy->buf, &argc, &argv);
     assert(ret == 0);
     for(int i = 0; i < argc; i++) {
         robj* obj = robjCreateStringObject(argv[i]);
@@ -727,8 +771,6 @@ void processClientQueryBuf(redisClient* client)
         client->argv[client->argc] = obj;
         client->argc++;
     }
-    sdsclear(client->readBuf); // 不需要，过程中已经读取完了
-
     // 不一定是query 因为client是对端，可能是响应。
     processCommand(client);
 }
@@ -822,8 +864,6 @@ void saveRDBToSlave(redisClient *client)
         return;
     }
 
-    // 发送完毕转换状态,  不等client响应？
-    client->replState = REPL_STATE_MASTER_CONNECTED;
     log_debug("RDB sent to slave %d， size:%lld", client->fd, rdb_len);
 }
 

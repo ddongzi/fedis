@@ -59,16 +59,6 @@ void sendReplconfToMaster()
     free(portstr);
     free(buf);
 }
-/**
- * @brief 命令传播：作为正常服务器处理命令
- *
- */
-void handleCommandPropagate()
-{
-    log_debug("handle commandPropagate");
-}
-
-
 
 /**
  * @brief 向master写
@@ -193,10 +183,8 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             break;
         case REPL_STATE_SLAVE_CONNECTED:
             if (strstr(server->master->readBuf->buf, "+OK") != NULL) {
-                log_debug("replication connection established.");
-                log_debug("==>> 5. [REPL_STATE_SLAVE_CONNECTED] receive ok. √");
-
-                handleCommandPropagate();
+                log_debug("==>> 5. [REPL_STATE_SLAVE_CONNECTED] receive ok.  Normally slave !! √");
+                aeCreateFileEvent(el, fd, AE_READABLE, readQueryFromClient, c);
             }
             break;
         default:

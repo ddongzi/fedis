@@ -51,6 +51,11 @@ struct sharedObjects {
 #define CMD_SENTINEL 0x10
 #define CMD_SLAVE 0x100
 #define CMD_ALL (CMD_MASTER | CMD_SLAVE | CMD_SENTINEL)
+#define CMD_WRITE 0x010000 // 写命令， 修改服务器或者数据状态.  用于命令传播
+#define CMD_RED 0x100000 // 读命令
+#define CMD_NONE 0x000000 // 还不知道 ，默认不传播
+
+
 typedef struct redisCommand redisCommand;
 typedef void redisCommandProc(redisClient* client);
 struct redisCommand {

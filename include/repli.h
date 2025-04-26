@@ -9,7 +9,7 @@ enum REPL_STATE {
     REPL_STATE_SLAVE_SEND_REPLCONF,   // 发送port号
     REPL_STATE_SLAVE_SEND_SYNC,    // 发送SYNC请求
     REPL_STATE_SLAVE_TRANSFER,      // 接收RDB文件
-    REPL_STATE_SLAVE_CONNECTED,      // 正常复制中
+    REPL_STATE_SLAVE_CONNECTED,      // 等待REPL ACK返回
     // 主服务器维护主向从的状态。
     REPL_STATE_MASTER_NONE,     //
     REPL_STATE_MASTER_WAIT_PING,    // 正在等待PING
