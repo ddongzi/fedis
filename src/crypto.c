@@ -62,6 +62,7 @@ int verify_sha256(const char* data, size_t len, unsigned char expected_hash[])
     unsigned char computed_hash[SHA256_DIGEST_LENGTH];
     compute_sha256(data, len, computed_hash);
     if (memcmp(computed_hash, expected_hash, SHA256_DIGEST_LENGTH) == 0) {
+        log_debug("Verify success!");
         return 1;
     } else {
         log_error("Verify failed ! Expected : ");
