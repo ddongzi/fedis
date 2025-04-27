@@ -124,7 +124,8 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
     rio sio;
     rioInitWithSocket(&sio, fd);
     char buf[NET_BUF_MAX_SIZE];
-    size_t nread = rioRead(&sio, buf, NET_BUF_MAX_SIZE);
+    ssize_t nread = rioRead(&sio, buf, NET_BUF_MAX_SIZE);
+    
     assert(nread > 0);
     sdscatlen(c->readBuf, buf, nread);
     
