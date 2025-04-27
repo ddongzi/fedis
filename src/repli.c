@@ -23,7 +23,6 @@
 void sendPingToMaster()
 {
     addWrite(server->master, shared.ping);
-    
 }
 
 void sendSyncToMaster()
@@ -33,13 +32,18 @@ void sendSyncToMaster()
     //  SYNC
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
-
+}
+void sendReplHeartBeatToMaster()
+{
+    char* argv[] = {"HEARTBEAT"};
+    char* buf = resp_encode(1, argv);
+    addWrite(server->master, robjCreateStringObject(buf));
+    free(buf);
 }
 void sendReplAckToMaster()
 {
     char* argv[] = {"REPLACK"};
     char* buf = resp_encode(1, argv);
-    //  REPLCONF ACK <从dbid>
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
 }
@@ -94,6 +98,7 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     default:
         break;
     }
+    // 其他的状态，如心跳
 
     char* msg = c->writeBuf->buf;
     if (sdslen(c->writeBuf) == 0) {
@@ -191,7 +196,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
         case REPL_STATE_SLAVE_CONNECTED:
             if (strstr(c->readBuf->buf, "+OK") != NULL) {
                 log_debug("==>> 5. [REPL_STATE_SLAVE_CONNECTED] receive ok.  Normally slave !! √");
-                aeCreateFileEvent(el, fd, AE_READABLE, readQueryFromClient, c);
+                aeCreateFileEvent(el, fd, AE_READABLE, readFromClient, c);
             }
             sdsclear(c->readBuf);
             break;
@@ -201,8 +206,6 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
     c->lastinteraction = server->unixtime;
 
 }
-
-
 
 /**
  * @brief 从服务器定时. 心跳检测
@@ -216,6 +219,12 @@ int replicationCron(aeEventLoop* eventLoop, long long id, void* clientData)
     if (server->master) {
         log_debug("TIME [%ld] %ld", server->repltimeout, server->unixtime - server->master->lastinteraction);
     }
+    if (server->replState == REPL_STATE_SLAVE_CONNECTED) {
+        log_debug("Heartbeat..");
+        sendPingToMaster();
+        aeCreateFileEvent(eventLoop, server->master->fd, AE_READABLE, readFromClient, server->master);
+        aeCreateFileEvent(eventLoop, server->master->fd, AE_WRITABLE, sendToClient, server->master);
+    }
     if (server->master && 
         (server->unixtime - server->master->lastinteraction) > server->repltimeout
     ) {
@@ -223,5 +232,5 @@ int replicationCron(aeEventLoop* eventLoop, long long id, void* clientData)
         log_warn("Master timeout, disconnecting...");
         reconnectMaster();
     }
-    return 2000;
+    return 10000;
 }

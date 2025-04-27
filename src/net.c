@@ -277,7 +277,7 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
 
     log_debug("Accepted connection from [%d]%s:%d。 Current all connections %d", cfd, ip, port, listLength(server->clients));
     // 注册读事件
-    aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
+    aeCreateFileEvent(el, cfd, AE_READABLE, readFromClient, client);
 }
 
 
@@ -499,119 +499,6 @@ void checkSockErr(int sockfd)
     }
 }
 
-/**
- * @brief 判断recv返回值，是否重连
- * 
- * @param [in] c 
- * @param [in] nread 
- */
-void reconnectIfNeed(redisClient*c, int nread)
-{
-}
-
-/**
- * @brief resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格
- * 
- * @param [in] resp 
- * @return char* 
- */
-char* respParse(const char* resp) {
-    if (!resp) return NULL;
-    
-    char type = resp[0];
-    const char* data = resp + 1;
-    char* result = NULL;
-    
-    switch (type) {
-        case '+':  // Simple Strings
-        case '-':  // Errors
-            result = strdup(data);
-            result[strcspn(result, "\r\n")] = 0; // 去掉结尾的 \r\n
-            break;
-        case ':':  // Integers
-        //  linux
-            asprintf(&result, "%ld", strtol(data, NULL, 10));
-            break;
-        case '$': { // Bulk Strings
-            int len = strtol(data, NULL, 10);
-            if (len == -1) {
-                result = strdup("(nil)");
-            } else {
-                const char* str = strchr(data, '\n');
-                if (str) {
-                    result = strndup(str + 1, len);
-                }
-            }
-            break;
-        }
-        case '*': { // Arrays
-            int count = strtol(data, NULL, 10);
-            if (count == -1) {
-                result = strdup("(empty array)");
-            } else {
-                result = malloc(1024);  // 假设最大长度不会超
-                result[0] = '\0';
-                const char* ptr = strchr(data, '\n') + 1;
-                for (int i = 0; i < count; i++) {
-                    char* elem = respParse(ptr);
-                    strcat(result, elem);
-                    strcat(result, " ");
-                    free(elem);
-                    
-                    // 移动 ptr 指向下一个 RESP 片段
-                    if (*ptr == '+' || *ptr == '-' || *ptr == ':') {
-                        ptr = strchr(ptr, '\n') + 1;
-                    } else if (*ptr == '$') {
-                        int blen = strtol(ptr + 1, NULL, 10);
-                        if (blen != -1) {
-                            ptr = strchr(ptr, '\n') + 1 + blen + 2;
-                        } else {
-                            ptr = strchr(ptr, '\n') + 1;
-                        }
-                    }
-                }
-            }
-            break;
-        }
-        default:
-            result = strdup("(unknown)");
-            break;
-    }
-    return result;
-}
-
-
-/**
- * @brief 构造resp格式
- * 
- * @param [in] argc 
- * @param [in] argv 
- * @return char* 
- */
-char* respFormat(int argc, char** argv)
-{
-    // 计算 RESP 总长度
-    size_t total_len = 0;
-    for (int i = 0; i < argc; i++) {
-        total_len += snprintf(NULL, 0, "$%zu\r\n%s\r\n", strlen(argv[i]), argv[i]);
-    }
-    total_len += snprintf(NULL, 0, "*%d\r\n", argc);
-
-    // 分配 RESP 命令的字符串
-    char *resp_cmd = (char *)malloc(total_len + 1);
-    if (!resp_cmd) {
-        return NULL;
-    }
-
-    // 构造 RESP 字符串
-    char *ptr = resp_cmd;
-    ptr += sprintf(ptr, "*%d\r\n", argc);
-    for (int i = 0; i < argc; i++) {
-        ptr += sprintf(ptr, "$%zu\r\n%s\r\n", strlen(argv[i]), argv[i]);
-    }
-
-    return resp_cmd;
-}
 
 /**
  * @brief 编码：argv[] -> RESP 批量数组字符串
@@ -652,7 +539,6 @@ char* resp_encode(int argc, char* argv[])
  */
 int resp_decode(const char *resp, int *argc_out, char** argv_out[]) {
     if (*resp != '*') {
-        log_error("RESP head isn't *. , got %c", *resp);
         return -1;
     }
     int argc;

@@ -50,7 +50,7 @@ void commandSetProc(redisClient* client)
     } else {
         addWrite(client, shared.err);
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 
 }
 void commandGetProc(redisClient* client)
@@ -61,7 +61,7 @@ void commandGetProc(redisClient* client)
     } else {
         addWrite(client, res);
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandDelProc(redisClient* client)
 {
@@ -73,7 +73,7 @@ void commandDelProc(redisClient* client)
     } else {
         addWrite(client, shared.keyNotFound);
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandObjectProc(redisClient* client)
 {
@@ -91,7 +91,7 @@ void commandObjectProc(redisClient* client)
             addWrite(client, robjCreateStringObject(buf));
         }
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 
 }
 
@@ -99,7 +99,7 @@ void commandByeProc(redisClient* client)
 {
     client->toclose = 1;
     addWrite(client, shared.bye);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 void masterToSlave(const char* ip, int port)
@@ -124,7 +124,7 @@ void commandSlaveofProc(redisClient* client)
 
     addWrite(client, shared.ok);
     connectMaster();
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 
@@ -133,28 +133,28 @@ void commandPingProc(redisClient* client)
     // todo replstate要小心设置。
     client->replState = REPL_STATE_MASTER_WAIT_PING;
     addWrite(client, shared.pong);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 void commandSyncProc(redisClient* client)
 {
     client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
     addWrite(client, shared.sync);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 void commandReplconfProc(redisClient* client)
 {
     //  暂不处理，不影响
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandReplACKProc(redisClient* client)
 {
     //  ���不处理，不影响
     client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 char* getRoleStr(int role)
@@ -242,10 +242,15 @@ void commandInfoProc(redisClient* client)
     char* res = resp_encode(argc, argv);
     log_debug("INFO PROC: res : %s", res);
     addWrite(client, robjCreateStringObject(res));
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
-// 全局命令表，包含sentinel等所有命令
+void commandHeartBeatProc(redisClient* client)
+{
+    addWrite(client, shared.ok);
+    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
+}
 
+// 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
     {CMD_WRITE | CMD_MASTER,                "SET", commandSetProc, -3},
     {CMD_RED | CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
@@ -258,6 +263,8 @@ redisCommand commandsTable[] = {
     {CMD_RED |CMD_SLAVE | CMD_MASTER,    "SYNC", commandSyncProc, 1},
     {CMD_RED |CMD_SLAVE | CMD_MASTER,    "REPLACK", commandReplACKProc, 1},
     {CMD_RED |CMD_ALL,                   "INFO", commandInfoProc, 1},
+    {CMD_ALL,                           "HEARTBEAT", commandHeartBeatProc, 1}
+
 };
 
 
@@ -472,7 +479,7 @@ int sentinelInfoCron( aeEventLoop* eventLoop, long long id, void* clientData)
             addWrite(node->value, shared.info);
             // 对于主动消息，我们通过自己创建读事件处理器来
             aeCreateFileEvent(server->eventLoop, client->fd, AE_READABLE, sentinelReadInfo, client);
-            aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
+            aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
             node = node->next;
         }
     }
@@ -723,8 +730,8 @@ void commandPropagate(sds* s)
             // 对端是slave
             log_debug("Propagate to %d slave, [%d]-%s:%d", slaves, c->fd, c->ip, c->port);
             sdscat(c->writeBuf, s->buf);
-            aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readRespFromClient, c);
-            aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendReplyToClient, c);
+            aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readFromClient, c);
+            aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
         }
         node = node->next;
     }
@@ -746,7 +753,7 @@ void processCommand(redisClient * c)
     if (cmd == NULL) {
         log_debug("Will ret invalid!");
         addWrite(c, shared.invalidCommand);
-        aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendReplyToClient, c);
+        aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     } else {
         cmd->proc(c);
     }
@@ -765,30 +772,38 @@ void processCommand(redisClient * c)
 /**
  * @brief 解析协议到 argc, argv[]
     *1\r\n$4\r\nping\r\n
-    $3\r\nSET\r\n
-    $2\r\nk1\r\n
-    $2\r\nv1\r\n
+    +OK
+
  * @param [in] client 
  */
 void processClientQueryBuf(redisClient* client)
 {
     if (client->readBuf == NULL )  return;
-    // TODO 后续命令传播需要，命令处理完再清除
     sds* s = (sds*)(client->readBuf);
     sds* scpy = sdsdump(s);
     int argc;
     char** argv;
     int ret = resp_decode(scpy->buf, &argc, &argv);
-    assert(ret == 0);
-    for(int i = 0; i < argc; i++) {
-        robj* obj = robjCreateStringObject(argv[i]);
-        client->argv = realloc(client->argv, sizeof(robj*) * (client->argc + 1));
-        client->argv[client->argc] = obj;
-        client->argc++;
+    if (ret == 0) {
+        // 按照命令执行
+        for(int i = 0; i < argc; i++) {
+            robj* obj = robjCreateStringObject(argv[i]);
+            client->argv = realloc(client->argv, sizeof(robj*) * (client->argc + 1));
+            client->argv[client->argc] = obj;
+            client->argc++;
+        }
+        processCommand(client);
+        sdsfree(scpy);
+    }else if (*scpy->buf == '+' || *scpy->buf == '-') {
+        // 按照响应执行
+        log_info("Get RESP from client %s", scpy->buf);    
+        sdsclear(client->readBuf);
+    } else {
+        // 其余不处理
+        sdsfree(scpy);
     }
-    // 不一定是query 因为client是对端，可能是响应。
-    processCommand(client);
-    sdsfree(scpy);
+
+
 }
 /**
  * @brief 读取+OK, -ERR 格式
@@ -809,6 +824,8 @@ void readRespFromClient(aeEventLoop *el, int fd, void *privData)
         log_info("Get RESP from client %s", buf);    
         client->lastinteraction = server->unixtime;
     }
+    // 恢复默认的读事件处理
+    aeCreateFileEvent(el, fd, AE_READABLE, readFromClient, client);
 }
 /**
  * @brief 读取命令，*2\r\n$3\r\nget\r\n$3\r\nfoo\r\n
@@ -817,14 +834,13 @@ void readRespFromClient(aeEventLoop *el, int fd, void *privData)
  * @param [in] fd 
  * @param [in] privData 
  */
-void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
+void readFromClient(aeEventLoop *el, int fd, void *privData)
 {
     redisClient *client = (redisClient *)privData;
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
     ssize_t nread = rioRead(&r, buf, sizeof(buf));
-    // TODO
     int checked = checkSockRead(client, nread);
     if (checked) {
         sdscat(client->readBuf, buf);
@@ -896,7 +912,7 @@ void saveRDBToSlave(redisClient *client)
     log_debug("RDB sent to slave %d， size:%lld", client->fd, rdb_len);
 }
 
-void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
+void sendToClient(aeEventLoop *el, int fd, void *privdata)
 {
     redisClient *client = (redisClient *)privdata;
     char *msg = client->writeBuf->buf;

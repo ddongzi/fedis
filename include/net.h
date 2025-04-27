@@ -25,9 +25,9 @@ int anetTcpServer(int port, char *bindaddr, int backlog);
 // 封装accept，接受TCP连接。服务器初始化时候，会将该处理程序与AE_READABLE关联。创建client实例，注册事件。
 void acceptTcpHandler(aeEventLoop *el, int fd, void* privData);
 // 封装read。
-void readQueryFromClient(aeEventLoop *el, int fd, void* privData);
+void readFromClient(aeEventLoop *el, int fd, void* privData);
 // 封装write
-void sendReplyToClient(aeEventLoop *el, int fd, void *privdata);
+void sendToClient(aeEventLoop *el, int fd, void *privdata);
 
 int anetTcpConnect( const char* host, int port);
 void connectMaster();
