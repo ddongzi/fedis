@@ -156,6 +156,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
         case REPL_STATE_SLAVE_SEND_SYNC:
             // 读取+FULLSYNC
             // +FULLSYNC\r\n$<length>\r\n<RDB binary data> 
+
             char* token = strtok(c->readBuf->buf, "\r\n");
             if (strcmp(token, "+FULLSYNC") == 0) {
                 sdsrange(c->readBuf, strlen(token) + 2, sdslen(c->readBuf)-1);
@@ -171,19 +172,20 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             int lenLength = 0;
             // 特殊用法， %n不消耗，记录消耗的字符数
             if (sscanf(c->readBuf->buf, "$%d\r\n%n", &len, &lenLength)!= 1) {
-                log_error("sscanf failed");
-                exit(1);
+                log_error("==>> 4.[REPL_STATE_SLAVE_TRANSFER] sscanf failed. Will repl again.  =>[REPL_STATE_SLAVE_CONNECTING]");
+                // 返回初始状态。重新repl
+                server->replState = REPL_STATE_SLAVE_CONNECTING;
+            } else {
+                sdsrange(c->readBuf, lenLength, sdslen(c->readBuf) - 1);
+                log_debug("start transfer ..., len %u", len);
+                receiveRDBfile(c->readBuf->buf, len);
+                log_debug("transfer finished.");
+                rdbLoad();
+                log_debug("rdbload finished.");
+                server->replState = REPL_STATE_SLAVE_CONNECTED;
+                log_debug("==>> 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
+                aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c);
             }
-            sdsrange(c->readBuf, lenLength, sdslen(c->readBuf) - 1);
-
-            log_debug("start transfer ..., len %u", len);
-            receiveRDBfile(c->readBuf->buf, len);
-            log_debug("transfer finished.");
-            rdbLoad();
-            log_debug("rdbload finished.");
-            server->replState = REPL_STATE_SLAVE_CONNECTED;
-            log_debug("==>> 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
-            aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c);
             sdsclear(c->readBuf);
             break;
         case REPL_STATE_SLAVE_CONNECTED:
@@ -219,8 +221,7 @@ int replicationCron(aeEventLoop* eventLoop, long long id, void* clientData)
     ) {
         // 心跳断开，重新连接
         log_warn("Master timeout, disconnecting...");
-        clientToclose(server->master);
-        connectMaster();
+        reconnectMaster();
     }
     return 2000;
 }

@@ -1,7 +1,7 @@
 #ifndef REPLI_H
 #define REPLI_H
 
-#define REPL_TIMEOUT 60 // 与主超时阈值：60s
+#define REPL_TIMEOUT 20 // 与主超时阈值：30s
 // 主从复制状态
 enum REPL_STATE {
     // 从服务器server.replState 字段

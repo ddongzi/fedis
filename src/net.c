@@ -436,6 +436,16 @@ ssize_t getRespLength(const char *buf, size_t len)
 }
 
 /**
+ * @brief 中断当前master连接，重新连接
+ * 
+ */
+void reconnectMaster()
+{
+    freeClient(server->master);    
+    connectMaster();
+}
+
+/**
  * @brief 连接主，切换到CONNECTING
  *
  */

@@ -415,12 +415,12 @@ int checkSockRead(redisClient* c, int nread)
 {
     if (nread == 0) {
         // 对端正常关闭，释放client. fd不能延迟， 因为fd一直可读epoll一直返回。
-        log_debug("Close by peer.");
+        log_debug("Close by peer. [%d]", c->fd);
         clientToclose(c);
         return 0;
     } else if (nread < 0) {
         // 错误处理
-        log_error("Error check sock read, %s",strerror(errno));
+        log_error("Error check sock read, [%d] %s", c->fd, strerror(errno));
         clientToclose(c);
         return -1;
     } else {

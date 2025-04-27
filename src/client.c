@@ -53,19 +53,19 @@ void addWrite(redisClient* client, robj* obj)
  */
 void clientToclose(redisClient* c)
 {
-    log_debug("Client to close . Now have %d clients", listLength(server->clients));
     listNode* node;
     node = listSearchKey(server->clientsToClose, c);
     if (node) {
         // 已经在close链表了
+        node = listSearchKey(server->clients, c);
         return;
     }
-    // 立即关闭epoll fd, 
+    // 第一次添加
+    aeDeleteFileEvent(server->eventLoop, c->fd, AE_WRITABLE);
+    aeDeleteFileEvent(server->eventLoop, c->fd, AE_READABLE);
+
     node = listSearchKey(server->clients, c);    
     assert(c);
-    if (!node) {
-        log_debug("clientsto close, %d", listLength(server->clients));
-    }
     assert(node);
 
     // 加到clientstoclose
@@ -74,7 +74,7 @@ void clientToclose(redisClient* c)
 
 }
 /**
- * @brief 释放client, 不能直接调用，
+ * @brief 释放client, 不能直接调用，   除非需要立马清除如重连。
  * 
  * @param [in] client 
  */

@@ -40,6 +40,7 @@ int resp_decode(const char *resp, int *argc_out, char** argv_out[]);
 
 void checkSockErr(int sockfd);
 int checkSockRead(redisClient* c, int nread);
+void reconnectMaster();
 
 #endif
 
