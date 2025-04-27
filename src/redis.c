@@ -97,8 +97,7 @@ void commandObjectProc(redisClient* client)
 
 void commandByeProc(redisClient* client)
 {
-
-    listAddNodeTail(server->clientsToClose, listCreateNode(client));
+    client->toclose = 1;
     addWrite(client, shared.bye);
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendReplyToClient, client);
 }
@@ -381,26 +380,14 @@ void updateServerTime()
     server->unixtime = time(NULL);
     server->mstime = mstime();
 }
-void freeClient(redisClient* client)
-{
-    log_debug("free client %d\n", client->fd);
-    close(client->fd);
-    // TODO 如果 query reply buf还有怎么办？
-    sdsfree(client->readBuf);
-    sdsfree(client->writeBuf);
-    // 正常情况，每次执行完命令argv就destroy了，临时
-    if (client->argv) {
-        for(int i = 0; i < client->argc; i++) {
-            robjDestroy(client->argv[i]);
-        }
-    }
-    free(client);
-}
+
 void closeClients()
 {
+    log_debug("Will close %d clients. Now have %d clients", listLength(server->clientsToClose), listLength(server->clients));
     listNode* node = listHead(server->clientsToClose);
     while (node) {
         redisClient* client = node->value;
+        log_debug("Close client [%d]%s:%d", client->fd, client->ip, client->port);
         listDelNode(server->clientsToClose, node);
         freeClient(client);
         node = listHead(server->clientsToClose);
@@ -416,6 +403,32 @@ void prepareShutdown()
     // 4. 自动释放部分文件、网络资源
     exit(0);
 }
+
+
+/**
+ * @brief 对socket recv后进行处理： 正常，
+ * 
+ * @param [in] c 
+ * @param [in] nread 
+ */
+int checkSockRead(redisClient* c, int nread)
+{
+    if (nread == 0) {
+        // 对端正常关闭，释放client. fd不能延迟， 因为fd一直可读epoll一直返回。
+        log_debug("Close by peer.");
+        clientToclose(c);
+        return 0;
+    } else if (nread < 0) {
+        // 错误处理
+        log_error("Error check sock read, %s",strerror(errno));
+        clientToclose(c);
+        return -1;
+    } else {
+        // 正常有数据
+        return 1;
+
+    }
+}
 /**
  * @brief INfo命令回复
  * 
@@ -429,15 +442,13 @@ void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
-    size_t nread = rioRead(&r, buf, sizeof(buf));
-    if (nread == 0)
-    {
-        if (r.error)
-            close(fd);
-        return;
+    ssize_t nread = rioRead(&r, buf, sizeof(buf));
+    int checked = checkSockRead(client, nread);
+    if (checked) {
+        sdscat(client->readBuf, buf);
+        log_debug("Sentinel read info : %s", buf);
+        client->lastinteraction = server->unixtime;
     }
-    sdscat(client->readBuf, buf);
-    log_debug("Sentinel read info : %s", buf);
 }
 
 /**
@@ -447,7 +458,7 @@ void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
  * @param [in] id 
  * @param [in] clientData 
  */
-int sentinelInfoCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
+int sentinelInfoCron( aeEventLoop* eventLoop, long long id, void* clientData)
 {
     log_info("sentinel info cron.");
     if (server->role == REDIS_CLUSTER_SENTINEL) {
@@ -488,6 +499,7 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     // 更新server时间
     updateServerTime();
 
+    // TODO 作为服务器角色，应该立马关闭对应fd, 防止epoll一直无意义的转
     // 关闭clients
     closeClients();
 
@@ -791,14 +803,12 @@ void readRespFromClient(aeEventLoop *el, int fd, void *privData)
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
-    size_t nread = rioRead(&r, buf, sizeof(buf));
-    if (nread == 0)
-    {
-        if (r.error)
-            close(fd);
-        return;
+    ssize_t nread = rioRead(&r, buf, sizeof(buf));
+    int checked = checkSockRead(client, nread);
+    if (checked) {
+        log_info("Get RESP from client %s", buf);    
+        client->lastinteraction = server->unixtime;
     }
-    log_info("Get RESP from client %s", buf);    
 }
 /**
  * @brief 读取命令，*2\r\n$3\r\nget\r\n$3\r\nfoo\r\n
@@ -813,18 +823,16 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privData)
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
-    size_t nread = rioRead(&r, buf, sizeof(buf));
-    if (nread == 0)
-    {
-        if (r.error)
-            close(fd);
-        return;
+    ssize_t nread = rioRead(&r, buf, sizeof(buf));
+    // TODO
+    int checked = checkSockRead(client, nread);
+    if (checked) {
+        sdscat(client->readBuf, buf);
+        log_debug(" processing query from client, %s, Client buf: %s", buf, client->readBuf->buf);
+        processClientQueryBuf(client);
+        log_debug(" processed query from client");
+        client->lastinteraction = server->unixtime;
     }
-    sdscat(client->readBuf, buf);
-
-    log_debug(" processing query from client, %s, Client buf: %s", buf, client->readBuf->buf);
-    processClientQueryBuf(client);
-    log_debug(" processed query from client");
 }
 
 /**
@@ -926,5 +934,11 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata)
         saveRDBToSlave(client); // 发送 RDB
     }
     aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
+    client->lastinteraction = server->unixtime;
+    if (client->toclose) {
+        // 发送完再关闭
+        clientToclose(client);
+        aeDeleteFileEvent(el, fd, AE_READABLE); // epoll 删除fd 防止后续epoll一直对他读就绪
+    }
 }
 

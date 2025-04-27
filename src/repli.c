@@ -18,7 +18,7 @@
 #include "rdb.h"
 #include "net.h"
 #include "util.h"
-
+#include "client.h"
 
 void sendPingToMaster()
 {
@@ -69,6 +69,7 @@ void sendReplconfToMaster()
  */
 void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
 {
+    redisClient* c = privData; // 就是server.master
     switch (server->replState)
     {
     case REPL_STATE_SLAVE_CONNECTING:
@@ -94,8 +95,8 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
         break;
     }
 
-    char* msg = server->master->writeBuf->buf;
-    if (sdslen(server->master->writeBuf) == 0) {
+    char* msg = c->writeBuf->buf;
+    if (sdslen(c->writeBuf) == 0) {
         // 如果没有数据，不可写
         log_debug("NO buffer available\n");
         aeDeleteFileEvent(el, fd, AE_WRITABLE);
@@ -110,9 +111,11 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
         close(fd);
         return;
     }   
-    sdsclear(server->master->writeBuf);
+    sdsclear(c->writeBuf);
 
     aeDeleteFileEvent(el, fd, AE_WRITABLE);
+    c->lastinteraction = server->unixtime;
+
 }
 
 
@@ -193,17 +196,31 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
         default:
             break;
     }
+    c->lastinteraction = server->unixtime;
 
 }
 
 
 
 /**
- * @brief 从服务器定时
+ * @brief 从服务器定时. 心跳检测
  * 
  * @return int 
  */
-int replicationCron()
+int replicationCron(aeEventLoop* eventLoop, long long id, void* clientData)
 {
-    // TODO:
+    log_debug("Repli Cron.");
+    assert(server->role == REDIS_CLUSTER_SLAVE);
+    if (server->master) {
+        log_debug("TIME [%ld] %ld", server->repltimeout, server->unixtime - server->master->lastinteraction);
+    }
+    if (server->master && 
+        (server->unixtime - server->master->lastinteraction) > server->repltimeout
+    ) {
+        // 心跳断开，重新连接
+        log_warn("Master timeout, disconnecting...");
+        clientToclose(server->master);
+        connectMaster();
+    }
+    return 2000;
 }

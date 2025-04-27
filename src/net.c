@@ -275,10 +275,7 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
     redisClient *client = redisClientCreate(cfd, ip, port);
     listAddNodeTail(server->clients, listCreateNode(client));
 
-    log_debug("Accepted connection from [%d]%s:%d", cfd, ip, port);
-
-
-    
+    log_debug("Accepted connection from [%d]%s:%d。 Current all connections %d", cfd, ip, port, listLength(server->clients));
     // 注册读事件
     aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
 }
@@ -438,9 +435,8 @@ ssize_t getRespLength(const char *buf, size_t len)
     }
 }
 
-
 /**
- * @brief 收到SLAVEOF命令，开始连接master，切换到CONNECTING
+ * @brief 连接主，切换到CONNECTING
  *
  */
 void connectMaster()
@@ -454,19 +450,25 @@ void connectMaster()
     // 非阻塞
     anetNonBlock(fd);
     anetEnableTcpNoDelay(fd);
-
     int err = 0;
-
     server->master = redisClientCreate(fd, server->masterhost, server->masterport);
     server->master->flags = REDIS_CLIENT_MASTER;
     server->replState = REPL_STATE_SLAVE_CONNECTING;
-    log_debug("Connecting Master fd %d", fd);
+    server->repltimeout = REPL_TIMEOUT;
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master);
     aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, server->master);
+
+    log_debug("Connecting Master fd %d", fd);
+
+    server->master->lastinteraction =server->unixtime;
+    // 开启心跳检测
+    aeCreateTimeEvent(server->eventLoop, 1000, replicationCron, NULL);
 }
+
+
 /**
- * @brief 打印sockfd上的错误
+ * @brief 打印sock上的err
  * 
  * @param [in] sockfd 
  */

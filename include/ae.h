@@ -60,7 +60,7 @@ typedef struct aeTimeEvent {
 
 // 事件循环
 typedef struct aeEventLoop {
-    int maxfd;  // 目前最大注册fd
+    int maxfd;  // 目前最大注册fd。 对于epoll不需要。
     int maxsize;    // 支持的最大fd-1。即events数组大小。
     aeFileEvent* events;    // 已注册事件数组。events[0]对应fd为0.
     aeFireEvent* fireEvents;    // 触发的事件队列。

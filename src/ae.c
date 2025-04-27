@@ -383,7 +383,8 @@ int aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask)
     aeApiState* apiState = eventLoop->apiState;
     struct epoll_event ee;
     if (mask == AE_NONE) {
-        // 描述符上都不监听，删除
+        // TODO 描述符上都不监听，删除. 没起作用
+        log_debug("Del epoll fd [%d]", fd);
         epoll_ctl(apiState->epfd, EPOLL_CTL_DEL, fd, NULL);
         return AE_OK;
     }
@@ -429,6 +430,8 @@ int aeDeleteFileEvent(aeEventLoop* loop, int fd, int mask)
         }
         loop->maxfd = j;
     }
+    // 从events里面删除
+    
     // 更新apisate
     return aeApiDelEvent(loop, fd, fe->mask);
 }

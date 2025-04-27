@@ -23,6 +23,8 @@ typedef struct redisClient {
     int flags;  ///< 表示对端角色 REDIS_CLIENT_
     char* ip;
     int port;
+    time_t lastinteraction; // 最后一次交流时间
+    int toclose; // 将要关闭
 
     // 读写缓冲
     sds* readBuf;
@@ -44,6 +46,8 @@ typedef struct redisClient {
     
 } redisClient;
 redisClient *redisClientCreate(int fd, char* ip, int port);
+void freeClient(redisClient* client);
+void clientToclose(redisClient* c);
 
 void addWrite(redisClient* client, robj* obj) ;
 void readToReadBuf(redisClient* client) ;

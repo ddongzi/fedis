@@ -143,6 +143,12 @@ listNode *listIndex(list *list, int index)
     }
     return node;
 }
+/**
+ * @brief 如果没有设置free, 不会释放node.value
+ * 
+ * @param [in] list 
+ * @param [in] node 
+ */
 void listDelNode(list *list, listNode *node)
 {
     if (node->prev)

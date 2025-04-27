@@ -20,6 +20,7 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     strcpy(c->ip, ip);
     c->port = port;
     c->name = calloc(1, CLIENT_NAME_MAX);
+    c->toclose = 0;
     log_debug("create client %s:%d, fd %d", c->ip, c->port, c->fd);
     return c;
 
@@ -45,7 +46,57 @@ void addWrite(redisClient* client, robj* obj)
 
     sdscat(client->writeBuf, buf);
 }
+/**
+ * @brief 加入close链表
+ * 
+ * @param [in] c 
+ */
+void clientToclose(redisClient* c)
+{
+    log_debug("Client to close . Now have %d clients", listLength(server->clients));
+    listNode* node;
+    node = listSearchKey(server->clientsToClose, c);
+    if (node) {
+        // 已经在close链表了
+        return;
+    }
+    // 立即关闭epoll fd, 
+    node = listSearchKey(server->clients, c);    
+    assert(c);
+    if (!node) {
+        log_debug("clientsto close, %d", listLength(server->clients));
+    }
+    assert(node);
 
+    // 加到clientstoclose
+    listAddNodeTail(server->clientsToClose, listCreateNode(node->value));
+    listDelNode(server->clients, node);
+
+}
+/**
+ * @brief 释放client, 不能直接调用，
+ * 
+ * @param [in] client 
+ */
+void freeClient(redisClient* client)
+{
+    log_debug("free client %d\n", client->fd);
+    // 确保epoll fd释放
+    aeDeleteFileEvent(server->eventLoop, client->fd, AE_READABLE);
+    aeDeleteFileEvent(server->eventLoop, client->fd, AE_WRITABLE);
+    close(client->fd);
+
+    sdsfree(client->readBuf);
+    sdsfree(client->writeBuf);
+    // 正常情况，每次执行完命令argv就destroy了，临时
+    if (client->argv) {
+        for(int i = 0; i < client->argc; i++) {
+            robjDestroy(client->argv[i]);
+        }
+    }
+    free(client);
+    client = NULL;
+}
 
 /**
  * @brief read接口， 读取到client->readbuf, 两种情况：纯RESP, RESP+数据流。 只读取RESP部分。

@@ -83,7 +83,7 @@ struct redisServer {
     char *configfile; // 
 
     // 运行时状态
-    time_t unixtime;    // 当前时间, 秒进度
+    time_t unixtime;    // 统一的粗粒度时间, 秒进度
     long long mstime;   // 当前时间，毫秒
     int shutdownAsap;   // 是否立即关闭
 
@@ -102,11 +102,12 @@ struct redisServer {
 
     int role; // 角色 REDIS_CLUSTER_
 
-    // 主从复制 (Slave)
+    // Slave特性
     redisClient* master; // （从字段）主客户端
     char* masterhost; // （从字段）主host
     int masterport; // （从字段）主port
     int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
+    time_t repltimeout; // 心跳检测阈值
 
     // 模块化
 
@@ -134,5 +135,6 @@ void initServerConfig();
 void readRespFromClient(aeEventLoop *el, int fd, void *privData);
 
 void readQueryFromClient(aeEventLoop *el, int fd, void *privData);
+void connectMaster();
 
 #endif
