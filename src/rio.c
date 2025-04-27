@@ -181,20 +181,15 @@ size_t rioWrite(rio *r, const void *buf, size_t len)
  * @param [in] r 
  * @param [in] buf 
  * @param [in] len 
- * @return size_t 读到的字节数。 通过error检查是否出错还是真的0
+ * @return 
  */
-size_t rioRead(rio *r, void *buf, size_t len)
+ssize_t rioRead(rio *r, void *buf, size_t len)
 {
     if (r == NULL || buf == NULL) {
         log_error(" rioread NULL pointer");
         return 0;
     }
-    ssize_t nread = r->read(r, buf, len);
-    if (nread == -1) {
-        log_error("rioread error");
-        return 0;
-    }
-    return (size_t)nread;
+    return r->read(r, buf, len);
 }
 /**
  * @brief 偏移量

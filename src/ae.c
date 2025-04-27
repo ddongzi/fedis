@@ -23,6 +23,7 @@
 #include "log.h"
 #include <poll.h>
 #include "redis.h"
+#include "net.h"
 /**
  * @brief 初始化apistate
  * 
@@ -224,7 +225,8 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
     }
     int op = eventLoop->events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
     if (epoll_ctl(eventLoop->apiState->epfd, op, fd, &ee) == -1) {
-        log_debug("epoll_ctl  fd:%d, err:%s\n", fd, strerror(errno));
+        log_debug("epoll_ctl [%d], err:%s\n", fd, strerror(errno));
+        checkSockErr(fd);
         return AE_ERROR;
     }
     log_debug("EPOLL CTL fd:%d, OP :%s, mask:%s\n", fd, op == EPOLL_CTL_ADD ? "add" : "mod" 

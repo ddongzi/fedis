@@ -36,7 +36,7 @@ typedef struct rio {
 // 向rio中写入 len长度的buf
 size_t rioWrite(rio *r, const void *buf, size_t len);
 // 从rio读出 最大len长度的buf
-size_t rioRead(rio *r, void *buf, size_t len);
+ssize_t rioRead(rio *r, void *buf, size_t len);
 off_t rioTell(rio *r);
 // flush 的含义并不是清空缓冲区，而是确保数据被提交到目标（磁盘、网络、文件描述符等）。
 void rioFlush(rio *r);

@@ -131,6 +131,7 @@ struct redisServer {
 
 void initServer();
 void initServerConfig();
+void readRespFromClient(aeEventLoop *el, int fd, void *privData);
 
 void readQueryFromClient(aeEventLoop *el, int fd, void *privData);
 

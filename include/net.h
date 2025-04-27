@@ -38,5 +38,7 @@ char * respFormat(int argc, char** argv);
 char* resp_encode(int argc, char* argv[]);
 int resp_decode(const char *resp, int *argc_out, char** argv_out[]);
 
+void checkSockErr(int sockfd);
+
 #endif
 

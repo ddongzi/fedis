@@ -233,7 +233,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 1, fp);
         snprintf(buf, 11, "%d", val);
-        log_debug("Load STRING(int) %d\n", val);
+        // log_debug("Load STRING(int) %d\n", val);
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT16) {
         /* code */
@@ -241,7 +241,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 2, fp);
         snprintf(buf, 11, "%d", val);
-        log_debug("Load STRING(int) %d\n", val);
+        // log_debug("Load STRING(int) %d\n", val);
 
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT32) {
@@ -250,7 +250,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 4, fp);
         snprintf(buf, 11, "%d", val);
-        log_debug("Load STRING(int) %d\n", val);
+        // log_debug("Load STRING(int) %d\n", val);
 
         return robjCreateStringObject(buf);
     }else {
@@ -260,7 +260,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char * buf = malloc(len + 1);
         fread(buf, 1, len, fp);
         buf[len] = '\0';
-        log_debug("Load STRING() %s\n", buf);
+        // log_debug("Load STRING() %s\n", buf);
 
         robj* obj = robjCreateStringObject(buf);
         free(buf);

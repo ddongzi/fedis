@@ -275,8 +275,10 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
     redisClient *client = redisClientCreate(cfd, ip, port);
     listAddNodeTail(server->clients, listCreateNode(client));
 
-    log_debug("Accepted connection from %s:%d,  fd %d\n", ip, port, cfd);
+    log_debug("Accepted connection from [%d]%s:%d", cfd, ip, port);
 
+
+    
     // 注册读事件
     aeCreateFileEvent(el, cfd, AE_READABLE, readQueryFromClient, client);
 }
@@ -463,7 +465,37 @@ void connectMaster()
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master);
     aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, server->master);
 }
+/**
+ * @brief 打印sockfd上的错误
+ * 
+ * @param [in] sockfd 
+ */
+void checkSockErr(int sockfd)
+{
+    int err;
+    socklen_t len = sizeof(err);
+    // 查看错误状态
+    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &err, &len) == 0) { 
+        // getsockopt 成功了，再看 err
+        if (err == 0) {
+            log_debug("Socket [%d] is OK, no error.\n", sockfd);
+        } else {
+            log_error("Socket [%d] error:  %s\n", sockfd, strerror(err));  // 打印错误信息
+        }
+    } else {
+        log_error("Socket getsockopt failed: [%d] %s", sockfd,strerror(errno));
+    }
+}
 
+/**
+ * @brief 判断recv返回值，是否重连
+ * 
+ * @param [in] c 
+ * @param [in] nread 
+ */
+void reconnectIfNeed(redisClient*c, int nread)
+{
+}
 
 /**
  * @brief resp格式内容转为字符串空格分割。 常用于打印RESP，RESP必须完整严格
