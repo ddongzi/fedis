@@ -80,7 +80,7 @@ void clientToclose(redisClient* c)
  */
 void freeClient(redisClient* client)
 {
-    log_debug("free client %d\n", client->fd);
+    log_debug("free client %d", client->fd);
     // 确保epoll fd释放
     aeDeleteFileEvent(server->eventLoop, client->fd, AE_READABLE);
     aeDeleteFileEvent(server->eventLoop, client->fd, AE_WRITABLE);

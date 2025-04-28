@@ -99,7 +99,7 @@ void dbPrint(redisDb* db)
     dictIterator* di = dictGetIterator(db->dict);
     dictEntry* entry;
     while ((entry = dictIterNext(di))!= NULL) {
-        log_debug("key: %s, val: %p\n", (char*)entry->key, entry->v.val);
+        log_debug("key: %s, val: %p", (char*)entry->key, entry->v.val);
     }
     dictReleaseIterator(di);
 }

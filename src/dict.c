@@ -127,7 +127,7 @@ static void _dictRehashStep(dict *dict)
     dict->ht[0].used--;
     dict->ht[1].used++;
 
-    log_debug("rehash : %s [%u]->[%u].  0used %d,   0size %d,     1used %d   1size %d\n", 
+    log_debug("rehash : %s [%u]->[%u].  0used %d,   0size %d,     1used %d   1size %d", 
         (char*)entry->key ,dict->rehashidx, idx,
         dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size  // 注意，dict->ht[0]和dict->ht[1]是交换的，所以需要反转一下
     );
@@ -140,8 +140,8 @@ static void _dictRehashStep(dict *dict)
         dict->ht[0] = dict->ht[1];
         _dictReset(&dict->ht[1]);
         dict->rehashidx = -1;
-        // log_debug("rehash 完成\n");
-        log_debug("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d\n",
+        // log_debug("rehash 完成");
+        log_debug("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d",
             dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size
         );
         return;
@@ -201,15 +201,15 @@ static int dictExpandIfNeed(dict *dict)
     // 就扩容
     if (dict->ht[0].used == dict->ht[0].size)
     {
-        // log_debug("开始扩容\n");
+        // log_debug("开始扩容");
         return dictExpand(dict, _nextpower(dict->ht[0].used * 2));
     }
 
     // 小于0.1缩容
-    // log_debug("Ratio : used %d, size %d\n", dict->ht[0].used, dict->ht[0].size);
+    // log_debug("Ratio : used %d, size %d", dict->ht[0].used, dict->ht[0].size);
     if ((double)dict->ht[0].used / (double)dict->ht[0].size < DICT_LOAD_RATIO)
     {
-        log_debug("开始缩容\n");
+        log_debug("开始缩容");
         // 如果缩容后小于最小size就不缩
         if (_nextpower(dict->ht[0].used) > DICT_INITIAL_SIZE)
         {

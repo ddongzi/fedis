@@ -57,7 +57,7 @@ static void printAddrinfo(struct addrinfo *servinfo)
             continue;
         }
         inet_ntop(p->ai_family, addr, ip, sizeof(ip));
-        log_debug("Address: %s, Port: %d\n", ip, port);
+        log_debug("Address: %s, Port: %d", ip, port);
     }
 }
 
@@ -196,7 +196,7 @@ int anetTcpServer(int port, char *bindaddr, int backlog)
         anetSetReuseAddr(sockfd);
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
         {
-            log_debug("TRY bind() failed%s\n", strerror(errno));
+            log_debug("TRY bind() failed%s", strerror(errno));
             close(sockfd);
             continue;
         }
@@ -213,7 +213,7 @@ int anetTcpServer(int port, char *bindaddr, int backlog)
         log_error("listen: %s", strerror(errno));
         return NET_ERR;
     }
-    log_debug("listening on port: %d addr: %s ,listen-fd: %d\n", port, bindaddr, sockfd);
+    log_debug("listening on port: %d addr: %s ,listen-fd: %d", port, bindaddr, sockfd);
     return sockfd;
 }
 
@@ -302,7 +302,7 @@ int anetTcpConnect(const char *host, int port)
     struct addrinfo hints, *servinfo, *p;
     int ret;
 
-    log_debug("anetconnect %s:%d\n", host, port);
+    log_debug("anetconnect %s:%d", host, port);
 
     snprintf(portStr, sizeof(portStr), "%d", port);
     memset(&hints, 0, sizeof(hints));
@@ -311,7 +311,7 @@ int anetTcpConnect(const char *host, int port)
 
     if ((ret = getaddrinfo(host, portStr, &hints, &servinfo)) != 0)
     {
-        fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(ret));
+        log_error(stderr, "getaddrinfo error: %s", gai_strerror(ret));
         return NET_ERR;
     }
     printAddrinfo(servinfo);
@@ -337,7 +337,7 @@ int anetTcpConnect(const char *host, int port)
 
     if (p == NULL)
     { // 遍历所有地址仍然连接失败
-        fprintf(stderr, "Failed to connect to %s:%d\n", host, port);
+        log_error(stderr, "Failed to connect to %s:%d", host, port);
         return NET_ERR;
     }
 
@@ -490,9 +490,9 @@ void checkSockErr(int sockfd)
     if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &err, &len) == 0) { 
         // getsockopt 成功了，再看 err
         if (err == 0) {
-            log_debug("Socket [%d] is OK, no error.\n", sockfd);
+            log_debug("Socket [%d] is OK, no error.", sockfd);
         } else {
-            log_error("Socket [%d] error:  %s\n", sockfd, strerror(err));  // 打印错误信息
+            log_error("Socket [%d] error:  %s", sockfd, strerror(err));  // 打印错误信息
         }
     } else {
         log_error("Socket getsockopt failed: [%d] %s", sockfd,strerror(errno));

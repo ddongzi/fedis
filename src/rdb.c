@@ -102,7 +102,7 @@ void _rdbSaveObject(FILE* fp, robj *obj)
 // 全量保存
 void rdbSave()
 {
-    log_debug("======RDB Save(child:%u)======\n", getpid());
+    log_debug("======RDB Save(child:%u)======", getpid());
     int nwritten = 0;
     int nread = 0;
     FILE* fp = fopen(server->rdbFileName, "w+");
@@ -157,7 +157,7 @@ void rdbSave()
 
     fflush(fp);
     fclose(fp);
-    log_debug("Save the RDB file success\n");
+    log_debug("Save the RDB file success");
 }
 
 void bgsave()
@@ -178,7 +178,7 @@ void bgSaveIfNeeded()
 {
     // 检查是否在BGSAVE
     if (server->isBgSaving) {
-        log_debug("BGSAVE is running, no need....\n");
+        log_debug("BGSAVE is running, no need....");
         return;
     }
 
@@ -187,7 +187,7 @@ void bgSaveIfNeeded()
         if (interval >= server->saveParams[i].seconds && 
             server->dirty >= server->saveParams[i].changes
         ) {
-            log_debug("CHECK BGSAVE OK, %d, %d\n", interval, server->dirty);
+            log_debug("CHECK BGSAVE OK, %d, %d", interval, server->dirty);
             bgsave();
             break;
         }
@@ -233,7 +233,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 1, fp);
         snprintf(buf, 11, "%d", val);
-        // log_debug("Load STRING(int) %d\n", val);
+        // log_debug("Load STRING(int) %d", val);
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT16) {
         /* code */
@@ -241,7 +241,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 2, fp);
         snprintf(buf, 11, "%d", val);
-        // log_debug("Load STRING(int) %d\n", val);
+        // log_debug("Load STRING(int) %d", val);
 
         return robjCreateStringObject(buf);
     } else if (c == RDB_ENC_INT32) {
@@ -250,7 +250,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char buf[12];
         fread(&val, 1, 4, fp);
         snprintf(buf, 11, "%d", val);
-        // log_debug("Load STRING(int) %d\n", val);
+        // log_debug("Load STRING(int) %d", val);
 
         return robjCreateStringObject(buf);
     }else {
@@ -260,7 +260,7 @@ robj* _rdbLoadStringObject(FILE* fp)
         char * buf = malloc(len + 1);
         fread(buf, 1, len, fp);
         buf[len] = '\0';
-        // log_debug("Load STRING() %s\n", buf);
+        // log_debug("Load STRING() %s", buf);
 
         robj* obj = robjCreateStringObject(buf);
         free(buf);
@@ -318,7 +318,7 @@ void rdbLoad()
             robj* obj = _rdbLoadStringObject(fp);
             dbid = (int)(obj->ptr);
             if (dbid < 0 || dbid > server->dbnum) {
-                log_debug("Error loading dbid %d\n", dbid);;
+                log_debug("Error loading dbid %d", dbid);;
                 exit(1);
             }
             continue;
@@ -360,6 +360,6 @@ void receiveRDBfile(char* buf, int n)
     }
     fwrite(buf, 1, n, fp);
     fclose(fp);
-    log_debug("Save the RDB file success\n");
+    log_debug("Save the RDB file success");
     
 }

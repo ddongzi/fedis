@@ -103,7 +103,7 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     char* msg = c->writeBuf->buf;
     if (sdslen(c->writeBuf) == 0) {
         // 如果没有数据，不可写
-        log_debug("NO buffer available\n");
+        log_debug("NO buffer available");
         aeDeleteFileEvent(el, fd, AE_WRITABLE);
         return;
     }
@@ -112,7 +112,7 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     rioInitWithSocket(&sio, fd);
     nwritten = rioWrite(&sio, msg, strlen(msg));
     if (nwritten == 0 && sio.error) { 
-        log_error("write failed\n");
+        log_error("write failed");
         close(fd);
         return;
     }   

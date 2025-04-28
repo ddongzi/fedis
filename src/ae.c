@@ -49,7 +49,7 @@ static int aeApiCreate(aeEventLoop* eventLoop)
     // ET 模式
 
     eventLoop->apiState = apiState;
-    log_debug("Create epoll instance. epfd = %d\n", apiState->epfd);
+    log_debug("Create epoll instance. epfd = %d", apiState->epfd);
     return AE_OK;
 }
 /**
@@ -108,12 +108,12 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
             mask |= AE_WRITABLE;
         }
         if (e->events & EPOLLERR) {
-            log_debug("epoll_error on fd[%d]\n", e->data.fd);
+            log_debug("epoll_error on fd[%d]", e->data.fd);
         }
 
         eventLoop->fireEvents[i].fd = e->data.fd;
         eventLoop->fireEvents[i].mask = mask;
-        log_debug("epoll fd[%d] event[%s] come.\n", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
+        log_debug("epoll fd[%d] event[%s] come.", e->data.fd, mask == AE_WRITABLE ? "WRITABLE" : "READ");
     }
     return numevents;
 }
@@ -197,7 +197,7 @@ int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, voi
     if (fd > loop->maxfd) {
         loop->maxfd = fd;
     }
-    log_debug("● create %s event for fd %d.\n", mask == AE_WRITABLE ? "WRITE": "READ", fd);
+    log_debug("● create %s event for fd %d.", mask == AE_WRITABLE ? "WRITE": "READ", fd);
     return AE_OK;
 }
 /**
@@ -225,11 +225,11 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
     }
     int op = eventLoop->events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
     if (epoll_ctl(eventLoop->apiState->epfd, op, fd, &ee) == -1) {
-        log_debug("epoll_ctl [%d], err:%s\n", fd, strerror(errno));
+        log_debug("epoll_ctl [%d], err:%s", fd, strerror(errno));
         checkSockErr(fd);
         return AE_ERROR;
     }
-    log_debug("EPOLL CTL fd:%d, OP :%s, mask:%s\n", fd, op == EPOLL_CTL_ADD ? "add" : "mod" 
+    log_debug("EPOLL CTL fd:%d, OP :%s, mask:%s", fd, op == EPOLL_CTL_ADD ? "add" : "mod" 
         , mask == AE_WRITABLE ? "write" : "read");
     return AE_OK;
 }
@@ -353,7 +353,7 @@ static int aeProcessEvents(aeEventLoop* loop, int flags)
         aeFileEvent* fe = &loop->events[loop->fireEvents[i].fd];
         int mask = loop->fireEvents[i].mask;
         int fd = loop->fireEvents[i].fd;
-        log_debug("event come: fd %d, ready %s\n", fd, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
+        log_debug("event come: fd %d, ready %s", fd, mask == AE_WRITABLE ? "WRITABLE" : "READABLE");
         if ((fe->mask & AE_READABLE) && (mask & AE_READABLE)) {
             fe->rfileProc(loop, fd, fe->data);
         }
@@ -431,7 +431,7 @@ int aeDeleteFileEvent(aeEventLoop* loop, int fd, int mask)
         loop->maxfd = j;
     }
     // 从events里面删除
-    
+
     // 更新apisate
     return aeApiDelEvent(loop, fd, fe->mask);
 }

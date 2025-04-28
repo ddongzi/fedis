@@ -367,7 +367,7 @@ void initServerConfig()
     server->maxclients = REDIS_MAX_CLIENTS;
     loadCommands();
 
-    log_debug("√ init server config.\n");
+    log_debug("√ init server config.");
 }
 
 
@@ -529,7 +529,7 @@ void sigChildHandler(int sig)
             // 检查退出状态
             if (WIFEXITED(stat) && WEXITSTATUS(stat) == 0) {
                 server->lastSave = server->unixtime;
-                log_debug("server know %d finished\n", pid);
+                log_debug("server know %d finished", pid);
             }
             server->rdbChildPid = -1;
             server->dirty = 0;
@@ -607,7 +607,7 @@ void initServer()
     server->rdbChildPid = -1;
     server->isBgSaving = 0;
     server->rdbfd = -1; //
-    log_debug("●  load rdb from %s\n", server->rdbFileName);
+    log_debug("●  load rdb from %s", server->rdbFileName);
     rdbLoad();
 
     server->clients = listCreate();
@@ -619,18 +619,14 @@ void initServer()
     if (fd == -1) {
         exit(1);
     }
-
-
-
-    log_debug("● create server, listening.....\n");
+    log_debug("● create server, listening.....");
     
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
-    log_debug("● create file event for ACCEPT, listening.....\n");
+    log_debug("● create file event for ACCEPT, listening.....");
     // 注册定时任务
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
-    log_debug("● create time event for serverCron\n");
+    log_debug("● create time event for serverCron");
     
-
 
     // sentinel特性，
     if (server->role == REDIS_CLUSTER_SENTINEL) {
@@ -811,6 +807,7 @@ void processClientQueryBuf(redisClient* client)
  * @param [in] el 
  * @param [in] fd 
  * @param [in] privData 
+ * @deprecated 逻辑上由readFromClient 统一处理
  */
 void readRespFromClient(aeEventLoop *el, int fd, void *privData)
 {
@@ -929,7 +926,7 @@ void sendToClient(aeEventLoop *el, int fd, void *privdata)
         return;
     }
 
-    log_debug("reply to client %d, %.*s (%zd bytes)", client->fd, (int)nwritten, msg, nwritten);
+    log_debug("Send to client %d, %.*s (%zd bytes)", client->fd, (int)nwritten, msg, nwritten);
 
     // 更新缓冲区
     if (nwritten == msg_len)
