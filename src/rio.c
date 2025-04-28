@@ -15,7 +15,7 @@
 #include "log.h"
 #include "rio.h"
 #include <errno.h>
-
+#include <stdint.h>
 /* 基于文件io函数 */
 ssize_t rioReadFromFile(rio* rio, void* buf, size_t len)
 {
@@ -81,11 +81,11 @@ void rioFlushToBuffer(rio *r) {
 
 /*基于网络的 rio*/
 ssize_t rioReadFromSocket(rio *r, void *buf, size_t len) {
-    int fd = *(int *)r->data;
+    int fd = (int)(intptr_t)(r->data);
     return recv(fd, buf, len, 0);
 }
 ssize_t rioWriteToSocket(rio *r, const void *buf, size_t len) {
-    int fd = *(int *)r->data;
+    int fd = (int)(intptr_t)(r->data);
     return send(fd, buf, len, 0);
 }
 off_t rioTellFromSocket(rio *r) {
@@ -98,17 +98,17 @@ void rioFlushToSocket(rio *r) {
 
 /*基于文件描述符的 rio*/
 ssize_t rioReadFromFD(rio *r, void *buf, size_t len) {
-    int fd = *(int *)r->data;  // 获取 fd
+    int fd = (int)(intptr_t)(r->data);  // 获取 fd
     return read(fd, buf, len);
 }
 
 ssize_t rioWriteToFD(rio *r, const void *buf, size_t len) {
-    int fd = *(int *)r->data;  // 获取 fd
+    int fd = (int)(intptr_t)(r->data);  // 获取 fd
     return write(fd, buf, len);
 }
 
 off_t rioTellFromFD(rio *r) {
-    int fd = *(int *)r->data;
+    int fd = (int)(intptr_t)(r->data);
     return lseek(fd, 0, SEEK_CUR);  // 获取当前位置
 }
 
@@ -140,16 +140,16 @@ void rioInitWithSocket(rio *r, int socket) {
     r->tell = rioTellFromSocket;
     r->flush = rioFlushToSocket;
     r->data = malloc(sizeof(int));
-    *(int *)r->data = socket;
+    r->data = (void*)(intptr_t)socket;
 }
-void rioInitWithFD(rio *r, int fd) {
-
-    
+void rioInitWithFD(rio *r, int fd) 
+{
     r->read = rioReadFromFD;
     r->write = rioWriteToFD;
     r->tell = rioTellFromFD;
     r->flush = rioFlushToFD;
-    *(int *)r->data = fd;
+    r->data = malloc(sizeof(int));
+    r->data = (void*)(intptr_t)fd;
 }
 
 /**

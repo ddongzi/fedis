@@ -29,7 +29,7 @@ typedef struct rio {
     ssize_t (*write)(struct rio *r, const void *buf, size_t len); // 写操作
     off_t (*tell)(struct rio *r);  // 当前文件偏移
     void (*flush)(struct rio *r);  // 刷新
-    void *data;  // 数据源（File*, sds* , int fd, int socket）
+    void *data;  // 数据源（File*, sds* , int fd, int socket）, 
     int error;  // 错误码，非0表示有错误。
 }rio;
 

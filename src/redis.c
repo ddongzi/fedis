@@ -448,7 +448,7 @@ void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
     redisClient *client = (redisClient *)privdata;
     char buf[1024] = {0};
     rio r;
-    rioInitWithFD(&r, fd);
+    rioInitWithSocket(&r, fd);
     ssize_t nread = rioRead(&r, buf, sizeof(buf));
     int checked = checkSockRead(client, nread);
     if (checked) {
