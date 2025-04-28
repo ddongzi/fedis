@@ -455,6 +455,7 @@ void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
         sdscat(client->readBuf, buf);
         log_debug("Sentinel read info : %s", buf);
         client->lastinteraction = server->unixtime;
+        sdsclear(client->readBuf);
     }
 }
 

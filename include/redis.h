@@ -27,7 +27,7 @@ struct redisCommand;
 
 #define REDIS_SHAREAD_MAX_INT 999
 
-#define REDIS_MAX_STRING 128
+#define REDIS_MAX_STRING 256
 
 struct sharedObjects {
     // RESP res
