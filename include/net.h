@@ -43,4 +43,3 @@ int checkSockRead(redisClient* c, int nread);
 void reconnectMaster();
 
 #endif
-
