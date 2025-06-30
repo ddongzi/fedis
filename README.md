@@ -1,8 +1,4 @@
-
-
 Main page
-
-√ Branch:withoutConnection0421
 
 主页！！
 REDIS
