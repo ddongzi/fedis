@@ -107,7 +107,6 @@ void masterToSlave(const char* ip, int port)
     log_info("Master => Slave");
     server->role = REDIS_CLUSTER_SLAVE;
     server->rdbFileName = RDB_FILENAME_2;
-    // TODO 能否直接=
     server->masterhost = ip;
     server->masterport = port;
     loadCommands();    
