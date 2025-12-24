@@ -34,7 +34,7 @@ void compute_sha256(const char* data, size_t len, unsigned char out[])
         return;
     }
     log_debug("compute_hash len: %zu", hash_len);
-    printhash(out, hash_len);
+    // printhash(out, hash_len);
     // 释放上下文资源
     EVP_MD_CTX_free(ctx);
 
@@ -44,9 +44,9 @@ void printhash(unsigned char hash[], size_t hashlen)
 {
     for (size_t i = 0; i < hashlen; i++)
     {
-        printf("%02x", hash[i]);
+        log_debug("%02x", hash[i]);
     }
-    printf("\n");    
+    log_debug("\n");    
 }
 
 /**

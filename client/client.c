@@ -6,6 +6,7 @@
 #include <strings.h>
 #include <sys/time.h>
 #include <errno.h>
+#include "resp.h"
 #define BUFFER_SIZE 1024
 
 const char* redis_host = "127.0.0.1";
@@ -55,7 +56,6 @@ void send_command(int sock, const char *command)
     for (int i = 0; i < argc; i++) {
         len += snprintf(buffer + len, BUFFER_SIZE - len, "$%d\r\n%s\r\n", strlen(args[i]), args[i]);
     }
-    printf("%s\n", buffer);
     send(sock, buffer, len, 0);
     free(cmd);
 }
@@ -67,7 +67,8 @@ int read_response(int sock) {
     int bytes_received = recv(sock, buffer, BUFFER_SIZE - 1, 0);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
-        printf("<<<: %s\n", buffer);
+
+        printf("<<<: %s\n", resp_str(buffer));
         if (strstr(buffer, "+bye" ) != NULL) {
             return -1;
         }

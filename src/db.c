@@ -75,11 +75,18 @@ void dbClear(redisDb* db)
     db->dict = NULL;
 }
 
+/**
+ * db的键值都是robj对象。
+ * @param db
+ * @param key
+ * @param value
+ * @return
+ */
 int dbAdd(redisDb* db, robj* key, robj* value)
-
 {
     if (db == NULL || key == NULL) return DB_DICT_ERR;
     return dictAdd(db->dict, (void*)key,(void*)value);
+
 }
 
 void* dbGet(redisDb* db, robj* key)

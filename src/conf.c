@@ -12,9 +12,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <strings.h>
- char* get_config(const char* filename, const char* key)
+#include "log.h"
+#include "util.h"
+ char* get_config(const char* key)
  {
-    FILE* f = fopen(filename, "r");
+    char fullpath[128] = {0};
+    snprintf(fullpath, sizeof(fullpath), "%s/conf/server.conf", PROJECT_ROOT);
+    FILE* f = fopen(fullpath, "r");
     if (f == NULL) {
         perror("open config file");
         return NULL;
@@ -23,16 +27,18 @@
     char line[64] = {0};
     char* ret = NULL;
     while(fgets(line, sizeof(line), f) != NULL) {
+        strim(line);
         if (line[0] == '#' || line[0] == '\n') continue;
         char* k = strtok(line, "=");
+        
         if (strcasecmp(k, key) == 0) {
             char* v = strtok(NULL, "=");
             ret = malloc(strlen(v) + 1);
             strcpy(ret, v);
-            printf("CONF ---- key: %s, value: %s\n", k, v);
             break;
         }
     }
+    // log_debug("CONF ---- key: %s, value: %s", key, ret);
     fclose(f);
     return ret;
  }

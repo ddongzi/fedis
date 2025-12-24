@@ -28,7 +28,7 @@ void sendPingToMaster()
 void sendSyncToMaster()
 {
     char* argv[] = {"SYNC"};
-    char* buf = resp_encode(1, argv);
+    char* buf = respEncodeArrayString(1, argv);
     //  SYNC
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
@@ -36,14 +36,14 @@ void sendSyncToMaster()
 void sendReplHeartBeatToMaster()
 {
     char* argv[] = {"HEARTBEAT"};
-    char* buf = resp_encode(1, argv);
+    char* buf = respEncodeArrayString(1, argv);
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
 }
 void sendReplAckToMaster()
 {
     char* argv[] = {"REPLACK"};
-    char* buf = resp_encode(1, argv);
+    char* buf = respEncodeArrayString(1, argv);
     addWrite(server->master, robjCreateStringObject(buf));
     free(buf);
 }
@@ -55,7 +55,7 @@ void sendReplconfToMaster()
     char* portstr = calloc(1, REDIS_MAX_STRING);
     sprintf(portstr, "%d", server->port);
     char* argv[] = {"REPLCONF", "listen-port", portstr};
-    char* buf = resp_encode(3, argv);
+    char* buf = respEncodeArrayString(3, argv);
     log_debug("sendReplconf content : %s", buf);
     addWrite(server->master, robjCreateStringObject(buf));
     log_debug("addwrite ok");

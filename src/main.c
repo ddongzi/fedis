@@ -11,14 +11,15 @@
 #include "redis.h"
 #include "log.h"
 #include <string.h>
+#include <unistd.h>
 // todo
 #define BASE_DIR "/home/dong/fedis"
 
 
 int main(int argc, char **argv)
 {
-
     log_set_level(LOG_DEBUG);
+    log_info("Process id: [%d]", getpid());
     log_debug("hello log.");
     server = calloc(1,sizeof(struct redisServer));
     server->role = REDIS_CLUSTER_MASTER; // 默认角色
@@ -29,10 +30,6 @@ int main(int argc, char **argv)
         }
         if (strcmp(argv[i], "--slave") == 0) {
             server->role = REDIS_CLUSTER_SLAVE;
-        }
-        if (strcmp(argv[i],"--conf") == 0 && i + 1 < argc) {
-            server->configfile = strdup(argv[i+1]);
-            log_debug("Configfile: %s", server->configfile);
         }
     }
     initServerConfig();

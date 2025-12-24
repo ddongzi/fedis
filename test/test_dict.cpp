@@ -1,7 +1,10 @@
+#include <gtest/gtest.h>
+
+extern "C" {
 #include "dict.h"
 #include <assert.h>
 #include <string.h>
-
+}
 /* 哈希函数 */
 unsigned long simpleHash(const void* key) {
     const char* str = (const char*)key;
@@ -200,18 +203,3 @@ void test_dictDictTypeNull()
 }
 
 
-int main() {
-    test_dictCreate();
-    test_dictAdd();
-    test_dictFetchValue();
-    test_dictDelete();
-    test_dictAddDuplicate();
-    test_dictNullCases();
-    test_dictExpand();
-    test_dictShrink();
-    test_dictIterator();
-    test_dictDictTypeNull();
-    
-    printf("\n🎉 All tests passed!\n");
-    return 0;
-}

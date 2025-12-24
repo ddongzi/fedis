@@ -17,8 +17,9 @@
 #include "repli.h"
 #include "net.h"
 #include "conf.h"
-
-
+#include "util.h"
+#include "aof.h"
+#include "resp.h"
 struct redisServer* server;
 
 struct sharedObjects shared;
@@ -43,23 +44,25 @@ void _encodingStr(int encoding, char *buf, int maxlen)
 
 void commandSetProc(redisClient* client)
 {
+    log_debug("Set proc...");
     int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
     if (retcode == DICT_OK) {
         addWrite(client, shared.ok);
         server->dirty++;
     } else {
-        addWrite(client, shared.err);
+        client->last_errno = ERR_KEY_EXISTS;
+        sprintf(client->err_msg, "-ERR:Duplicate key");
+        addWrite(client, robjCreateStringObject(client->err_msg));
     }
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
-
 }
 void commandGetProc(redisClient* client)
 {
     robj* res = (robj*)dbGet(client->db, client->argv[1]);
     if (res == NULL) { 
-        addWrite(client, robjCreateStringObject("-ERR key not found"));
+        addWrite(client, shared.keyNotFound);
     } else {
-        addWrite(client, res);
+        addWrite(client, robjCreateStringObject(respEncodeBulkString(robjGetValStr(res))));
     }
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
@@ -238,7 +241,7 @@ void commandInfoProc(redisClient* client)
     char** argv;
     int argc;
     generateInfoRespContent(&argc, &argv);
-    char* res = resp_encode(argc, argv);
+    char* res = respEncodeArrayString(argc, argv);
     log_debug("INFO PROC: res : %s", res);
     addWrite(client, robjCreateStringObject(res));
     aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
@@ -370,16 +373,7 @@ void initServerConfig()
 }
 
 
-/**
- * @brief 返回当前ms级时间戳
- * 
- * @return long long 
- */
-long long mstime(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return ((long long)tv.tv_sec) * 1000 + (tv.tv_usec / 1000);
-}
+
 
 void updateServerTime()
 {
@@ -389,7 +383,6 @@ void updateServerTime()
 
 void closeClients()
 {
-    log_debug("Will close %d clients. Now have %d clients", listLength(server->clientsToClose), listLength(server->clients));
     listNode* node = listHead(server->clientsToClose);
     while (node) {
         redisClient* client = node->value;
@@ -495,7 +488,6 @@ int sentinelInfoCron( aeEventLoop* eventLoop, long long id, void* clientData)
  */
 int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
-    log_debug("server cron.");
 
     if (server->role == REDIS_CLUSTER_MASTER) {
         // 检查SAVE条件，执行BGSAVE    
@@ -575,9 +567,9 @@ void createSharedObjects()
     // 2. RESP
     shared.ok = robjCreateStringObject("+OK\r\n");
     shared.pong = robjCreateStringObject("+PONG\r\n");
-    shared.err = robjCreateStringObject("-err\r\n");
+    shared.err = robjCreateStringObject("-ERR\r\n");
     shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
-    shared.bye = robjCreateStringObject("+bye\r\n");
+    shared.bye = robjCreateStringObject("-bye\r\n");
     shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
     shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
 
@@ -607,7 +599,7 @@ void initServer()
     server->rdbChildPid = -1;
     server->isBgSaving = 0;
     server->rdbfd = -1; //
-    log_debug("●  load rdb from %s", server->rdbFileName);
+    log_debug("load rdb from %s", server->rdbFileName);
     rdbLoad();
 
     server->clients = listCreate();
@@ -619,18 +611,18 @@ void initServer()
     if (fd == -1) {
         exit(1);
     }
-    log_debug("● create server, listening.....");
+    log_debug(" create server, listening.....");
     
     aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, acceptTcpHandler, NULL);
-    log_debug("● create file event for ACCEPT, listening.....");
+    log_debug(" create file event for ACCEPT, listening.....");
     // 注册定时任务
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
-    log_debug("● create time event for serverCron");
+    log_debug(" create time event for serverCron");
     
 
     // sentinel特性，
     if (server->role == REDIS_CLUSTER_SENTINEL) {
-        char* monitor = get_config(server->configfile, "monitor");
+        char* monitor = get_config("monitor");
         assert(monitor != NULL);
         dictType commandDictType = {
             .hashFunction = commandDictHashFunction,
@@ -656,9 +648,10 @@ void initServer()
         aeCreateTimeEvent(server->eventLoop, 10000, sentinelInfoCron, NULL);
     }
 
+    // AOF
+    aof_init();
 
     log_info("√ server init finished.  ROLE:%s.", getRoleStr(server->role));
-
 
 }
 /**
@@ -680,7 +673,15 @@ int isSupportedCmd(redisClient* c, redisCommand* cmd)
     }
     
     return 1;
-
+}
+/**
+ * 判断是否是写类型命令
+ */
+bool isWriteTypeCmd(char* cmdname)
+{
+    if (strcmp(cmdname, "set") == 0) 
+        return true;
+    return false;
 }
 
 redisCommand* lookupCommand(redisClient* c, const char* name)
@@ -694,7 +695,6 @@ redisCommand* lookupCommand(redisClient* c, const char* name)
         redisCommand* cmd = entry->v.val;
         assert(cmd);
         if (isSupportedCmd(c, cmd) && strcasecmp(cmd->name, name) == 0) {
-            log_debug("FIND cmd %s", name);
             dictReleaseIterator(iter);
             return cmd;
         }
@@ -744,20 +744,23 @@ void processCommand(redisClient * c)
     assert(c);
     // argv[0] 一定是字符串，sds
     char* cmdname = ((sds*)(c->argv[0]->ptr))->buf;
-    log_debug("process CMD %s", cmdname);
+    // log_debug("process CMD %s", cmdname);
     cmd = lookupCommand(c, cmdname);
     if (cmd == NULL) {
         log_debug("Will ret invalid!");
         addWrite(c, shared.invalidCommand);
         aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     } else {
+        // 加入aof
+        sdscatsds(server->aof.active_buf, c->readBuf);
+        //
         cmd->proc(c);
     }
 
     if ( cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER) {
         commandPropagate(c->readBuf);
     }
-    log_debug("Process ok , clear!");
+    // log_debug("Process ok , clear!");
     sdsclear(c->readBuf);
     c->argc = 0;
     for (int i = 0; i < c->argc; i++) {
@@ -841,9 +844,7 @@ void readFromClient(aeEventLoop *el, int fd, void *privData)
     int checked = checkSockRead(client, nread);
     if (checked) {
         sdscat(client->readBuf, buf);
-        log_debug(" processing query from client, %s, Client buf: %s", buf, client->readBuf->buf);
         processClientQueryBuf(client);
-        log_debug(" processed query from client");
         client->lastinteraction = server->unixtime;
     }
 }
@@ -926,7 +927,7 @@ void sendToClient(aeEventLoop *el, int fd, void *privdata)
         return;
     }
 
-    log_debug("Send to client %d, %.*s (%zd bytes)", client->fd, (int)nwritten, msg, nwritten);
+    // log_debug("Send to client %d, %.*s (%zd bytes)", client->fd, (int)nwritten, msg, nwritten);
 
     // 更新缓冲区
     if (nwritten == msg_len)

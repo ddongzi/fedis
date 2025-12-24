@@ -172,7 +172,7 @@ size_t rioWrite(rio *r, const void *buf, size_t len)
         log_error("rioWrite error %s", strerror(errno));
         return 0; 
     }
-    log_debug("rioWrite %zu bytes", nwritten);
+    // log_debug("rioWrite %zu bytes", nwritten);
     return (size_t)nwritten;
 }
 /**

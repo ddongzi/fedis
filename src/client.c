@@ -5,6 +5,8 @@
 #include "log.h"
 #include "net.h"
 #include <string.h>
+#include <unistd.h>
+
 redisClient *redisClientCreate(int fd, char* ip, int port)
 {
     redisClient *c = malloc(sizeof(redisClient));
@@ -26,20 +28,17 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
 
 }
 /**
- * @brief 准备buf，向client写, 后续write类handler处理
- * 
- * @param [in] client 
- * @param [in] obj 
+ * @param [in] client
+ * @param [in] obj RESP形式字符串
  */
 void addWrite(redisClient* client, robj* obj) 
 {
-    char buf[128] = {0};
+    char buf[1024] = {0};
     switch (obj->type)
     {
     case REDIS_STRING:
-        robjGetValStr(obj, buf, sizeof(buf));
+        strcpy(buf, robjGetValStr(obj));
         break;
-    
     default:
         break;
     }

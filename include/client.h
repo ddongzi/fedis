@@ -9,8 +9,9 @@
 #include "sds.h"
 #include "db.h"
 #include "robj.h"
-
+#include  "error.h"
 #define CLIENT_NAME_MAX 32
+
 
 /**
  * @struct redisClient
@@ -43,7 +44,10 @@ typedef struct redisClient {
 
     // sentinel 客户实例特性
     char* name; // 对端名称
-    
+
+    // 错误
+    char err_msg[128];
+    ErrorCode last_errno;
 } redisClient;
 redisClient *redisClientCreate(int fd, char* ip, int port);
 void freeClient(redisClient* client);

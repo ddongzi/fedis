@@ -4,3 +4,9 @@
  2. get
  3. del
 */
+#include <stdio.h>
+int main(int argc, char const *argv[])
+{
+    printf("hello test client!\n");
+    return 0;
+}

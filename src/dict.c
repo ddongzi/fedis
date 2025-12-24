@@ -1,3 +1,11 @@
+/**
+ * 字典：
+ * 键值对：void*, void*
+ * 字典类型：hash函数等必要
+ *
+ *
+ */
+
 #include "dict.h"
 #include "log.h"
 // ------------static-------------------//
@@ -108,13 +116,13 @@ static void _dictRehashStep(dict *dict)
     }
     if (dict->rehashidx == dict->ht[0].size) {
         // 找不到非空桶， 说明rehash完了。  按理来说，不会走到这里！！！
-        // printf("Unexpected !!!!! size %d, rehashidx %d\n", dict->ht[0].size, dict->rehashidx);
+        // log_debug("Unexpected !!!!! size %d, rehashidx %d\n", dict->ht[0].size, dict->rehashidx);
     }
 
     // 迁移rehashidx桶的第一个entry，
     dictEntry *entry = dict->ht[0].table[dict->rehashidx];
     if (dict->ht[0].table == NULL) {
-        // printf("Unexpected table !!!!!!!!");
+        // log_debug("Unexpected table !!!!!!!!");
     }
     dict->ht[0].table[dict->rehashidx] = entry->next;
 
@@ -127,10 +135,10 @@ static void _dictRehashStep(dict *dict)
     dict->ht[0].used--;
     dict->ht[1].used++;
 
-    log_debug("rehash : %s [%u]->[%u].  0used %d,   0size %d,     1used %d   1size %d", 
-        (char*)entry->key ,dict->rehashidx, idx,
-        dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size  // 注意，dict->ht[0]和dict->ht[1]是交换的，所以需要反转一下
-    );
+    // log_debug("rehash : %s [%u]->[%u].  0used %d,   0size %d,     1used %d   1size %d", 
+    //     (char*)entry->key ,dict->rehashidx, idx,
+    //     dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size  // 注意，dict->ht[0]和dict->ht[1]是交换的，所以需要反转一下
+    // );
 
     // 每一次rehash都去主动检查
     if (dict->ht[0].used == 0)
@@ -141,9 +149,9 @@ static void _dictRehashStep(dict *dict)
         _dictReset(&dict->ht[1]);
         dict->rehashidx = -1;
         // log_debug("rehash 完成");
-        log_debug("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d",
-            dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size
-        );
+        // log_debug("REHASH ok： 0used %d, 0size %d, 1used %d, 1size %d",
+        //     dict->ht[0].used, dict->ht[0].size, dict->ht[1].used, dict->ht[1].size
+        // );
         return;
     }
 }
@@ -215,7 +223,7 @@ static int dictExpandIfNeed(dict *dict)
         {
             return dictExpand(dict, _nextpower(dict->ht[0].used));
         }
-        printf("小于 initial size 不缩容");
+        log_debug("小于 initial size 不缩容");
     }
     return DICT_OK;
 }
@@ -470,7 +478,7 @@ int dictDelete(dict *dict, const void *key)
         {
             if (dict->type->keyCompare(dict->privdata, entry->key, key) == 0)
             {
-                printf("delete ok %s from ht[%d][%d]\n", entry->key, i, idx);
+                log_debug("delete ok %s from ht[%d][%d]\n", entry->key, i, idx);
 
                 // Key-value pair found, perform deletion
                 if (prev == NULL)

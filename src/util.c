@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-
+#include <strings.h>
+#include <string.h>
+#include <sys/time.h>
 /**
  * 打印字符数组缓冲区内容，格式化输出字符和十六进制值
  * @param prefix 打印的前缀字符串，用于标识来源。 自定义标识
@@ -53,4 +55,38 @@ void printBuf(const char* prefix, const char* buf, int len) {
     }
 
     printf("--------------------------------------------------\n");
+}
+
+char* fullPath(char* path)
+{
+    char buf[128] = {0};
+    snprintf(buf, sizeof(buf), "%s/%s", PROJECT_ROOT, path);
+    return strdup(buf);
+}
+
+/**
+ * @brief 返回当前ms级时间戳
+ * 
+ * @return long long 
+ */
+long long mstime(void) {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return ((long long)tv.tv_sec) * 1000 + (tv.tv_usec / 1000);
+}
+
+// 去除字符串中空白字符,
+void strim(char *s)
+{
+    char* r =s ;
+    char *w = s;
+    while (*r)
+    {
+        if(!isspace(*r)) {
+            *w = *r;
+            w++;
+        }
+        r++;
+    }
+    *w = '\0';
 }

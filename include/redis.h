@@ -7,6 +7,8 @@
 #include "dict.h"
 #include "robj.h"
 #include "client.h"
+#include <stdbool.h>
+#include "aof.h"
 
 #define REDIS_SERVERPORT 6666
 #define REDIS_DEFAULT_DBNUM 16
@@ -126,6 +128,9 @@ struct redisServer {
     // sentinel 服务器特性
 
     dict* instances; // 监控的sentinel列表
+
+    // aof持久化
+    struct AOF aof;
 };
 
 

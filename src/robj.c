@@ -156,20 +156,23 @@ robj* robjCreateStringObject(const char*s)
     return _createRawString(s);
 }
 
-void robjGetValStr(robj* obj, char* buf, int maxlen) 
+char* robjGetValStr(robj* obj)
 {
+    char buf[1024] = {0};
+
     switch (obj->type)
     {
     case REDIS_STRING:
         if (obj->encoding == REDIS_ENCODING_INT) {
-            snprintf(buf, maxlen, "%d", (int)(obj->ptr));
+            snprintf(buf, sizeof(buf), "%d", (int)(obj->ptr));
         } else {
             sds* s = (sds*)(obj->ptr);
-            strncpy(buf, s->buf, maxlen - 1);
+            strncpy(buf, s->buf, sizeof(buf) - 1);
         }
         break;
     
     default:
         break;
     }
+    return strdup(buf);
 }
