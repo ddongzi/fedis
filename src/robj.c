@@ -1,3 +1,10 @@
+/**
+ * 对象模型
+ *  数据结构：sds, 链表...
+ *  对象类型：字符串、列表、哈希、集合
+ *
+ */
+
 #include "robj.h"
 #include <stdlib.h>
 #include "sds.h"
@@ -5,7 +12,9 @@
 #include "redis.h"
 #include <limits.h>
 #include "log.h"
-/* string object*/
+
+struct sharedObjects shared;
+
 /**
  * @brief 根据encoding类型调用释放
  * 
@@ -26,7 +35,7 @@ static void _freeStringObject(robj *obj)
     }
 }
 /**
- * @brief 创建embedded str 编码的字符串对象
+ * @brief 创建embedded str 编码的字符串对象. 嵌入的是sds
  * | robj 结构体 | sds 头部 | 字符串缓冲区 (len + 1) |
     ^             ^          ^
     obj           obj->ptr   ss->buf
@@ -58,15 +67,26 @@ robj* _createRawString(const char* s)
     return obj;    
 }
 
-int _string2i(const char* s, int *succeed) {
+/**
+ * 字符串转long整数，支持10进制和16进制
+ * @param s
+ * @param succeed
+ * @return
+ */
+long _string2l(const char* s, int *succeed) {
     if (!s || !*s) {  // 空指针或空字符串直接失败
         *succeed = 0;
         return 0;
     }
 
+    int base = 10;
     char *endptr;
     errno = 0;  // 清除 errno
-    long long value = strtoll(s, &endptr, 10);
+    if (*s == '0' && (*(s+1) =='x' || *(s+1) =='X'))
+    {
+        base = 16;
+    }
+    long long value = strtoll(s, &endptr, base);
 
     // 判断是否成功解析
     if (*endptr != '\0' || endptr == s) {
@@ -76,25 +96,25 @@ int _string2i(const char* s, int *succeed) {
         return 0;
     }
 
-    // 检查范围（防止 int 溢出）
-    if (errno == ERANGE || value < INT_MIN || value > INT_MAX) {
+    // 检查范围（防止 溢出）
+    if (errno == ERANGE) {
         *succeed = 0;
         return 0;
     }
 
     *succeed = 1;
-    return (int)value;
+    return value;
 }
 
 
 /**
- * @brief 
+ * @brief 构建long整数的字符串
  * 
- * @param [in] value 
+ * @param [long] value
  * @return robj* 
  * @note 限制为
  */
-robj* _createIntString(int value)
+robj* _createLongString(long value)
 {
     // 
     if (value <= REDIS_SHAREAD_MAX_INT && shared.integers[value]) {
@@ -106,6 +126,43 @@ robj* _createIntString(int value)
     obj->ptr = (void*)value;
     return obj;
 }
+
+
+/**
+ * @brief Create a Shared Objects object
+ *
+ */
+void createSharedObjects()
+{
+    // 1. 0-999整数
+    for (int i = 0; i < REDIS_SHAREAD_MAX_INT; i++) {
+        char buf[5];
+        snprintf(buf, 4, "%d", i);
+        buf[4] = '\0';
+        shared.integers[i] = robjCreateStringObject(buf);
+    }
+    // 2. RESP
+    shared.ok = robjCreateStringObject("+OK\r\n");
+    shared.pong = robjCreateStringObject("+PONG\r\n");
+    shared.err = robjCreateStringObject("-ERR\r\n");
+    shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
+    shared.bye = robjCreateStringObject("-bye\r\n");
+    shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
+    shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
+
+    // REQUEST
+    shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
+    shared.info = robjCreateStringObject("*1\r\n$4\r\nINFO\r\n");
+}
+
+/**
+ * 对象系统初始化
+ */
+void robjInit()
+{
+    createSharedObjects();
+}
+
 /* robj */
 robj* robjCreate(int type, void *ptr)
 {
@@ -143,16 +200,14 @@ void robjDestroy(robj* obj)
 robj* robjCreateStringObject(const char*s)
 {
     int succeed = 0;
-    int value = _string2i(s, &succeed);
+    long value = _string2l(s, &succeed);
     if (succeed) {
-        // log_debug("CreateStringObj , INT, %d\n", value);
-        return _createIntString(value);
+        return _createLongString(value);
     }
+    // TODO 为什么是32字节？
     if (strlen(s) < 32) {
-        // log_debug("CreateStringObj , EMBSTR, %s\n", s);
         return _createEmbeddedString(s);
     }
-    // log_debug("CreateStringObj , RAW, %s\n", s);
     return _createRawString(s);
 }
 

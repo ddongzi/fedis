@@ -92,12 +92,17 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
         tvp ? (tvp->tv_sec * 1000 + (tvp->tv_usec + 999)/1000): -1
         );
 
-    if (numevents < 0) {
+    if (numevents == -1) {
         if (errno == EINTR) {
-            log_error("epoll_wait error: numevents < 0. %s", strerror(errno));
+            // 如果被中断了， 就返回把
+            return numevents;
+        } else
+        {
+            log_error("Unexpected epoll_wait error. %s", strerror(errno));
+            exit(EXIT_FAILURE);
         }
-        return numevents;
     }
+
     for (int i = 0; i < numevents; i++) {
         struct epoll_event* e = &eventLoop->apiState->events[i];
         int mask = 0;

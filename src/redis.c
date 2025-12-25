@@ -22,7 +22,6 @@
 #include "resp.h"
 struct redisServer* server;
 
-struct sharedObjects shared;
 
 void _encodingStr(int encoding, char *buf, int maxlen) 
 {
@@ -551,38 +550,11 @@ void initServerSignalHandlers()
     signal(SIGINT, sigIntHandler);
 }
 
-/**
- * @brief Create a Shared Objects object
- * 
- */
-void createSharedObjects()
-{
-    // 1. 0-999整数
-    for (int i = 0; i < REDIS_SHAREAD_MAX_INT; i++) {
-        char buf[5];
-        snprintf(buf, 4, "%d", i);
-        buf[4] = '\0';
-        shared.integers[i] = robjCreateStringObject(buf);
-    }
-    // 2. RESP
-    shared.ok = robjCreateStringObject("+OK\r\n");
-    shared.pong = robjCreateStringObject("+PONG\r\n");
-    shared.err = robjCreateStringObject("-ERR\r\n");
-    shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
-    shared.bye = robjCreateStringObject("-bye\r\n");
-    shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
-    shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
-
-    // REQUEST
-    shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
-    shared.info = robjCreateStringObject("*1\r\n$4\r\nINFO\r\n");
-}
-
 void initServer()
 {
     initServerSignalHandlers();
-    
-    createSharedObjects();
+
+    robjInit();
 
     server->id = getpid();
 

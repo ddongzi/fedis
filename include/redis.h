@@ -20,7 +20,6 @@
 
 
 extern struct redisServer* server;
-extern struct sharedObjects shared;
 
 struct redisCommand;
 
@@ -125,12 +124,12 @@ struct redisServer {
     pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
     int isBgSaving; // 正在BGSAVE
 
-    // sentinel 服务器特性
-
-    dict* instances; // 监控的sentinel列表
-
     // aof持久化
     struct AOF aof;
+
+    // sentinel 服务器特性
+    dict* instances; // 监控的sentinel列表
+
 };
 
 
