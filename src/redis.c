@@ -256,10 +256,21 @@ void commandHeartBeatProc(redisClient* client)
 {
     addWrite(client, shared.ok);
 }
-
+void commandSelectProc(redisClient* client)
+{
+    //
+    char* endp;
+    char* s = robjGetValStr(client->argv[1]);
+    int dbid = strtol(s, &endp, 10);
+    client->db = &server->db[dbid];
+    client->dbid = dbid;
+    char buf[32] = {0};
+    snprintf(buf, sizeof(buf), "OK, db is %d", dbid);
+    addWrite(client,robjCreateStringObject(respEncodeBulkString(buf)));
+}
 // 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
-    {CMD_WRITE | CMD_MASTER,                "SET", commandSetProc, -3},
+    {CMD_WRITE | CMD_MASTER,                "SET", commandSetProc, 3},
     {CMD_RED | CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
     {CMD_WRITE |CMD_MASTER,                "DEL", commandDelProc, 2},
     {CMD_RED | CMD_MASTER | CMD_SLAVE,    "OBJECT", commandObjectProc, 3},
@@ -270,8 +281,8 @@ redisCommand commandsTable[] = {
     {CMD_RED |CMD_SLAVE | CMD_MASTER,    "SYNC", commandSyncProc, 1},
     {CMD_RED |CMD_SLAVE | CMD_MASTER,    "REPLACK", commandReplACKProc, 1},
     {CMD_RED |CMD_ALL,                   "INFO", commandInfoProc, 1},
-    {CMD_ALL,                           "HEARTBEAT", commandHeartBeatProc, 1}
-
+    {CMD_ALL,                           "HEARTBEAT", commandHeartBeatProc, 1},
+    {CMD_ALL, "SELECT", commandSelectProc, 2}
 };
 
 
@@ -371,9 +382,9 @@ void initServerConfig()
     char* consistency = get_config("consistency");
     if (!strncasecmp(consistency, "rdb", 3)) server->rdbOn = true;
     if (!strncasecmp(consistency, "aof", 3)) server->aofOn = true;
-
+    char* dbnum = get_config("dbnum");
+    server->dbnum = atoi(dbnum);
     //
-    server->dbnum = REDIS_DEFAULT_DBNUM;
     server->saveCondSize = 0;
     server->saveParams = NULL;
     appendServerSaveParam(900, 1);

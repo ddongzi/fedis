@@ -11,7 +11,6 @@
 #include "aof.h"
 
 #define REDIS_SERVERPORT 6666
-#define REDIS_DEFAULT_DBNUM 16
 #define REDIS_MAX_CLIENTS 10000
 
 #define REDIS_CLUSTER_MASTER 0
