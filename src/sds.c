@@ -54,7 +54,7 @@ int sdsavail(const sds* ss)
 sds* sdsdump(const sds* ss)
 {
     if (ss == NULL) return NULL;
-    sds* res = malloc(sizeof(ss));
+    sds* res = sdsempty();
     res->buf = calloc(ss->len + ss->free + 1, sizeof(char));
     // 显示复制
     res->len = ss->len;

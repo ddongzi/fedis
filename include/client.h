@@ -5,6 +5,7 @@
 #define REDIS_CLIENT_MASTER 1
 #define REDIS_CLIENT_SLAVE 2
 #define REDIS_CLIENT_SENTINEL 3
+#define REDIS_CLIENT_FAKE 3
 
 #include "sds.h"
 #include "db.h"
@@ -49,6 +50,7 @@ typedef struct redisClient {
     char err_msg[128];
     ErrorCode last_errno;
 } redisClient;
+redisClient* redisFakeClientCreate();
 redisClient *redisClientCreate(int fd, char* ip, int port);
 void freeClient(redisClient* client);
 void clientToclose(redisClient* c);

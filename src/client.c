@@ -7,6 +7,29 @@
 #include <string.h>
 #include <unistd.h>
 
+/**
+ * 伪客户端，没有网络连接，但可以执行所有命令.
+ * 但是不能注册ae，所以接受不到任何回复。
+ * @return
+ */
+redisClient* redisFakeClientCreate()
+{
+    redisClient *c = malloc(sizeof(redisClient));
+    c->fd = -1;
+    c->flags = REDIS_CLIENT_FAKE;
+    c->readBuf = sdsempty();
+    c->writeBuf = sdsempty();
+    c->dbid = 0;
+    c->db = &server->db[c->dbid];
+    c->argc = 0;
+    c->argv = NULL;
+    c->ip = NULL;
+    c->port = -1;
+    c->name = calloc(1, CLIENT_NAME_MAX);
+    c->toclose = 0;
+    return c;
+}
+
 redisClient *redisClientCreate(int fd, char* ip, int port)
 {
     redisClient *c = malloc(sizeof(redisClient));
@@ -25,7 +48,6 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     c->toclose = 0;
     log_debug("create client %s:%d, fd %d", c->ip, c->port, c->fd);
     return c;
-
 }
 /**
  * @param [in] client

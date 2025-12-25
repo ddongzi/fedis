@@ -113,12 +113,14 @@ struct redisServer {
     // 模块化
 
     // 持久化
+    bool aofOn;
+    bool rdbOn;
+
+    //  RDB持久化 (Master)
     long long dirty; // 上次SAVE之后修改了多少次,set del 
     time_t lastSave;    // 上次SAVE时间
     int saveCondSize; // 
     struct saveparam* saveParams; // SAVE条件数组
-    
-    // RDB持久化 (Master)
     int rdbfd;     ///< 不关闭rdbfd
     char* rdbFileName; //
     pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
@@ -140,5 +142,7 @@ void readRespFromClient(aeEventLoop *el, int fd, void *privData);
 
 void readFromClient(aeEventLoop *el, int fd, void *privData);
 void connectMaster();
+
+void processClientQueryBuf(redisClient* client);
 
 #endif

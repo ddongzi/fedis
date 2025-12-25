@@ -22,26 +22,8 @@ int main(int argc, char **argv)
     log_info("Process id: [%d]", getpid());
     log_debug("hello log.");
     server = calloc(1,sizeof(struct redisServer));
-    server->role = REDIS_CLUSTER_MASTER; // 默认角色
-    for (int i = 0; i < argc; i++)
-    {
-        if (strcmp(argv[i], "--sentinel") == 0) {
-            server->role = REDIS_CLUSTER_SENTINEL;
-        }
-        if (strcmp(argv[i], "--slave") == 0) {
-            server->role = REDIS_CLUSTER_SLAVE;
-        }
-    }
-    initServerConfig();
 
-    for (int i = 0; i < argc; i++)
-    {
-        log_debug("arg %d: %s", i, argv[i]);
-        if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
-            server->port = atoi(argv[i + 1]);
-        }
-    }
-    
+    initServerConfig();
     initServer();
     aeMain(server->eventLoop);
 

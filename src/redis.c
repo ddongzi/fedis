@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/sendfile.h>
+#include <stdbool.h>
 
 #include "redis.h"
 #include "rdb.h"
@@ -36,7 +37,7 @@ void _encodingStr(int encoding, char *buf, int maxlen)
             strncpy(buf, "embstr", maxlen - 1);
             break;
         case REDIS_ENCODING_INT:
-            strncpy(buf, "int", maxlen - 1);
+            strncpy(buf, "integer", maxlen - 1);
             break;
         case REDIS_ENCODING_RAW:
             strncpy(buf, "raw", maxlen - 1);
@@ -104,7 +105,7 @@ void commandObjectProc(redisClient* client)
             char buf[1024];
             _encodingStr(val->encoding, buf, sizeof(buf));
 
-            addWrite(client, robjCreateStringObject(buf));
+            addWrite(client, robjCreateStringObject(respEncodeBulkString(buf)));
         }
     }
 
@@ -360,7 +361,18 @@ void loadCommands()
  */
 void initServerConfig()
 {
-    server->port = REDIS_SERVERPORT;
+    // 加载配置文件必要参数
+    char* role = get_config("role");
+    if (!strncasecmp(role, "sentinel", 8)) server->role = REDIS_CLUSTER_SENTINEL;
+    if (!strncasecmp(role, "master", 6)) server->role = REDIS_CLUSTER_MASTER;
+    if (!strncasecmp(role, "slave", 5)) server->role = REDIS_CLUSTER_SLAVE;
+    char* port = get_config("port");
+    server->port = atoi(port);
+    char* consistency = get_config("consistency");
+    if (!strncasecmp(consistency, "rdb", 3)) server->rdbOn = true;
+    if (!strncasecmp(consistency, "aof", 3)) server->aofOn = true;
+
+    //
     server->dbnum = REDIS_DEFAULT_DBNUM;
     server->saveCondSize = 0;
     server->saveParams = NULL;
@@ -494,8 +506,9 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
 
     if (server->role == REDIS_CLUSTER_MASTER) {
-        // 检查SAVE条件，执行BGSAVE    
-        bgSaveIfNeeded();
+        // 检查SAVE条件，执行BGSAVE
+        if (server->rdbOn)
+            bgSaveIfNeeded();
     }
 
 
@@ -576,8 +589,11 @@ void initServer()
     server->rdbChildPid = -1;
     server->isBgSaving = 0;
     server->rdbfd = -1; //
-    log_debug("load rdb from %s", server->rdbFileName);
-    rdbLoad();
+    if (server->rdbOn)
+    {
+        log_debug("load rdb from %s", server->rdbFileName);
+        rdbLoad();
+    }
 
     server->clients = listCreate();
     server->clientsToClose = listCreate();
@@ -626,8 +642,11 @@ void initServer()
     }
 
     // AOF
-    aof_init();
-
+    if (server->aofOn)
+    {
+        aof_init();
+        aof_load();
+    }
     log_info("√ server init finished.  ROLE:%s.", getRoleStr(server->role));
 
 }
@@ -728,9 +747,11 @@ void processCommand(redisClient * c)
         addWrite(c, shared.invalidCommand);
         aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     } else {
-        // 加入aof
-        sdscatsds(server->aof.active_buf, c->readBuf);
-        //
+        // 写命令写入aof
+        if (server->aofOn &&  (cmd->flags & CMD_WRITE))
+        {
+            sdscatsds(server->aof.active_buf, c->readBuf);
+        }
         cmd->proc(c);
         aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     }
@@ -747,11 +768,11 @@ void processCommand(redisClient * c)
     c->argv = NULL;
 }
 /**
- * @brief 解析协议到 argc, argv[]
-    *1\r\n$4\r\nping\r\n
-    +OK
-
- * @param [in] client 
+ * @brief 解析客户端RESP字符串到 argc, argv[]
+        *1\r\n$4\r\nping\r\n
+ *  伪客户端
+ * @param [in] client
+ *
  */
 void processClientQueryBuf(redisClient* client)
 {
@@ -779,8 +800,6 @@ void processClientQueryBuf(redisClient* client)
         // 其余不处理
         sdsfree(scpy);
     }
-
-
 }
 /**
  * @brief 读取+OK, -ERR 格式

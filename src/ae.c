@@ -180,7 +180,7 @@ aeEventLoop *aeCreateEventLoop(int maxsize)
  */
 int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, void* data)
 {
-    if (fd >= loop->maxsize) {
+    if (fd >= loop->maxsize || fd < 0) {
         return AE_ERROR;
     }
     aeFileEvent* fe = &loop->events[fd];

@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <errno.h>
 #include "resp.h"
+#include "linenoise.h"
 #define BUFFER_SIZE 1024
 
 const char* redis_host = "127.0.0.1";
@@ -20,7 +21,7 @@ int connect_to_redis(const char *host, int port) {
         perror("Socket creation failed");
         return -1;
     }
-    printf("Connecting to [%d]%s:%d\n", sock, host, port);
+    printf("~~~ Connecting to [%d]%s:%d\n", sock, host, port);
     
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
@@ -68,7 +69,7 @@ int read_response(int sock) {
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
 
-        printf("<<<: %s\n", resp_str(buffer));
+        printf("<<< %s\n", resp_str(buffer));
         if (strstr(buffer, "+bye" ) != NULL) {
             return -1;
         }
@@ -107,38 +108,76 @@ int read_response(int sock) {
     
 }
 
-
-// ./a.out --port 6667
-int main(int argc, char* argv[]) {
-
-    for (size_t i = 0; i < argc; i++)
+void completion(const char* buf, linenoiseCompletions* lc)
+{
+    if (!strncasecmp(buf, "object", 6))
     {
-        if (strcasecmp("--port", argv[i]) == 0 && i + 1 < argc ) {
-            redis_port = atoi( argv[i+1]);
-            break;
-        }
+        linenoiseAddCompletion(lc, "object encoding");
     }
+    if (!strncasecmp(buf, "s", 1))
+    {
+        linenoiseAddCompletion(lc, "set");
+    }
+    if (!strncasecmp(buf, "g", 1))
+    {
+        linenoiseAddCompletion(lc, "get");
+    }
+}
+char *hints(const char *buf, int *color, int *bold) {
+    if (!strcasecmp(buf, "SET")) {
+        *color = 35; // 紫色
+        return " <key> <value>";
+    }
+    if (!strcasecmp(buf, "get")) {
+        *color = 35; // 紫色
+        return " <key>";
+    }
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    char* line;
+    // TAB
+    linenoiseSetCompletionCallback(completion);
+    // 提示
+    linenoiseSetHintsCallback(hints);
+
+    // history file
+    linenoiseHistoryLoad("history.txt");
+
 
     sock = connect_to_redis(redis_host, redis_port);
     if (sock < 0) return 1;
-
-
     struct timeval tv = {3, 0}; // 最多等待3秒
     setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-    
-    char command[BUFFER_SIZE];
-    while (1) {
-        printf(">>>: ");
-        fgets(command, BUFFER_SIZE, stdin);
-        command[strcspn(command, "\n")] = 0;  // 移除换行符
-        
-        if (strcmp(command, "exit") == 0) break;
-        send_command(sock, command);
-        if (read_response(sock) == -1) { // bye
-            break;  // 断开连接时，主循环结束
+
+    while (1)
+    {
+        line = linenoise(">>> ");
+        if (line == NULL) break;
+        if (line[0] == '\0')
+        {
+            free(line);
+            continue;
         }
+        // 内部指令
+        if (line[0] == '/')
+        {
+            printf("Unreconized internal command %s\n", line);
+        } else
+        {
+         // fedis命令
+            linenoiseHistoryAdd(line);
+            linenoiseHistorySave("history.txt");
+
+            send_command(sock, line);
+            if (read_response(sock) == -1) { // bye
+                break;  // 断开连接时，主循环结束
+            }
+        }
+        free(line);
     }
-    
     close(sock);
     return 0;
 }
