@@ -1,3 +1,9 @@
+/**
+ *
+ * Command
+ *  只负责进行逻辑处理，向client更新buf
+ */
+
 #include <stdio.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -41,19 +47,29 @@ void _encodingStr(int encoding, char *buf, int maxlen)
     }
 }
 
+/**
+ *
+ * @param client
+ * @warning set命令 值必须传入
+ */
 void commandSetProc(redisClient* client)
 {
     log_debug("Set proc...");
-    int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
-    if (retcode == DICT_OK) {
-        addWrite(client, shared.ok);
-        server->dirty++;
-    } else {
-        client->last_errno = ERR_KEY_EXISTS;
-        sprintf(client->err_msg, "-ERR:Duplicate key");
+    if (client->argc == 2) {
+        client->last_errno = ERR_VALUE_MISSED;
+        sprintf(client->err_msg, "-ERR: Value missed\r\n");
         addWrite(client, robjCreateStringObject(client->err_msg));
+    } else {
+        int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
+        if (retcode == DICT_OK) {
+            addWrite(client, shared.ok);
+            server->dirty++;
+        } else {
+            client->last_errno = ERR_KEY_EXISTS;
+            sprintf(client->err_msg, "-ERR:Duplicate key\r\n");
+            addWrite(client, robjCreateStringObject(client->err_msg));
+        }
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandGetProc(redisClient* client)
 {
@@ -63,7 +79,6 @@ void commandGetProc(redisClient* client)
     } else {
         addWrite(client, robjCreateStringObject(respEncodeBulkString(robjGetValStr(res))));
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandDelProc(redisClient* client)
 {
@@ -75,7 +90,6 @@ void commandDelProc(redisClient* client)
     } else {
         addWrite(client, shared.keyNotFound);
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandObjectProc(redisClient* client)
 {
@@ -93,7 +107,6 @@ void commandObjectProc(redisClient* client)
             addWrite(client, robjCreateStringObject(buf));
         }
     }
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 
 }
 
@@ -101,7 +114,6 @@ void commandByeProc(redisClient* client)
 {
     client->toclose = 1;
     addWrite(client, shared.bye);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 void masterToSlave(const char* ip, int port)
@@ -125,7 +137,6 @@ void commandSlaveofProc(redisClient* client)
 
     addWrite(client, shared.ok);
     connectMaster();
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 
@@ -134,28 +145,24 @@ void commandPingProc(redisClient* client)
     // todo replstate要小心设置。
     client->replState = REPL_STATE_MASTER_WAIT_PING;
     addWrite(client, shared.pong);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 void commandSyncProc(redisClient* client)
 {
     client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
     addWrite(client, shared.sync);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 void commandReplconfProc(redisClient* client)
 {
     //  暂不处理，不影响
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandReplACKProc(redisClient* client)
 {
     //  ���不处理，不影响
     client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 char* getRoleStr(int role)
@@ -243,12 +250,10 @@ void commandInfoProc(redisClient* client)
     char* res = respEncodeArrayString(argc, argv);
     log_debug("INFO PROC: res : %s", res);
     addWrite(client, robjCreateStringObject(res));
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 void commandHeartBeatProc(redisClient* client)
 {
     addWrite(client, shared.ok);
-    aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
 }
 
 // 全局命令表，包含sentinel等所有命令
@@ -727,6 +732,7 @@ void processCommand(redisClient * c)
         sdscatsds(server->aof.active_buf, c->readBuf);
         //
         cmd->proc(c);
+        aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     }
 
     if ( cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER) {

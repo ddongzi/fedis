@@ -101,6 +101,9 @@ TEST(Resptest, HandleSimpleString)
 
     s = resp_str("-ERR: duplicate key\r\n");
     EXPECT_STREQ(s, "ERR: duplicate key");
+
+    s = resp_str("-ERR: duplicate key");
+    EXPECT_EQ(s, nullptr);
     free(s);
 }
 TEST(Resptest, EncodeArrayString)

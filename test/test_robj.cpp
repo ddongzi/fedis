@@ -48,4 +48,12 @@ TEST(RobjTest, StringEncoding)
     s = (sds*)o->ptr;
     EXPECT_STREQ(s->buf, "12helloworldhelloworldhelloworld");
     robjDestroy(o);
+
+    // 浮点数 字符串表示
+    o = robjCreateStringObject("0.12345678909090900");
+    EXPECT_EQ(o->encoding, REDIS_ENCODING_EMBSTR);
+    EXPECT_EQ(o->type, REDIS_STRING);
+    s = (sds*)o->ptr;
+    EXPECT_STREQ(s->buf, "0.12345678909090900");
+    robjDestroy(o);
 }
