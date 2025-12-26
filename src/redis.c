@@ -29,6 +29,113 @@
 #include "resp.h"
 struct redisServer* server;
 
+extern struct RespShared resp;
+
+char* getRoleStr(int role);
+
+static void commandSetProc(redisClient* client);
+static void commandGetProc(redisClient* client);
+static void commandDelProc(redisClient* client);
+static void commandObjectProc(redisClient* client);
+static void commandByeProc(redisClient* client);
+static void commandSlaveofProc(redisClient* client);
+static void commandPingProc(redisClient* client);
+static void commandReplconfProc(redisClient* client);
+static void commandSyncProc(redisClient* client);
+static void commandReplACKProc(redisClient* client);
+static void commandInfoProc(redisClient* client);
+static void commandHeartBeatProc(redisClient* client);
+static void commandSelectProc(redisClient* client);
+static void commandExpireProc(redisClient* client);
+
+
+// 全局命令表，包含sentinel等所有命令
+redisCommand commandsTable[] = {
+    {CMD_WRITE | CMD_MASTER,"SET", commandSetProc, 3},
+    {CMD_READ | CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
+    {CMD_WRITE |CMD_MASTER,"DEL", commandDelProc, 2},
+    {CMD_READ | CMD_MASTER | CMD_SLAVE,    "OBJECT", commandObjectProc, 3},
+    {CMD_MASTER | CMD_SLAVE,"BYE", commandByeProc, 1},
+    {CMD_MASTER | CMD_SLAVE,"SLAVEOF", commandSlaveofProc, 3},
+    {CMD_MASTER | CMD_SLAVE,"PING", commandPingProc, 1},
+    {CMD_MASTER | CMD_SLAVE,"REPLCONF", commandReplconfProc, 3},
+    {CMD_MASTER | CMD_SLAVE,"SYNC", commandSyncProc, 1},
+    {CMD_MASTER | CMD_SLAVE,"REPLACK", commandReplACKProc, 1},
+    {CMD_MASTER | CMD_SLAVE,"INFO", commandInfoProc, 1},
+    {CMD_MASTER | CMD_SLAVE,"HEARTBEAT", commandHeartBeatProc, 1},
+    {CMD_MASTER | CMD_SLAVE, "SELECT", commandSelectProc, 2},
+    {CMD_MASTER, "EXPIRE", commandExpireProc, 3}
+};
+
+
+// command dictType
+static unsigned long commandDictHashFunction(const void *key) {
+    unsigned long hash = 5381;
+    const char *str = key;
+    while (*str) {
+        hash = ((hash << 5) + hash) + *str; // hash * 33 + c
+        str++;
+    }
+    return hash;
+}
+static int commandDictKeyCompare(void* privdata, const void* key1, const void* key2)
+{
+    return strcmp((char*)key1, (char*)key2);
+}
+static void commandDictKeyDestructor(void* privdata, void* key)
+{
+}
+static void commandDictValDestructor(void* privdata, void* val)
+{
+    free((redisCommand*)val);
+}
+static void* commandDictKeyDup(void* privdata, const void* key)
+{
+    if (key == NULL) {
+        return NULL;
+    }
+    size_t size = strlen((char*)key);
+    char* res = malloc(size + 1);
+    strcpy(res, key);
+    return (void*)res;
+}
+static void* commandDictValDup(void* privdata, const void* obj)
+{
+    if (obj == NULL) {
+        return NULL;
+    }
+    redisCommand* res = malloc(sizeof(redisCommand));
+    memcpy(res, obj, sizeof(redisCommand));
+    return (void*)res;
+}
+dictType commandDictType = {
+    .hashFunction = commandDictHashFunction,
+    .keyCompare = commandDictKeyCompare,
+    .keyDup =  commandDictKeyDup,
+    .valDup =  commandDictValDup,
+    .keyDestructor = commandDictKeyDestructor,
+    .valDestructor = commandDictValDestructor
+};
+
+/**
+ * @brief 添加全局命令表， 如果命令不支持，在处理时候禁止
+ *
+ */
+void loadCommands()
+{
+    if (server->commands != NULL) {
+        dictRelease(server->commands);
+    }
+    server->commands = dictCreate(&commandDictType, NULL);
+    for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
+        redisCommand* cmd = malloc(sizeof(redisCommand));
+        memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
+        dictAdd(server->commands, cmd->name, cmd);
+    }
+    char* rolestr = getRoleStr(server->role);
+    log_info("Load commands for role %s", rolestr);
+    free(rolestr);
+}
 
 void _encodingStr(int encoding, char *buf, int maxlen) 
 {
@@ -55,57 +162,60 @@ void _encodingStr(int encoding, char *buf, int maxlen)
  */
 void commandSetProc(redisClient* client)
 {
-    log_debug("Set proc...");
+    log_debug("Set proc..key: %s", client->argv[1]);
     if (client->argc == 2) {
+        // TODO 多余，应该在之前通过arity校验
         client->last_errno = ERR_VALUE_MISSED;
-        sprintf(client->err_msg, "-ERR: Value missed\r\n");
-        addWrite(client, robjCreateStringObject(client->err_msg));
+        sprintf(client->err_msg, "%s",resp.valmissed);
+        addWrite(client, resp.valmissed);
     } else {
-        int retcode = dbAdd(client->db, client->argv[1], client->argv[2]);
+        sds* key = sdsnew(client->argv[1]);
+        robj* v = robjCreateStringObject(client->argv[2]);
+        int retcode = dbAdd(client->db, key, v);
         if (retcode == DICT_OK) {
-            addWrite(client, shared.ok);
+            addWrite(client, resp.ok);
             server->dirty++;
         } else {
             client->last_errno = ERR_KEY_EXISTS;
             sprintf(client->err_msg, "-ERR:Duplicate key\r\n");
-            addWrite(client, robjCreateStringObject(client->err_msg));
+            addWrite(client, resp.dupkey);
         }
     }
 }
 void commandGetProc(redisClient* client)
 {
-    robj* res = (robj*)dbGet(client->db, client->argv[1]);
+    sds* k = sdsnew(client->argv[1]);
+    robj* res = (robj*)dbGet(client->db, k);
     if (res == NULL) { 
-        addWrite(client, shared.keyNotFound);
+        addWrite(client, resp.keyNotFound);
     } else {
-        addWrite(client, robjCreateStringObject(respEncodeBulkString(robjGetValStr(res))));
+        addWrite(client, respEncodeBulkString(robjGetValStr(res)));
     }
 }
 void commandDelProc(redisClient* client)
 {
-    int retcode = dbDelete(client->db, client->argv[1]);
+    sds* k = sdsnew(client->argv[1]);
+    int retcode = dbDelete(client->db, k);
     if (retcode == DICT_OK) {
         server->dirty++;
-
-        addWrite(client, shared.ok);
+        addWrite(client,resp.ok);
     } else {
-        addWrite(client, shared.keyNotFound);
+        addWrite(client,resp.keyNotFound);
     }
 }
 void commandObjectProc(redisClient* client)
 {
-    robj* key = client->argv[2];
-    robj* op = client->argv[1];
-    if (strcasecmp(((sds*)(op->ptr))->buf, "ENCODING") == 0) {
-        robj* val = dbGet(client->db, key);
+    char* key = client->argv[2];
+    char* op = client->argv[1];
+    if (strcasecmp(op, "ENCODING") == 0) {
+        robj* val = dbGet(client->db, sdsnew(key));
         if (val == NULL) {
-            addWrite(client, shared.keyNotFound);
+            addWrite(client,resp.keyNotFound);
         } else {
             // TODO maybe we should use the valEncode() function
             char buf[1024];
             _encodingStr(val->encoding, buf, sizeof(buf));
-
-            addWrite(client, robjCreateStringObject(respEncodeBulkString(buf)));
+            addWrite(client, respEncodeBulkString(buf));
         }
     }
 
@@ -114,7 +224,7 @@ void commandObjectProc(redisClient* client)
 void commandByeProc(redisClient* client)
 {
     client->toclose = 1;
-    addWrite(client, shared.bye);
+    addWrite(client,resp.bye);
 }
 
 void masterToSlave(const char* ip, int port)
@@ -130,13 +240,12 @@ void masterToSlave(const char* ip, int port)
 // 127.0.0.1:6668
 void commandSlaveofProc(redisClient* client)
 {
-    sds* s = (sds*)(client->argv[1]->ptr);
-    char* hp = s->buf;
-    char* ip = strtok(hp, ":");
+    char* s = strdup(client->argv[1]);
+    char* ip = strtok(s, ":");
     int port =  atoi(strtok(NULL, ":"));
     masterToSlave(ip, port);
 
-    addWrite(client, shared.ok);
+    addWrite(client,resp.ok);
     connectMaster();
 }
 
@@ -145,30 +254,30 @@ void commandPingProc(redisClient* client)
 {
     // todo replstate要小心设置。
     client->replState = REPL_STATE_MASTER_WAIT_PING;
-    addWrite(client, shared.pong);
+    addWrite(client,resp.pong);
 }
 
 void commandSyncProc(redisClient* client)
 {
     client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC;  // 状态等待clientbuf 发送出FULLSYNC
-    addWrite(client, shared.sync);
+    addWrite(client,resp.sync);
 }
 
 void commandReplconfProc(redisClient* client)
 {
     //  暂不处理，不影响
-    addWrite(client, shared.ok);
+    addWrite(client,resp.ok);
 }
 void commandReplACKProc(redisClient* client)
 {
     //  ���不处理，不影响
     client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
-    addWrite(client, shared.ok);
+    addWrite(client,resp.ok);
 }
 
 char* getRoleStr(int role)
 {
-    char* buf = calloc(1, 16);
+    char* buf = malloc(16);
     switch (role)
     {
     case REDIS_CLUSTER_MASTER:
@@ -250,90 +359,56 @@ void commandInfoProc(redisClient* client)
     generateInfoRespContent(&argc, &argv);
     char* res = respEncodeArrayString(argc, argv);
     log_debug("INFO PROC: res : %s", res);
-    addWrite(client, robjCreateStringObject(res));
+    addWrite(client, res);
 }
 void commandHeartBeatProc(redisClient* client)
 {
-    addWrite(client, shared.ok);
+    addWrite(client,resp.ok);
 }
 void commandSelectProc(redisClient* client)
 {
     //
-    char* endp;
-    char* s = robjGetValStr(client->argv[1]);
-    int dbid = strtol(s, &endp, 10);
-    client->db = &server->db[dbid];
-    client->dbid = dbid;
-    char buf[32] = {0};
-    snprintf(buf, sizeof(buf), "OK, db is %d", dbid);
-    addWrite(client,robjCreateStringObject(respEncodeBulkString(buf)));
-}
-// 全局命令表，包含sentinel等所有命令
-redisCommand commandsTable[] = {
-    {CMD_WRITE | CMD_MASTER,                "SET", commandSetProc, 3},
-    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "GET", commandGetProc, 2},
-    {CMD_WRITE |CMD_MASTER,                "DEL", commandDelProc, 2},
-    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "OBJECT", commandObjectProc, 3},
-    {CMD_RED | CMD_ALL,                   "BYE", commandByeProc, 1},
-    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "SLAVEOF", commandSlaveofProc, 3},
-    {CMD_RED |CMD_ALL,                   "PING", commandPingProc, 1},
-    {CMD_RED | CMD_MASTER | CMD_SLAVE,    "REPLCONF", commandReplconfProc, 3},
-    {CMD_RED |CMD_SLAVE | CMD_MASTER,    "SYNC", commandSyncProc, 1},
-    {CMD_RED |CMD_SLAVE | CMD_MASTER,    "REPLACK", commandReplACKProc, 1},
-    {CMD_RED |CMD_ALL,                   "INFO", commandInfoProc, 1},
-    {CMD_ALL,                           "HEARTBEAT", commandHeartBeatProc, 1},
-    {CMD_ALL, "SELECT", commandSelectProc, 2}
-};
+    char* s = client->argv[1];
+    long dbid;
+    if (!string2long(s, &dbid))
+    {
+        addWrite(client,resp.err);
+    }else
+    {
+        client->db = &server->db[dbid];
+        client->dbid = (int)dbid;
+        char buf[32] = {0};
+        snprintf(buf, sizeof(buf), "OK, db is %d", (int)dbid);
+        addWrite(client,respEncodeBulkString(buf));
+    }
 
+}
 
-// command dictType
-static unsigned long commandDictHashFunction(const void *key) {
-    unsigned long hash = 5381;
-    const char *str = key;
-    while (*str) {
-        hash = ((hash << 5) + hash) + *str; // hash * 33 + c
-        str++;
+/**
+ * expire key ns
+ * 秒为单位
+ * @param client
+ */
+void commandExpireProc(redisClient* client)
+{
+    sds* key = sdsnew(client->argv[1]);
+    char* expire = client->argv[2]; //
+    long expireat;
+    if (string2long(expire, &expireat))
+    {
+        expireat += time(NULL);
+        if (dbSetExpire(client->db, key, expireat) == 0)
+        {
+            addWrite(client, resp.ok);
+        } else
+        {
+            addWrite(client, resp.err);
+        }
+    }else
+    {
+        addWrite(client, resp.err);
     }
-    return hash;
 }
-static int commandDictKeyCompare(void* privdata, const void* key1, const void* key2)
-{
-    return strcmp((char*)key1, (char*)key2);
-}
-static void commandDictKeyDestructor(void* privdata, void* key)
-{
-}
-static void commandDictValDestructor(void* privdata, void* val)
-{
-    free((redisCommand*)val);
-}
-static void* commandDictKeyDup(void* privdata, const void* key)
-{
-    if (key == NULL) {
-        return NULL;
-    }
-    size_t size = strlen((char*)key);
-    char* res = malloc(size + 1);
-    strcpy(res, key);
-    return (void*)res;
-}
-static void* commandDictValDup(void* privdata, const void* obj)
-{
-    if (obj == NULL) {
-        return NULL;
-    }
-    redisCommand* res = malloc(sizeof(redisCommand));
-    memcpy(res, obj, sizeof(redisCommand));
-    return (void*)res;
-}
-dictType commandDictType = {
-    .hashFunction = commandDictHashFunction,
-    .keyCompare = commandDictKeyCompare,
-    .keyDup =  commandDictKeyDup,
-    .valDup =  commandDictValDup,
-    .keyDestructor = commandDictKeyDestructor,
-    .valDestructor = commandDictValDestructor
-};
 
 
 
@@ -345,25 +420,7 @@ void appendServerSaveParam(time_t sec, int changes)
     server->saveCondSize++;
 }
 
-/**
- * @brief 添加全局命令表， 如果命令不支持，在处理时候禁止
- * 
- */
-void loadCommands()
-{
-    if (server->commands != NULL) {
-        dictRelease(server->commands);
-    }
-    server->commands = dictCreate(&commandDictType, NULL);
-    for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++) {
-        redisCommand* cmd = malloc(sizeof(redisCommand));
-        memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
-        dictAdd(server->commands, cmd->name, cmd);
-    }
-    char* rolestr = getRoleStr(server->role);
-    log_info("Load commands for role %s", rolestr);
-    free(rolestr);
-}
+
 
 /**
  * @brief 初始化服务器配置
@@ -496,7 +553,7 @@ int sentinelInfoCron( aeEventLoop* eventLoop, long long id, void* clientData)
             redisClient* client = node->value;
             assert(client);
             log_debug("ready info to %s:%d", client->ip, client->port);
-            addWrite(node->value, shared.info);
+            addWrite(node->value,resp.info);
             // 对于主动消息，我们通过自己创建读事件处理器来
             aeCreateFileEvent(server->eventLoop, client->fd, AE_READABLE, sentinelReadInfo, client);
             aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
@@ -681,15 +738,6 @@ int isSupportedCmd(redisClient* c, redisCommand* cmd)
     
     return 1;
 }
-/**
- * 判断是否是写类型命令
- */
-bool isWriteTypeCmd(char* cmdname)
-{
-    if (strcmp(cmdname, "set") == 0) 
-        return true;
-    return false;
-}
 
 redisCommand* lookupCommand(redisClient* c, const char* name)
 {
@@ -750,18 +798,23 @@ void processCommand(redisClient * c)
     redisCommand* cmd;
     assert(c);
     // argv[0] 一定是字符串，sds
-    char* cmdname = ((sds*)(c->argv[0]->ptr))->buf;
+    char* cmdname = c->argv[0];
     // log_debug("process CMD %s", cmdname);
     cmd = lookupCommand(c, cmdname);
     if (cmd == NULL) {
         log_debug("Will ret invalid!");
-        addWrite(c, shared.invalidCommand);
+        addWrite(c,resp.invalidCommand);
         aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     } else {
         // 写命令写入aof
-        if (server->aofOn &&  (cmd->flags & CMD_WRITE))
+        if ( !(c->flags & REDIS_CLIENT_FAKE) && server->aofOn &&  (cmd->flags & CMD_WRITE))
         {
             sdscatsds(server->aof.active_buf, c->readBuf);
+        }
+        if ((cmd->flags & CMD_WRITE) || (cmd->flags & CMD_READ))
+        {
+            // 读写数据库时候，惰性删除 访问的键
+            expireIfNeed(c->db, sdsnew(c->argv[1]));
         }
         cmd->proc(c);
         aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
@@ -772,15 +825,17 @@ void processCommand(redisClient * c)
     }
     // log_debug("Process ok , clear!");
     sdsclear(c->readBuf);
-    c->argc = 0;
-    for (int i = 0; i < c->argc; i++) {
-        robjDestroy(c->argv[i]);
+    for (int i = 0; i < c->argc; ++i)
+    {
+        free(c->argv[i]);
     }
-    c->argv = NULL;
+    free(c->argv);
+    c->argc = 0;
 }
 /**
  * @brief 解析客户端RESP字符串到 argc, argv[]
         *1\r\n$4\r\nping\r\n
+        只能处理一个resp
  *  伪客户端
  * @param [in] client
  *
@@ -792,15 +847,12 @@ void processClientQueryBuf(redisClient* client)
     sds* scpy = sdsdump(s);
     int argc;
     char** argv;
+    // TODO 如果传入 许多呢？比如aof
     int ret = resp_decode(scpy->buf, &argc, &argv);
     if (ret == 0) {
         // 按照命令执行
-        for(int i = 0; i < argc; i++) {
-            robj* obj = robjCreateStringObject(argv[i]);
-            client->argv = realloc(client->argv, sizeof(robj*) * (client->argc + 1));
-            client->argv[client->argc] = obj;
-            client->argc++;
-        }
+        client->argv = argv;
+        client->argc = argc;
         processCommand(client);
         sdsfree(scpy);
     }else if (*scpy->buf == '+' || *scpy->buf == '-') {

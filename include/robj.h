@@ -1,7 +1,6 @@
 #ifndef ROBJ_H
 #define ROBJ_H
 
-extern struct sharedObjects shared;
 
 enum robj_encoding{
     REDIS_ENCODING_INT, // long类型整数

@@ -16,9 +16,11 @@ extern dictType dbDictType;  // 数据库键值对
 
 /* Redis 数据库结构 */
 typedef struct redisDb {
-    dict *dict;          /* 存储键值对的主哈希表 */
+    dict *kv;          /* 存储键值对的主哈希表 */
     int id;              /* 数据库编号 */
+    dict * expires; // 过期时间键值， {key:expiretime} ex
 } redisDb;
+// TODO 过期键值对需要持久化
 
 /* --------------------- 数据库 API --------------------- */
 
@@ -28,14 +30,17 @@ void dbFree(redisDb *db);
 void dbClear(redisDb *db);
 void dbInit(redisDb* db, int id) ;
 /* 键值操作 */
-int dbAdd(redisDb *db, robj* key, robj *value);
-void *dbGet(redisDb *db, robj* key);
-int dbDelete(redisDb *db, robj* key);
+int dbAdd(redisDb *db, sds* key, void* value);
+void *dbGet(redisDb *db, sds* key);
+int dbDelete(redisDb *db, sds* key);
 
 /* 过期管理 */
-int dbSetExpire(redisDb *db, robj* key, uint64_t expire_time);
-int dbCheckExpire(redisDb *db, robj* key);
+int dbSetExpire(redisDb *db, sds* key, long time);
+int dbCheckExpire(redisDb *db, sds* key);
+void expireIfNeed(redisDb* db, sds* key);
+
 
 /* 数据库信息 */
 void dbPrint(redisDb *db);
 #endif
+

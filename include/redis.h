@@ -29,32 +29,12 @@ struct redisCommand;
 
 #define REDIS_MAX_STRING 256
 
-struct sharedObjects {
-    // RESP res
-    robj *ok;
-    robj *pong;
-    robj* err;
-    robj* keyNotFound;
-    robj* bye;
-    robj* invalidCommand;
-    robj* sync;
-
-    // RESP request
-    robj* ping;
-    robj* info;
-    
-    robj* integers[1000];
-};
 
 // 命令标志：命令-服务器角色
-#define CMD_MASTER 0x01
-#define CMD_SENTINEL 0x10
-#define CMD_SLAVE 0x100
-#define CMD_ALL (CMD_MASTER | CMD_SLAVE | CMD_SENTINEL)
-#define CMD_WRITE 0x010000 // 写命令， 修改服务器或者数据状态.  用于命令传播
-#define CMD_RED 0x100000 // 读命令
-#define CMD_NONE 0x000000 // 还不知道 ，默认不传播
-
+#define CMD_MASTER (1<<0)   //      0001 主服务器可以执行
+#define CMD_SLAVE (1<<2)    //      0100 从服务器可以执行
+#define CMD_WRITE (1<<3)    //      1000 数据库写
+#define CMD_READ (1<<4)     //     10000 数据库读
 
 typedef struct redisCommand redisCommand;
 typedef void redisCommandProc(redisClient* client);
@@ -66,7 +46,6 @@ struct redisCommand {
 } ;
 
 extern redisCommand commandsTable[];
-char* respParse(const char* resp);
 
 struct saveparam {
     time_t seconds; // 保存条件：秒
@@ -132,8 +111,6 @@ struct redisServer {
     dict* instances; // 监控的sentinel列表
 
 };
-
-
 
 void initServer();
 void initServerConfig();

@@ -1,10 +1,13 @@
 #include "util.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <strings.h>
 #include <string.h>
 #include <sys/time.h>
+#include  <stdbool.h>
 /**
  * 打印字符数组缓冲区内容，格式化输出字符和十六进制值
  * @param prefix 打印的前缀字符串，用于标识来源。 自定义标识
@@ -90,3 +93,24 @@ void strim(char *s)
     }
     *w = '\0';
 }
+
+/**
+ * 字符串安全转10进制
+ * @param s
+ * @param val
+ * @return 是否成功
+ */
+bool string2long(const char*s, long* out)
+{
+    char* endptr;
+    errno = 0;
+    long val = strtol(s, &endptr, 10);
+    if (s==endptr || errno == ERANGE || *endptr != '\0')
+    {
+        return false;
+    }
+    if (val > LONG_MAX || val < LONG_MIN) return false;
+    *out = val;
+    return true;
+}
+

@@ -51,6 +51,7 @@ void* dictFetchValue(dict* dict, const void* key);
 void* dictGetRandomKey(dict* dict);    // 从字典中随机返回一个key
 int dictDelete(dict* dict, const void* key);   // 删除指定键值对
 void dictRelease(dict* dict);   // 释放字典及键值对
+int dictContains(dict* dict, const void* key);
 
 dictEntry* dictAddRaw(dict* dict, const void* key);
 dictEntry* dictFind(dict* dict, const void* key);

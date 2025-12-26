@@ -19,10 +19,12 @@
 #include "net.h"
 #include "util.h"
 #include "client.h"
+#include "resp.h"
+
 
 void sendPingToMaster()
 {
-    addWrite(server->master, shared.ping);
+    addWrite(server->master, resp.ping);
 }
 
 void sendSyncToMaster()
@@ -30,21 +32,22 @@ void sendSyncToMaster()
     char* argv[] = {"SYNC"};
     char* buf = respEncodeArrayString(1, argv);
     //  SYNC
-    addWrite(server->master, robjCreateStringObject(buf));
+    // TODO ?
+    addWrite(server->master, buf);
     free(buf);
 }
 void sendReplHeartBeatToMaster()
 {
     char* argv[] = {"HEARTBEAT"};
     char* buf = respEncodeArrayString(1, argv);
-    addWrite(server->master, robjCreateStringObject(buf));
+    addWrite(server->master, buf);
     free(buf);
 }
 void sendReplAckToMaster()
 {
     char* argv[] = {"REPLACK"};
     char* buf = respEncodeArrayString(1, argv);
-    addWrite(server->master, robjCreateStringObject(buf));
+    addWrite(server->master, buf);
     free(buf);
 }
 
@@ -57,7 +60,7 @@ void sendReplconfToMaster()
     char* argv[] = {"REPLCONF", "listen-port", portstr};
     char* buf = respEncodeArrayString(3, argv);
     log_debug("sendReplconf content : %s", buf);
-    addWrite(server->master, robjCreateStringObject(buf));
+    addWrite(server->master, buf);
     log_debug("addwrite ok");
     // TODO Buf free
     free(portstr);

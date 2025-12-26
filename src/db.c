@@ -1,8 +1,7 @@
 /**
- *键值对：键对象-值对象
- *键对象：字符串对象
- *值对象：字符串对象、列表对象..
- *
+ *db
+ * 键: sds字符串
+ * 值：robj对象， long整数
  */
 
 #include  "db.h"
@@ -12,8 +11,7 @@
 
 static unsigned long dbDictKeyHash(const void *key) {
     unsigned long hash = 5381;
-    robj *obj = (robj*) key;
-    sds* s = (sds*) (obj->ptr);
+    sds* s = (sds*) key;
     const char *str = s->buf;
     while (*str) {
         hash = ((hash << 5) + hash) + *str; // hash * 33 + c
@@ -23,94 +21,105 @@ static unsigned long dbDictKeyHash(const void *key) {
 }
 static void dbDictKeyfree(void* data, void* key)
 {
-    robjDestroy((robj*)key);
+    sdsfree((sds*)key);
 }
 
-static void dbDictValfree(void* data, void* obj)
+static void dbDictValfreeRobj(void* data, void* obj)
 {
     robjDestroy((robj*)obj);
 }
 static int dbDictKeyCmp(void* data, const void* key1, const void* key2)
 {
-    robj* key1obj = (robj*)key1;
-    robj* key2obj = (robj*)key2;
-    sds* s1 = (sds*)(key1obj->ptr);
-    sds* s2 = (sds*)(key2obj->ptr);
-    return sdscmp(s1, s2);
+    return sdscmp((sds*)key1, (sds*)key2);
 }
-// 有问题！！TODO 值是robj对象
-dictType dbDictType = {
-    .hashFunction = dbDictKeyHash,
-    .keyDup = NULL,
-   .valDup = NULL,
+
+dictType kvtype = {
+    .hashFunction =  dbDictKeyHash,
     .keyCompare = dbDictKeyCmp,
+    .valDup = NULL,
+    .keyDup = NULL,
     .keyDestructor = dbDictKeyfree,
-    .valDestructor = dbDictValfree,
+    .valDestructor = dbDictValfreeRobj,
 };
-
-/**
- * @brief 
- * 
- * @param [in] id 
- * @return redisDb* 
- * @note 正常流程中不会调用，db
- */
-redisDb* dbCreate(int id)
+dictType expiretype = {
+    .hashFunction =  dbDictKeyHash,
+    .keyCompare = dbDictKeyCmp,
+    .valDup = NULL,
+    .keyDup = NULL,
+    .keyDestructor = dbDictKeyfree,
+    .valDestructor = NULL,
+};
+void dbInit(redisDb* db, int id)
 {
-    redisDb* db = malloc(sizeof(*db));
-    db->id = id;
-    db->dict = dictCreate(&dbDictType, NULL);
+    db->kv = dictCreate(&kvtype, NULL);
 
-    return db;
-}
-void dbInit(redisDb* db, int id) 
-{
-    db->dict = dictCreate(&dbDictType, NULL);
     db->id = id;
+    db->expires = dictCreate(&expiretype, NULL);
 }
 
 
 void dbFree(redisDb* db)
 {
-    if (db->dict) dictRelease(db->dict);
+    if (db->kv) dictRelease(db->kv);
     free(db);
 }
 
 void dbClear(redisDb* db)
 {
-    dictRelease(db->dict);
-    db->dict = NULL;
+    dictRelease(db->kv);
+    db->kv = NULL;
 }
 
 /**
- * db的键值都是robj对象。
  * @param db
- * @param key
- * @param value
+ * @param key sds对象
+ * @param value robj对象
  * @return
  */
-int dbAdd(redisDb* db, robj* key, robj* value)
+int dbAdd(redisDb* db, sds* key,void* value)
 {
     if (db == NULL || key == NULL) return DB_DICT_ERR;
-    return dictAdd(db->dict, (void*)key,(void*)value);
+    return dictAdd(db->kv, (void*)key,(void*)value);
 
 }
 
-void* dbGet(redisDb* db, robj* key)
+void* dbGet(redisDb* db, sds* key)
 {
     if (db == NULL || key == NULL) return NULL;
-    return dictFetchValue(db->dict, (void*)key);
+    return dictFetchValue(db->kv, (void*)key);
 }
 
-int dbDelete(redisDb* db, robj* key)
+int dbDelete(redisDb* db, sds* key)
 {
     if (db == NULL || key == NULL) return DB_DICT_ERR;
-    return dictDelete(db->dict, (void*)key);
+    return dictDelete(db->kv, (void*)key);
+}
+int dbSetExpire(redisDb *db, sds* key, long time)
+{
+    return dictAdd(db->expires, (void*)key, (void*)time);
+}
+/**
+ * 惰性检查 key是否 国企删除
+ * @param key key过期检查
+ */
+void expireIfNeed(redisDb* db, sds* key)
+{
+    if (dictContains(db->expires, key))
+    {
+        long expire_at = (long)dictFetchValue(db->expires, key);
+        time_t now = time(NULL);
+        if (now > expire_at)
+        {
+            // 过期删除键。
+            if (dictDelete(db->kv, (void*)key) > 0 && dictDelete(db->expires, (void*)key) > 0)
+                log_debug("OK.Delete expire key  %s", key->buf);
+        }
+    }
 }
 
 void dbPrint(redisDb* db)
 {
-    dictIterator* di = dictGetIterator(db->dict);
+    dictIterator* di = dictGetIterator(db->kv);
     dictEntry* entry;
     while ((entry = dictIterNext(di))!= NULL) {
         log_debug("key: %s, val: %p", (char*)entry->key, entry->v.val);

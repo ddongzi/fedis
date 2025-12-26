@@ -1,3 +1,19 @@
+/**
+ * RDB 内存完全映射。
+ *
+ * RDB 文件格式
+ * REDIS 标识
+ * 0001 版本
+ * ---database 0 ---
+ * SELECTDB 标识
+ * 1 数据库编号1字节
+ * type,key,val
+ * ----------
+ * EOF
+ * CHECKSUM
+ */
+
+
 #include <stdio.h>
 #include "redis.h"
 #include "rdb.h"
@@ -53,7 +69,8 @@ int _rdbSaveLen(FILE* fp, uint32_t len)
     }
 }
 
-void _rdbSaveStringObject(FILE *fp, robj* obj)
+
+static void _rdbSaveStringObject(FILE *fp, robj* obj)
 {
     switch (obj->encoding)
     {
@@ -118,12 +135,13 @@ void rdbSave()
 
     for (int i = 0; i < server->dbnum; i++) {
         redisDb* db = server->db + i;
-        if (dictIsEmpty(db->dict)) continue;
+        if (dictIsEmpty(db->kv)) continue;
 
         _rdbSaveType(fp, RDB_SELECTDB); // 1字节
-        _rdbSaveStringObject(fp, shared.integers[i]); 
 
-        dictIterator* di = dictGetIterator(db->dict);
+        fwrite(&db->id, 1, 1, fp); //
+
+        dictIterator* di = dictGetIterator(db->kv);
         dictEntry* entry;
         while ((entry = dictIterNext(di))!= NULL) {
             robj *key = entry->key;

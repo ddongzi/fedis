@@ -127,6 +127,37 @@ TEST(Resptest, EncodeBulkString)
 {
     char *s =respEncodeBulkString("hello");
     EXPECT_STREQ(s, "$5\r\nhello\r\n");
-
     free(s);
+}
+TEST(Resptest, Get)
+{
+    char buf[128] = {0};
+    char* endptr;
+    char* s = "+ok\r\n-err\r\n";
+    endptr = respParse(s, strlen(s));
+    memcpy(buf, s, endptr - s + 1);
+    EXPECT_STREQ(buf, "+ok\r\n");
+
+    s = "$3\r\n\sex\r\n$3\r\n\age\r\n";
+    endptr = respParse(s, strlen(s));
+    memcpy(buf, s, endptr - s + 1);
+    EXPECT_STREQ(buf, "$3\r\n\sex\r\n");
+
+    s = "*2\r\n$3\r\n\sex\r\n$3\r\n\age\r\n+ok\r\n";
+    endptr = respParse(s, strlen(s));
+    memcpy(buf, s, endptr - s + 1);
+    EXPECT_STREQ(buf, "*2\r\n$3\r\n\sex\r\n$3\r\n\age\r\n");
+
+    //
+    s = "+ok\r-err\r\n";
+    endptr = respParse(s, strlen(s));
+    EXPECT_EQ(endptr, nullptr);
+
+    s = ":A\r\n";
+    endptr = respParse(s, strlen(s));
+    EXPECT_EQ(endptr, nullptr);
+
+    s = "$2\r\nA";
+    endptr = respParse(s, strlen(s));
+    EXPECT_EQ(endptr, nullptr);
 }

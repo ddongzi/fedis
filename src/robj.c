@@ -3,6 +3,7 @@
  *  数据结构：sds, 链表...
  *  对象类型：字符串、列表、哈希、集合
  *
+ *  用于： 值存储。 类型多态
  */
 
 #include "robj.h"
@@ -13,7 +14,6 @@
 #include <limits.h>
 #include "log.h"
 
-struct sharedObjects shared;
 
 /**
  * @brief 根据encoding类型调用释放
@@ -114,12 +114,9 @@ long _string2l(const char* s, int *succeed) {
  * @return robj* 
  * @note 限制为
  */
-robj* _createLongString(long value)
+static  robj* _createLongString(long value)
 {
     // 
-    if (value <= REDIS_SHAREAD_MAX_INT && shared.integers[value]) {
-        return shared.integers[value];
-    }
     robj* obj = malloc(sizeof(robj) );
     obj->type = REDIS_STRING;
     obj->encoding = REDIS_ENCODING_INT;
@@ -128,39 +125,12 @@ robj* _createLongString(long value)
 }
 
 
-/**
- * @brief Create a Shared Objects object
- *
- */
-void createSharedObjects()
-{
-    // 1. 0-999整数
-    for (int i = 0; i < REDIS_SHAREAD_MAX_INT; i++) {
-        char buf[5];
-        snprintf(buf, 4, "%d", i);
-        buf[4] = '\0';
-        shared.integers[i] = robjCreateStringObject(buf);
-    }
-    // 2. RESP
-    shared.ok = robjCreateStringObject("+OK\r\n");
-    shared.pong = robjCreateStringObject("+PONG\r\n");
-    shared.err = robjCreateStringObject("-ERR\r\n");
-    shared.keyNotFound = robjCreateStringObject("-ERR key not found\r\n");
-    shared.bye = robjCreateStringObject("-bye\r\n");
-    shared.invalidCommand = robjCreateStringObject("-Invalid command\r\n");
-    shared.sync = robjCreateStringObject("+FULLSYNC\r\n");
-
-    // REQUEST
-    shared.ping = robjCreateStringObject("*1\r\n$4\r\nPING\r\n");
-    shared.info = robjCreateStringObject("*1\r\n$4\r\nINFO\r\n");
-}
 
 /**
  * 对象系统初始化
  */
 void robjInit()
 {
-    createSharedObjects();
 }
 
 /* robj */
@@ -219,7 +189,7 @@ char* robjGetValStr(robj* obj)
     {
     case REDIS_STRING:
         if (obj->encoding == REDIS_ENCODING_INT) {
-            snprintf(buf, sizeof(buf), "%d", (int)(obj->ptr));
+            snprintf(buf, sizeof(buf), "%ld", (long)(obj->ptr));
         } else {
             sds* s = (sds*)(obj->ptr);
             strncpy(buf, s->buf, sizeof(buf) - 1);

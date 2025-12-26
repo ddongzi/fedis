@@ -51,21 +51,11 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
 }
 /**
  * @param [in] client
- * @param [in] obj RESP形式字符串
+ * @param [in] 为resp字符串
  */
-void addWrite(redisClient* client, robj* obj) 
+void addWrite(redisClient* client, char* s)
 {
-    char buf[1024] = {0};
-    switch (obj->type)
-    {
-    case REDIS_STRING:
-        strcpy(buf, robjGetValStr(obj));
-        break;
-    default:
-        break;
-    }
-
-    sdscat(client->writeBuf, buf);
+    sdscat(client->writeBuf, s);
 }
 /**
  * @brief 加入close链表

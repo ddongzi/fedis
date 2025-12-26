@@ -276,6 +276,12 @@ static int _dictInit(dict *d, dictType *type, void *privData)
     return DICT_OK;
 }
 
+/**
+ *
+ * @param type type指针
+ * @param privData 携带数据
+ * @return
+ */
 dict *dictCreate(dictType *type, void *privData)
 {
     dict *d = (dict *)malloc(sizeof(dict));
@@ -512,6 +518,10 @@ int dictDelete(dict *dict, const void *key)
         }
     }
     return DICT_ERR;
+}
+int dictContains(dict* dict, const void* key)
+{
+    return dictFind(dict, key) != NULL;
 }
 
 /**

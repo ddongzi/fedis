@@ -38,7 +38,7 @@ typedef struct redisClient {
 
     // req命令处理
     int argc;   ///< 参数个数
-    robj** argv;    ///< 参数数组
+    char** argv;    ///< 参数数组
 
     // repli复制特性
     int replState; ///< 对端同步状态。
@@ -55,6 +55,6 @@ redisClient *redisClientCreate(int fd, char* ip, int port);
 void freeClient(redisClient* client);
 void clientToclose(redisClient* c);
 
-void addWrite(redisClient* client, robj* obj) ;
+void addWrite(redisClient* client, char* s) ;
 void readToReadBuf(redisClient* client) ;
 #endif
