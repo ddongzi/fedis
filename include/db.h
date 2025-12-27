@@ -18,9 +18,8 @@ extern dictType dbDictType;  // 数据库键值对
 typedef struct redisDb {
     dict *kv;          /* 存储键值对的主哈希表 */
     int id;              /* 数据库编号 */
-    dict * expires; // 过期时间键值， {key:expiretime} ex
+    dict * expires; // 过期时间键值， {key:expiretime} 值是expireat过期的时间戳
 } redisDb;
-// TODO 过期键值对需要持久化
 
 /* --------------------- 数据库 API --------------------- */
 

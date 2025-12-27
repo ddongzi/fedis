@@ -64,7 +64,7 @@ redisCommand commandsTable[] = {
     {CMD_MASTER | CMD_SLAVE,"INFO", commandInfoProc, 1},
     {CMD_MASTER | CMD_SLAVE,"HEARTBEAT", commandHeartBeatProc, 1},
     {CMD_MASTER | CMD_SLAVE, "SELECT", commandSelectProc, 2},
-    {CMD_MASTER, "EXPIRE", commandExpireProc, 3}
+    {CMD_WRITE | CMD_MASTER, "EXPIRE", commandExpireProc, 3}
 };
 
 
@@ -399,6 +399,7 @@ void commandExpireProc(redisClient* client)
         expireat += time(NULL);
         if (dbSetExpire(client->db, key, expireat) == 0)
         {
+            server->dirty ++;
             addWrite(client, resp.ok);
         } else
         {
@@ -444,9 +445,10 @@ void initServerConfig()
     //
     server->saveCondSize = 0;
     server->saveParams = NULL;
+    // bgsave条件，
     appendServerSaveParam(900, 1);
     appendServerSaveParam(300, 10000);
-    appendServerSaveParam(10, 1);
+    appendServerSaveParam(10, 1); //10秒内修改一次
     
     server->rdbFileName = RDB_FILENAME_1;
     
@@ -578,7 +580,6 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
         if (server->rdbOn)
             bgSaveIfNeeded();
     }
-
 
     // 更新server时间
     updateServerTime();
@@ -811,7 +812,7 @@ void processCommand(redisClient * c)
         {
             sdscatsds(server->aof.active_buf, c->readBuf);
         }
-        if ((cmd->flags & CMD_WRITE) || (cmd->flags & CMD_READ))
+        if (cmd->flags & (CMD_READ | CMD_WRITE))
         {
             // 读写数据库时候，惰性删除 访问的键
             expireIfNeed(c->db, sdsnew(c->argv[1]));

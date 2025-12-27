@@ -484,8 +484,7 @@ int dictDelete(dict *dict, const void *key)
         {
             if (dict->type->keyCompare(dict->privdata, entry->key, key) == 0)
             {
-                log_debug("delete ok %s from ht[%d][%d]\n", entry->key, i, idx);
-
+                log_debug("delete ok");
                 // Key-value pair found, perform deletion
                 if (prev == NULL)
                 {

@@ -20,6 +20,7 @@
 #define RDB_ENC_INT32 0xFE
 #define RDB_EOF 0XFF
 #define RDB_SELECTDB 0xFE   // 与INT32不冲突
+#define RDB_EXPIRETIME 0XFD
 
 
 

@@ -102,7 +102,7 @@ static void _rdbSaveStringObject(FILE *fp, robj* obj)
 
 }
 
-void _rdbSaveObject(FILE* fp, robj *obj)
+void _rdbSaveValue(FILE* fp, robj *obj)
 {
     switch (obj->type)
     {
@@ -115,6 +115,12 @@ void _rdbSaveObject(FILE* fp, robj *obj)
         break;
     }
 }
+void _rdbSaveKey(FILE *fp, sds* key)
+{
+    _rdbSaveLen(fp, sdslen(key));
+    fwrite(key->buf, 1, sdslen(key), fp);
+}
+
 
 // 全量保存
 void rdbSave()
@@ -144,12 +150,20 @@ void rdbSave()
         dictIterator* di = dictGetIterator(db->kv);
         dictEntry* entry;
         while ((entry = dictIterNext(di))!= NULL) {
-            robj *key = entry->key;
+            sds *key = entry->key;
             robj *val = entry->v.val;
 
+            if (dictContains(db->expires, key))
+            {
+                uint8_t flag = 0xFD;
+                fwrite(&flag, 1, 1, fp);
+                long time = (long)dictFetchValue(db->expires, key);
+                fwrite(&time, 8, 1, fp);
+            }
+
             _rdbSaveType(fp, val->type);
-            _rdbSaveStringObject(fp, key);
-            _rdbSaveObject(fp, val);
+            _rdbSaveKey(fp, key);
+            _rdbSaveValue(fp, val);
         }
         dictReleaseIterator(di);
     }
@@ -200,6 +214,9 @@ void bgSaveIfNeeded()
         return;
     }
 
+    /*  bgsave：  满足一个就可以bgsave
+     *  服务器在距离上次save秒内，对数据库进行了至少n此修改。就
+     */
     for(int i = 0; i < server->saveCondSize; i++) {
         time_t interval = time(NULL) - server->lastSave;
         if (interval >= server->saveParams[i].seconds && 
@@ -293,7 +310,15 @@ unsigned char _rdbLoadType(FILE* fp)
     return c; // 1字节
     
 }
-
+sds*  _rdbLoadKey(FILE *fp)
+{
+    uint32_t len = _rdbLoadLen(fp);
+    sds* key = sdsempty();
+    char buf[1024];
+    size_t nread= fread(buf, 1, len, fp);
+    sdscatlen(key, buf, nread);
+    return key;
+}
 robj* _rdbLoadObject(FILE* fp, unsigned char type)
 {
     robj* obj;
@@ -324,7 +349,8 @@ void rdbLoad()
     if (strcmp(buf, "REDIS0001") != 0) return;
 
     // 2. read the dbs
-    int dbid;
+    uint8_t dbid;
+    long expire = 0;
     while (1) {
         unsigned char type = _rdbLoadType(fp); // 
         
@@ -333,18 +359,27 @@ void rdbLoad()
         if (type == RDB_SELECTDB) {
 
             // 读取数据库num
-            robj* obj = _rdbLoadStringObject(fp);
-            dbid = (int)(obj->ptr);
+            fread(&dbid, 1, 1, fp);
             if (dbid < 0 || dbid > server->dbnum) {
                 log_debug("Error loading dbid %d", dbid);;
                 exit(1);
             }
             continue;
         }
-        // 键值对
-        robj* key = _rdbLoadStringObject(fp);
+        if (type == RDB_EXPIRETIME)
+        {
+            fread(&expire, 8, 1, fp);
+            continue;
+        }
+        // 正常数据
+        sds* key = _rdbLoadKey(fp);
         robj* val = _rdbLoadObject(fp, type);
         dbAdd(server->db + dbid, key, val);
+        if (expire > 0)
+        {
+            dbSetExpire(server->db + dbid, key, expire);
+            expire = 0;
+        }
     }
 
     // 校验
