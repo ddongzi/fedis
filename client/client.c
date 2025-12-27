@@ -8,6 +8,7 @@
 #include <errno.h>
 #include "resp.h"
 #include "linenoise.h"
+#include "sds.h"
 #define BUFFER_SIZE 1024
 
 const char* redis_host = "127.0.0.1";
@@ -68,8 +69,16 @@ int read_response(int sock) {
     int bytes_received = recv(sock, buffer, BUFFER_SIZE - 1, 0);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
-        // TODO 支持事务返回的多
-        printf("<<< %s\n", resp_str(buffer));
+        // TODO 支持事务返回的多个resp组合。
+        char* endptr;
+        sds* sbuf = sdsnew(buffer);
+        char buf[512] = {0};
+        while (( endptr = respParse(sbuf->buf, sbuf->len)) != NULL)
+        {
+            memcpy(buf, sbuf->buf, endptr - sbuf->buf + 1);
+            printf("<<< %s\n", resp_str(buf));
+            sdsrange(sbuf, endptr - sbuf->buf + 1, sdslen(sbuf) - 1);
+        }
         if (strstr(buffer, "+bye" ) != NULL) {
             return -1;
         }

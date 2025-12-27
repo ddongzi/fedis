@@ -129,7 +129,7 @@ TEST(Resptest, EncodeBulkString)
     EXPECT_STREQ(s, "$5\r\nhello\r\n");
     free(s);
 }
-TEST(Resptest, Get)
+TEST(Resptest, ParseAresp)
 {
     char buf[128] = {0};
     char* endptr;
@@ -160,4 +160,6 @@ TEST(Resptest, Get)
     s = "$2\r\nA";
     endptr = respParse(s, strlen(s));
     EXPECT_EQ(endptr, nullptr);
+
+
 }

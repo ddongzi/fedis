@@ -128,9 +128,8 @@ int resp_decode(const char* resp, int* argc_out, char** argv_out[])
     return 0;
 }
 
-// 用户看到
 /**
- *
+ * resp字符串 转为用户看的
  * @param resp
  * @return 错误返回NULL
  */
@@ -288,10 +287,10 @@ static char* find_line_end(char* buf, size_t len)
 }
 
 /**
- * 从buf开头识别一个resp字符串。 开头-endptr
+ * 从buf开头识别一个resp字符串。
  * @param buf
  * @param len
- * @param endptr 指向最终位置\n。 如果识别不出来 就是NULL
+ * @return 指向最终位置\n。 如果识别不出来 就是NULL
  */
 char* respParse(char* buf, size_t len)
 {

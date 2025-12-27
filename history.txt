@@ -1,11 +1,3 @@
-expire age 180
-get age
-expire age 180
-get age
-expire age 180
-get age
-expire age 60
-get age
 set age 12
 expire age 360
 get age
@@ -98,3 +90,11 @@ set k3 v3
 set k4 v4
 exec
 get k4
+multi
+get age
+set k6 v6
+exec
+multi
+get age
+sex k8 v8
+exec

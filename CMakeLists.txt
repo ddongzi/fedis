@@ -46,5 +46,6 @@ add_executable( client
         src/resp.c
         src/log.c
         src/linenoise.c
+        src/sds.c
 )
 target_include_directories(client PUBLIC ${PROJECT_SOURCE_DIR}/include)
