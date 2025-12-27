@@ -1,0 +1,77 @@
+hello
+SET 1 2
+sji
+SET 1 2
+set age 32
+get age
+object encoding age
+get age
+set uou io
+get uou
+get age
+set qiio io
+object encoding age
+set foo
+soo
+set age 18
+get agr
+get age
+set sex male
+set age 12
+get age
+select 2
+get age
+set age 20
+get age
+select 1
+get age
+select 2
+get age
+set age 10
+get age
+set age 19
+get age
+set sex male
+get sex
+get male
+get sex
+set sex male
+get sex
+get age
+get sex
+set sex male
+get sex
+set age 12
+set sex male
+get sex
+get age
+get sex
+get age
+expire age 180
+get age
+expire age 180
+get age
+expire age 180
+get age
+expire age 60
+get age
+set age 12
+expire age 360
+get age
+expire age 360
+get age
+expire age 360
+set sex male
+expire sex 360
+get age
+get sex
+get age
+set age 19
+expire age 60
+ttl age
+get age
+set sex male
+expire sex 360
+ttl sex
+ttl age
+ttl sex
