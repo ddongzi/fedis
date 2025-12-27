@@ -47,6 +47,7 @@ static void commandInfoProc(redisClient* client);
 static void commandHeartBeatProc(redisClient* client);
 static void commandSelectProc(redisClient* client);
 static void commandExpireProc(redisClient* client);
+static void commandTtlProc(redisClient* client);
 
 
 // 全局命令表，包含sentinel等所有命令
@@ -64,7 +65,8 @@ redisCommand commandsTable[] = {
     {CMD_MASTER | CMD_SLAVE,"INFO", commandInfoProc, 1},
     {CMD_MASTER | CMD_SLAVE,"HEARTBEAT", commandHeartBeatProc, 1},
     {CMD_MASTER | CMD_SLAVE, "SELECT", commandSelectProc, 2},
-    {CMD_WRITE | CMD_MASTER, "EXPIRE", commandExpireProc, 3}
+    {CMD_WRITE | CMD_MASTER, "EXPIRE", commandExpireProc, 3},
+    {CMD_READ | CMD_MASTER, "TTL", commandTtlProc, 2}
 };
 
 
@@ -411,7 +413,21 @@ void commandExpireProc(redisClient* client)
     }
 }
 
+ void commandTtlProc(redisClient* client)
+{
+    sds* key = sdsnew(client->argv[1]);
+    if (dictContains(server->db->expires, key))
+    {
+        long ttl = dbGetTTL(client->db, key);
+        char buf[64] = {0};
+        snprintf(buf, sizeof(buf), "ttl:%lds", ttl);
+        addWrite(client, respEncodeBulkString(buf));
+    } else
+    {
+        addWrite(client, resp.keyNotFound);
+    }
 
+}
 
 void appendServerSaveParam(time_t sec, int changes)
 {

@@ -99,6 +99,18 @@ int dbSetExpire(redisDb *db, sds* key, long time)
     return dictAdd(db->expires, (void*)key, (void*)time);
 }
 /**
+ *  返回过期键剩余时间
+ * @param db
+ * @param key 过期键
+ * @return
+ */
+long dbGetTTL(redisDb *db, sds* key)
+{
+    long expireate = (long)dictFetchValue(db->expires, key);
+    return expireate - time(NULL);
+}
+
+/**
  * 惰性检查 key是否 国企删除
  * @param key key过期检查
  */

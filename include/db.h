@@ -35,7 +35,8 @@ int dbDelete(redisDb *db, sds* key);
 
 /* 过期管理 */
 int dbSetExpire(redisDb *db, sds* key, long time);
-int dbCheckExpire(redisDb *db, sds* key);
+long dbGetTTL(redisDb *db, sds* key);
+
 void expireIfNeed(redisDb* db, sds* key);
 
 
