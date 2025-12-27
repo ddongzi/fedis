@@ -46,6 +46,12 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     c->port = port;
     c->name = calloc(1, CLIENT_NAME_MAX);
     c->toclose = 0;
+    c->multiCmdCount = 0;
+    c->multcmds = malloc(sizeof(sds* ) * 10);
+    for (int i = 0; i < 10; ++i)
+    {
+        c->multcmds[i] = sdsempty();
+    }
     log_debug("create client %s:%d, fd %d", c->ip, c->port, c->fd);
     return c;
 }
@@ -148,4 +154,11 @@ void readToReadBuf(redisClient* client)
         }
     }
     printf("\nread buf finished,  %s\n", client->readBuf->buf);
+}
+void clientMultiAdd(redisClient* c)
+{
+    sds* cmd = c->multcmds[c->multiCmdCount];
+    sdsclear(cmd);
+    sdscatsds(cmd, c->readBuf);
+    c->multiCmdCount++;
 }

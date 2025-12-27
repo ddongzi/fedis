@@ -5,3 +5,7 @@
 ../.vscode/*
 .vscode/*
 build/
+cmake-build-valgrind/
+cmake-build-debug/
+lib/
+.idea/

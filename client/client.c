@@ -68,7 +68,7 @@ int read_response(int sock) {
     int bytes_received = recv(sock, buffer, BUFFER_SIZE - 1, 0);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
-
+        // TODO 支持事务返回的多
         printf("<<< %s\n", resp_str(buffer));
         if (strstr(buffer, "+bye" ) != NULL) {
             return -1;
@@ -135,6 +135,23 @@ char *hints(const char *buf, int *color, int *bold) {
     return NULL;
 }
 
+/**
+ *
+ * @param cmd
+ * @return 响应
+ */
+void handleInterCommand(char* cmd)
+{
+    if (strncasecmp(cmd, "/help", 5) == 0)
+    {
+        printf("set k v\n");
+        printf("get k\n");
+        printf("object encoding k\n");
+        printf("expire k\n");
+    }
+}
+
+
 int main(int argc, char* argv[])
 {
     char* line;
@@ -145,7 +162,6 @@ int main(int argc, char* argv[])
 
     // history file
     linenoiseHistoryLoad("history.txt");
-
 
     sock = connect_to_redis(redis_host, redis_port);
     if (sock < 0) return 1;
@@ -164,7 +180,7 @@ int main(int argc, char* argv[])
         // 内部指令
         if (line[0] == '/')
         {
-            printf("Unreconized internal command %s\n", line);
+            handleInterCommand(line);
         } else
         {
          // fedis命令

@@ -131,7 +131,7 @@ void sdscat(sds* dest, const char* s)
 void sdscatsds(sds* dest, sds* src)
 {
     if (src == NULL) return;
-    sdscat(dest, src->buf);
+    sdscatlen(dest, src->buf, src->len);
     src->free = src->len + src->free + 1;
     src->len = 0;
     src->buf[0] = '\0';

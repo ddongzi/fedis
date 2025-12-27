@@ -1,52 +1,3 @@
-hello
-SET 1 2
-sji
-SET 1 2
-set age 32
-get age
-object encoding age
-get age
-set uou io
-get uou
-get age
-set qiio io
-object encoding age
-set foo
-soo
-set age 18
-get agr
-get age
-set sex male
-set age 12
-get age
-select 2
-get age
-set age 20
-get age
-select 1
-get age
-select 2
-get age
-set age 10
-get age
-set age 19
-get age
-set sex male
-get sex
-get male
-get sex
-set sex male
-get sex
-get age
-get sex
-set sex male
-get sex
-set age 12
-set sex male
-get sex
-get age
-get sex
-get age
 expire age 180
 get age
 expire age 180
@@ -75,3 +26,75 @@ expire sex 360
 ttl sex
 ttl age
 ttl sex
+get age
+multi
+set age 12
+multi
+set sex male
+multi
+set who ob
+set her io
+multi
+set k1 v1
+set k2 v2
+exec
+multi
+set k1 v1
+set k2 v2
+exec
+multi
+set k1 v1
+exec
+multi
+set k2 v2
+set k3 v3
+exec
+multi
+set k8 v8
+multi
+set k8 v8
+multi
+set k2 v2
+exec
+multi
+set k1 v1
+multi
+set k2 v2
+set k3 v3
+exec
+multi
+set k1 v1
+exec
+multi
+set k1 v1
+exec
+multi
+set k1 v1
+exec
+multi
+set k1 v1
+exec
+multi
+set k1 v1
+exec
+multi
+set k1 v1
+exec
+MULTI
+set k3 v3
+MULTI
+set k2 v2
+exec
+multi
+set k3 v3
+exec
+multi
+set k1 v1
+exec
+get k1
+multi
+set k2 v2
+set k3 v3
+set k4 v4
+exec
+get k4

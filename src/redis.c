@@ -48,7 +48,8 @@ static void commandHeartBeatProc(redisClient* client);
 static void commandSelectProc(redisClient* client);
 static void commandExpireProc(redisClient* client);
 static void commandTtlProc(redisClient* client);
-
+static void commandMultiProc(redisClient* client);
+static void commandExecProc(redisClient* client);
 
 // 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
@@ -66,7 +67,9 @@ redisCommand commandsTable[] = {
     {CMD_MASTER | CMD_SLAVE,"HEARTBEAT", commandHeartBeatProc, 1},
     {CMD_MASTER | CMD_SLAVE, "SELECT", commandSelectProc, 2},
     {CMD_WRITE | CMD_MASTER, "EXPIRE", commandExpireProc, 3},
-    {CMD_READ | CMD_MASTER, "TTL", commandTtlProc, 2}
+    {CMD_READ | CMD_MASTER, "TTL", commandTtlProc, 2},
+    {CMD_MASTER, "MULTI", commandMultiProc, 1},
+    {CMD_MASTER, "EXEC", commandExecProc, 1},
 };
 
 
@@ -427,6 +430,30 @@ void commandExpireProc(redisClient* client)
         addWrite(client, resp.keyNotFound);
     }
 
+}
+void commandMultiProc(redisClient* client)
+{
+    client->flags |= REDIS_MULTI;
+    addWrite(client, resp.ok);
+}
+void commandExecProc(redisClient* client)
+{
+    // 清除multi状态 进入 exec状态
+    client->flags &= ~REDIS_MULTI;
+    client->flags |= REDIS_EXEC;
+    // 执行事务队列的命令
+    for (int i = 0; i < client->multiCmdCount; ++i)
+    {
+        sds* cmd = client->multcmds[i];
+        sdsclear(client->readBuf);
+        sdscatsds(client->readBuf, cmd);
+        processClientQueryBuf(client);
+        sdsclear(cmd);
+    }
+    client->flags &= ~REDIS_EXEC;
+    client->multiCmdCount = 0;
+    // 禁止嵌套exec
+    addWrite(client, respEncodeBulkString("Exec ok"));
 }
 
 void appendServerSaveParam(time_t sec, int changes)
@@ -821,7 +848,6 @@ void processCommand(redisClient * c)
     if (cmd == NULL) {
         log_debug("Will ret invalid!");
         addWrite(c,resp.invalidCommand);
-        aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     } else {
         // 写命令写入aof
         if ( !(c->flags & REDIS_CLIENT_FAKE) && server->aofOn &&  (cmd->flags & CMD_WRITE))
@@ -834,7 +860,6 @@ void processCommand(redisClient * c)
             expireIfNeed(c->db, sdsnew(c->argv[1]));
         }
         cmd->proc(c);
-        aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c);
     }
 
     if ( cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER) {
@@ -846,14 +871,16 @@ void processCommand(redisClient * c)
     {
         free(c->argv[i]);
     }
-    free(c->argv);
     c->argc = 0;
 }
+
+void multiInQueue(redisClient* c)
+{
+
+}
+
 /**
- * @brief 解析客户端RESP字符串到 argc, argv[]
-        *1\r\n$4\r\nping\r\n
-        只能处理一个resp
- *  伪客户端
+ * @brief 处理一次RESP协议的请求。
  * @param [in] client
  *
  */
@@ -864,22 +891,31 @@ void processClientQueryBuf(redisClient* client)
     sds* scpy = sdsdump(s);
     int argc;
     char** argv;
-    // TODO 如果传入 许多呢？比如aof
     int ret = resp_decode(scpy->buf, &argc, &argv);
     if (ret == 0) {
         // 按照命令执行
-        client->argv = argv;
-        client->argc = argc;
-        processCommand(client);
-        sdsfree(scpy);
-    }else if (*scpy->buf == '+' || *scpy->buf == '-') {
+        // 如果处于事务状态，设置事务队列
+        if ((client->flags & REDIS_MULTI )
+            && strncasecmp(argv[0], "exec", 4) != 0)
+        {
+            // 加入事务队列(即readbuf暂存一条resp)，返回queued
+            clientMultiAdd(client);
+            addWrite(client, respEncodeBulkString("queued"));
+            sdsclear(client->readBuf);
+        } else
+        {
+            // 执行命令
+            client->argv = argv;
+            client->argc = argc;
+            processCommand(client);
+        }
+        aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client);
+    }
+    else if (*scpy->buf == '+' || *scpy->buf == '-') {
         // 按照响应执行
         log_info("Get RESP from client %s", scpy->buf);    
-        sdsclear(client->readBuf);
-    } else {
-        // 其余不处理
-        sdsfree(scpy);
     }
+    sdsfree(scpy);
 }
 /**
  * @brief 读取+OK, -ERR 格式
@@ -922,6 +958,7 @@ void readFromClient(aeEventLoop *el, int fd, void *privData)
     if (checked) {
         sdscat(client->readBuf, buf);
         processClientQueryBuf(client);
+        sdsclear(client->readBuf);
         client->lastinteraction = server->unixtime;
     }
 }

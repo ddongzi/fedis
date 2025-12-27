@@ -1,25 +1,36 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#define REDIS_CLIENT_NORMAL 0
-#define REDIS_CLIENT_MASTER 1
-#define REDIS_CLIENT_SLAVE 2
-#define REDIS_CLIENT_SENTINEL 3
-#define REDIS_CLIENT_FAKE 3
+#define REDIS_CLIENT_NORMAL (1<<0)
+#define REDIS_CLIENT_MASTER (1<<1)
+#define REDIS_CLIENT_SLAVE (1<<2)
+#define REDIS_CLIENT_SENTINEL (1<<3)
+#define REDIS_CLIENT_FAKE (1<<4)
+#define REDIS_MULTI (1<<5) // 处于事务状态
+#define REDIS_EXEC (1<<6) // 处于事务状态
 
 #include "sds.h"
 #include "db.h"
 #include "robj.h"
-#include  "error.h"
+#include "error.h"
+#include "typedefs.h"
+#include "redis.h"
 #define CLIENT_NAME_MAX 32
 
+// 存储事务中命令状态
+struct MultiCmd
+{
+    int argc;
+    char** argv;
+    redisCommand* cmd;
+};
 
 /**
  * @struct redisClient
  * @brief  client状态结构，不只是传统意义的client。 维持的master也是该结构，所以更像是对端peer。
  * 
  */
-typedef struct redisClient {
+struct redisClient {
     // 基本信息
     int fd;
     int flags;  ///< 表示对端角色 REDIS_CLIENT_
@@ -49,7 +60,12 @@ typedef struct redisClient {
     // 错误
     char err_msg[128];
     ErrorCode last_errno;
-} redisClient;
+
+    // 事务队列
+    sds** multcmds; // 固定大小，最大支持10个。
+    int multiCmdCount;
+
+} ;
 redisClient* redisFakeClientCreate();
 redisClient *redisClientCreate(int fd, char* ip, int port);
 void freeClient(redisClient* client);
@@ -57,4 +73,5 @@ void clientToclose(redisClient* c);
 
 void addWrite(redisClient* client, char* s) ;
 void readToReadBuf(redisClient* client) ;
+void clientMultiAdd(redisClient* c);
 #endif

@@ -95,7 +95,7 @@ char* respEncodeBulkString(const char* s)
  * @param [in] resp 多条批量字符串格式
  * @param [out] argc_out
  * @param [out] argv_out
- * @return int
+ * @return int -1标识失败。 0标识成功
  */
 int resp_decode(const char* resp, int* argc_out, char** argv_out[])
 {

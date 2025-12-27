@@ -6,6 +6,7 @@
 #include "list.h"
 #include "dict.h"
 #include "robj.h"
+#include "typedefs.h"
 #include "client.h"
 #include <stdbool.h>
 #include "aof.h"
@@ -17,10 +18,7 @@
 #define REDIS_CLUSTER_SLAVE 1
 #define REDIS_CLUSTER_SENTINEL 2
 
-
 extern struct redisServer* server;
-
-struct redisCommand;
 
 #define RDB_FILENAME_1 "/home/dong/fedis/data/1.rdb"
 #define RDB_FILENAME_2 "/home/dong/fedis/data/2.rdb"
@@ -35,12 +33,10 @@ struct redisCommand;
 #define CMD_SLAVE (1<<2)    //      0100 从服务器可以执行
 #define CMD_WRITE (1<<3)    //      1000 数据库写
 #define CMD_READ (1<<4)     //     10000 数据库读
-
-typedef struct redisCommand redisCommand;
 typedef void redisCommandProc(redisClient* client);
-struct redisCommand {
+struct  redisCommand{
     int flags;  // CMD_
-    char* name; // 
+    char* name; //
     redisCommandProc* proc;
     int arity; // 参数个数. -x:表示至少X个变长参数（完整，包含操作字）
 } ;
