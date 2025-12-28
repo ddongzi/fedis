@@ -162,7 +162,7 @@ void rioInitWithFD(rio *r, int fd)
  */
 size_t rioWrite(rio *r, const void *buf, size_t len)
 {
-    log_debug("rioWrite go  %d", len);   
+    // log_debug("rioWrite go  %d", len);
     if (r == NULL || buf == NULL) {
         log_error("rioWrite NULL pointer！！");
         return 0;

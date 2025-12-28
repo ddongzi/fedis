@@ -13,11 +13,12 @@
 #include <stdlib.h>
 #include <strings.h>
 #include "log.h"
+#include "redis.h"
 #include "util.h"
  char* get_config(const char* key)
  {
     char fullpath[128] = {0};
-    snprintf(fullpath, sizeof(fullpath), "%s/conf/server.conf", PROJECT_ROOT);
+    snprintf(fullpath, sizeof(fullpath), "%s/conf/%s", PROJECT_ROOT, server->configfile);
     FILE* f = fopen(fullpath, "r");
     if (f == NULL) {
         perror("open config file");

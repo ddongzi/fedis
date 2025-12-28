@@ -148,6 +148,11 @@ void handleInterCommand(char* cmd)
 
 int main(int argc, char* argv[])
 {
+    if (argc == 2)
+    {
+        redis_port = atoi(argv[1]);
+    }
+
     char* line;
     // TAB
     linenoiseSetCompletionCallback(completion);

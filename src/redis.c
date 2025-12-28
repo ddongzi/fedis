@@ -747,7 +747,6 @@ void initServer()
     aeCreateTimeEvent(server->eventLoop, 1000, serverCron, NULL);
     log_debug(" create time event for serverCron");
     
-
     // sentinel特性，
     if (server->role == REDIS_CLUSTER_SENTINEL) {
         char* monitor = get_config("monitor");

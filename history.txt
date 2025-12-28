@@ -1,9 +1,3 @@
-ttl age
-get age
-set sex male
-expire sex 360
-ttl sex
-ttl age
 ttl sex
 get age
 multi
@@ -98,3 +92,9 @@ exec
 get name
 set name zyd
 get name
+slaveof 127.0.0.1:6667
+get name
+set friend lll
+get friend
+get name
+set year 1999

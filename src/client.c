@@ -105,12 +105,6 @@ void freeClient(redisClient* client)
 
     sdsfree(client->readBuf);
     sdsfree(client->writeBuf);
-    // 正常情况，每次执行完命令argv就destroy了，临时
-    if (client->argv) {
-        for(int i = 0; i < client->argc; i++) {
-            robjDestroy(client->argv[i]);
-        }
-    }
     free(client);
     client = NULL;
 }

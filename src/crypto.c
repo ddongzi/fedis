@@ -11,7 +11,7 @@
  */
 void compute_sha256(const char* data, size_t len, unsigned char out[])
 {
-    log_debug("Compute sha256 for data len [%zu]", len);
+    // log_debug("Compute sha256 for data len [%zu]", len);
     // MD : message digest
     EVP_MD_CTX *ctx = EVP_MD_CTX_new(); // md上下文
     assert(ctx);
@@ -33,7 +33,7 @@ void compute_sha256(const char* data, size_t len, unsigned char out[])
         EVP_MD_CTX_free(ctx);
         return;
     }
-    log_debug("compute_hash len: %zu", hash_len);
+    // log_debug("compute_hash len: %zu", hash_len);
     // printhash(out, hash_len);
     // 释放上下文资源
     EVP_MD_CTX_free(ctx);
@@ -62,7 +62,7 @@ int verify_sha256(const char* data, size_t len, unsigned char expected_hash[])
     unsigned char computed_hash[SHA256_DIGEST_LENGTH];
     compute_sha256(data, len, computed_hash);
     if (memcmp(computed_hash, expected_hash, SHA256_DIGEST_LENGTH) == 0) {
-        log_debug("Verify success!");
+        log_debug("Hash Verify success!");
         return 1;
     } else {
         log_error("Verify failed ! Expected : ");

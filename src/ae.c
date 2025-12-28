@@ -391,8 +391,7 @@ int aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask)
     aeApiState* apiState = eventLoop->apiState;
     struct epoll_event ee;
     if (mask == AE_NONE) {
-        // TODO 描述符上都不监听，删除. 没起作用
-        log_debug("Del epoll fd [%d]", fd);
+        // log_debug("Del epoll fd [%d]", fd);
         epoll_ctl(apiState->epfd, EPOLL_CTL_DEL, fd, NULL);
         return AE_OK;
     }

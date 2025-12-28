@@ -19,7 +19,7 @@ make
 启动服务端：
 ```bash
  # sentinel 服务
- ./bin/redis --sentinel --config conf/server.conf --port 7000
+ ./bin/redis --sentinel --config conf/server-6667.conf --port 7000
  # slave服务
  ./bin/redis --slave --port 7003
  # master服务（默认）

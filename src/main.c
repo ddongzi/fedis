@@ -23,6 +23,12 @@ int main(int argc, char **argv)
     log_debug("hello log.");
     server = calloc(1,sizeof(struct redisServer));
 
+    server->configfile = "server.conf";
+    if (argc == 2)
+    {
+        char* conf_file = argv[1];
+        server->configfile = strdup(conf_file);
+    }
     initServerConfig();
     initServer();
     aeMain(server->eventLoop);

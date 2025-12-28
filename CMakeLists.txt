@@ -32,6 +32,7 @@ add_executable(unit_tests
         test/test_resp.cpp
         test/test_robj.cpp
         test/test_command.cpp
+        test/test_transaction.cpp
         src/resp.c src/robj.c src/sds.c
         src/log.c
 )
