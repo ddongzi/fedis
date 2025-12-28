@@ -354,7 +354,7 @@ dictEntry *dictAddRaw(dict *dict, const void *key)
  * @param [in] dict
  * @param [in] key
  * @param [in] val
- * @return int
+ * @return int 失败返回-1， 成功返回0
  */
 int dictAdd(dict *dict, const void *key, const void *val)
 {
@@ -377,7 +377,7 @@ int dictAdd(dict *dict, const void *key, const void *val)
  * @param [in] dict 
  * @param [in] key 
  * @param [in] val 
- * @return int 
+ * @return int 更新成功返回0， 否则返回-1
  */
 int dictReplace(dict *dict, const void *key, const void *val)
 {

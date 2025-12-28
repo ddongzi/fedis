@@ -93,7 +93,14 @@ void dbClear(redisDb* db)
 int dbAdd(redisDb* db, sds* key,void* value)
 {
     if (db == NULL || key == NULL) return DB_DICT_ERR;
-    return dictAdd(db->kv, (void*)key,(void*)value);
+    if (!dictContains(db->kv, (void*)key))
+    {
+        return dictAdd(db->kv, (void*)key,(void*)value);
+    } else
+    {
+        return dictReplace(db->kv, (void*)key, (void*)value);
+    }
+
 
 }
 

@@ -171,7 +171,7 @@ void commandSetProc(redisClient* client)
 {
     log_debug("Set proc..key: %s", client->argv[1]);
     if (client->argc == 2) {
-        // TODO 多余，应该在之前通过arity校验
+        // TODO 在之前通过arity校验
         client->last_errno = ERR_VALUE_MISSED;
         sprintf(client->err_msg, "%s",resp.valmissed);
         addWrite(client, resp.valmissed);

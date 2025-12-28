@@ -1,6 +1,3 @@
-get age
-set age 19
-expire age 60
 ttl age
 get age
 set sex male
@@ -98,3 +95,6 @@ WATCH name
 multi
 set name wangba
 exec
+get name
+set name zyd
+get name
