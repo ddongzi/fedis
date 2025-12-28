@@ -1,13 +1,3 @@
-set age 12
-expire age 360
-get age
-expire age 360
-get age
-expire age 360
-set sex male
-expire sex 360
-get age
-get sex
 get age
 set age 19
 expire age 60
@@ -97,4 +87,14 @@ exec
 multi
 get age
 sex k8 v8
+exec
+get age
+set age 16
+multi
+set score 19
+exec
+watch name
+WATCH name
+multi
+set name wangba
 exec

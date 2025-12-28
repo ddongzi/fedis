@@ -518,6 +518,13 @@ int dictDelete(dict *dict, const void *key)
     }
     return DICT_ERR;
 }
+
+/**
+ *
+ * @param dict
+ * @param key
+ * @return 包含返回 true
+ */
 int dictContains(dict* dict, const void* key)
 {
     return dictFind(dict, key) != NULL;
@@ -536,8 +543,11 @@ void dictRelease(dict *dict)
     free(dict);
 }
 
-
-/* dict iterator */
+/**
+ * 获取一个迭代器。
+ * @param dict
+ * @return
+ */
 dictIterator *dictGetIterator(dict *dict)
 {
     dictIterator *iter = (dictIterator *)malloc(sizeof(dictIterator));

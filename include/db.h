@@ -3,6 +3,7 @@
 #include "dict.h"
 #include <stdlib.h>
 #include "sds.h"
+#include "typedefs.h"
 #include "robj.h"
 
 #define DB_DICT_ERR -1
@@ -19,6 +20,7 @@ typedef struct redisDb {
     dict *kv;          /* 存储键值对的主哈希表 */
     int id;              /* 数据库编号 */
     dict * expires; // 过期时间键值， {key:expiretime} 值是expireat过期的时间戳
+    dict* watched_keys; // 正在watch监视的键-客户端。 值是客户端set
 } redisDb;
 
 /* --------------------- 数据库 API --------------------- */
@@ -39,6 +41,8 @@ long dbGetTTL(redisDb *db, sds* key);
 
 void expireIfNeed(redisDb* db, sds* key);
 
+void dbAddWatch(redisDb* db, sds* key, redisClient* client);
+int dbIsWatching(redisDb* db, sds* key);
 
 /* 数据库信息 */
 void dbPrint(redisDb *db);

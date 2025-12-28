@@ -64,8 +64,8 @@ struct redisServer {
 
     // 客户端连接
     int maxclients; // 最大客户端连接数
-    list* clients;  // 客户端链表    
-    list* clientsToClose;   // 待关闭客户端链表
+    list * clients;  // 客户端链表    
+    list * clientsToClose;   // 待关闭客户端链表
 
     // 数据库
     int dbnum;  // 数据库数量

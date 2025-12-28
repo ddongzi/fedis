@@ -69,7 +69,6 @@ int read_response(int sock) {
     int bytes_received = recv(sock, buffer, BUFFER_SIZE - 1, 0);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
-        // TODO 支持事务返回的多个resp组合。
         char* endptr;
         sds* sbuf = sdsnew(buffer);
         char buf[512] = {0};
@@ -91,21 +90,7 @@ int read_response(int sock) {
     } else {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
             // 阻塞超时，
-            printf("No data available temporarily.\n");
-            int err;
-            socklen_t len = sizeof(err);    
-            // 查看错误状态
-            if (getsockopt(sock, SOL_SOCKET, SO_ERROR, &err, &len) == 0) { 
-                // getsockopt 成功了，再看 err
-                if (err != 0) {
-                    printf("Socket error status: %d (%s)", err, strerror(err));
-                }
-            } else {
-                printf("getsockopt failed: %s", strerror(errno));
-            }
-            close(sock);
-            sock = connect_to_redis(redis_host, redis_port);
-            return 1;
+            return 0;
         } else {
             // 真正错误
             perror("recv failed");
@@ -174,8 +159,6 @@ int main(int argc, char* argv[])
 
     sock = connect_to_redis(redis_host, redis_port);
     if (sock < 0) return 1;
-    struct timeval tv = {3, 0}; // 最多等待3秒
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
     while (1)
     {

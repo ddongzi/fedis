@@ -6,8 +6,9 @@
 #define REDIS_CLIENT_SLAVE (1<<2)
 #define REDIS_CLIENT_SENTINEL (1<<3)
 #define REDIS_CLIENT_FAKE (1<<4)
-#define REDIS_MULTI (1<<5) // 处于事务状态
-#define REDIS_EXEC (1<<6) // 处于事务状态
+#define REDIS_MULTI (1<<5) // 处于事务入队状态
+#define REDIS_EXEC (1<<6) // 处于事务执行状态
+#define REDIS_DIRTY_CAS (1<<7) // 客户端监视的键被修改过
 
 #include "sds.h"
 #include "db.h"

@@ -50,6 +50,7 @@ static void commandExpireProc(redisClient* client);
 static void commandTtlProc(redisClient* client);
 static void commandMultiProc(redisClient* client);
 static void commandExecProc(redisClient* client);
+static void commandWatchProc(redisClient* client);
 
 // 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
@@ -70,6 +71,7 @@ redisCommand commandsTable[] = {
     {CMD_READ | CMD_MASTER, "TTL", commandTtlProc, 2},
     {CMD_MASTER, "MULTI", commandMultiProc, 1},
     {CMD_MASTER, "EXEC", commandExecProc, 1},
+    {CMD_MASTER, "WATCH", commandWatchProc, 1},
 };
 
 
@@ -441,19 +443,42 @@ void commandExecProc(redisClient* client)
     // 清除multi状态 进入 exec状态
     client->flags &= ~REDIS_MULTI;
     client->flags |= REDIS_EXEC;
-    // 执行事务队列的命令
-    for (int i = 0; i < client->multiCmdCount; ++i)
+    if (client->flags &= REDIS_DIRTY_CAS)
     {
-        sds* cmd = client->multcmds[i];
-        sdsclear(client->readBuf);
-        sdscatsds(client->readBuf, cmd);
-        processClientQueryBuf(client);
-        sdsclear(cmd);
+        // 事务安全已经破坏，拒绝执行
+        addWrite(client, respEncodeBulkString("err dirty"));
+    } else
+    {
+        // 执行事务队列的命令
+        for (int i = 0; i < client->multiCmdCount; ++i)
+        {
+            sds* cmd = client->multcmds[i];
+            sdsclear(client->readBuf);
+            sdscatsds(client->readBuf, cmd);
+            processClientQueryBuf(client);
+            sdsclear(cmd);
+        }
+        addWrite(client, respEncodeBulkString("Exec ok"));
     }
+
     client->flags &= ~REDIS_EXEC;
     client->multiCmdCount = 0;
-    // 禁止嵌套exec
-    addWrite(client, respEncodeBulkString("Exec ok"));
+}
+
+/**
+ * 在multi之前执行watch
+ * 在exec执行之前，监视任意数量键
+ * 在exec执行时，检查监视的键是否被修改过，如果被修改过，拒绝事务，保证事务安全
+ * @param client
+ */
+void commandWatchProc(redisClient* client)
+{
+    for (int i = 1; i < client->argc; ++i)
+    {
+        sds* key = sdsnew(client->argv[i]);
+        dbAddWatch(client->db, key, client);
+    }
+    addWrite(client, resp.ok);
 }
 
 void appendServerSaveParam(time_t sec, int changes)
@@ -463,8 +488,6 @@ void appendServerSaveParam(time_t sec, int changes)
     server->saveParams[server->saveCondSize].changes = changes;
     server->saveCondSize++;
 }
-
-
 
 /**
  * @brief 初始化服务器配置
@@ -832,6 +855,28 @@ void commandPropagate(sds* s)
     }
     log_debug("Count propagate %d slaves.", slaves);
 }
+
+/**
+ * 写命令 , 为watch的客户端 设置dirty标识
+ * @param client
+ */
+void touchWatchKey(redisClient* client)
+{
+    sds* key = sdsnew(client->argv[1]);
+    if (dbIsWatching(client->db, key))
+    {
+        list* clients = dictFetchValue(client->db->watched_keys, key);
+        listNode* node = listHead(clients);
+        while (node)
+        {
+            redisClient* watch_client = listNodeValue(node);
+            watch_client->flags |= REDIS_DIRTY_CAS;
+            listDelNode(clients, node);
+            node = listHead(clients);
+        }
+    }
+}
+
 /**
  * @brief 调用执行命令。已有argc,argv[]
  * 
@@ -854,12 +899,17 @@ void processCommand(redisClient * c)
         {
             sdscatsds(server->aof.active_buf, c->readBuf);
         }
+        // 读写数据库时候，惰性删除 访问的键
         if (cmd->flags & (CMD_READ | CMD_WRITE))
         {
-            // 读写数据库时候，惰性删除 访问的键
             expireIfNeed(c->db, sdsnew(c->argv[1]));
         }
         cmd->proc(c);
+        // 监视键更新
+        if (cmd->flags & CMD_WRITE)
+        {
+            touchWatchKey(c);
+        }
     }
 
     if ( cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER) {
@@ -894,7 +944,8 @@ void processClientQueryBuf(redisClient* client)
     int ret = resp_decode(scpy->buf, &argc, &argv);
     if (ret == 0) {
         // 按照命令执行
-        // 如果处于事务状态，设置事务队列
+
+        // 如果处于事务状态，设置事务队列，暂不执行
         if ((client->flags & REDIS_MULTI )
             && strncasecmp(argv[0], "exec", 4) != 0)
         {

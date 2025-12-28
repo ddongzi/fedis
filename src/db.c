@@ -3,8 +3,10 @@
  * 键: sds字符串
  * 值：robj对象， long整数
  */
-
+#include "typedefs.h"
 #include  "db.h"
+
+#include "list.h"
 #include "sds.h"
 #include "robj.h"
 #include "log.h"
@@ -32,7 +34,10 @@ static int dbDictKeyCmp(void* data, const void* key1, const void* key2)
 {
     return sdscmp((sds*)key1, (sds*)key2);
 }
-
+static void dbDictValfreelist(void* data, void* obj)
+{
+    listRelease((list*)obj);
+}
 dictType kvtype = {
     .hashFunction =  dbDictKeyHash,
     .keyCompare = dbDictKeyCmp,
@@ -49,12 +54,21 @@ dictType expiretype = {
     .keyDestructor = dbDictKeyfree,
     .valDestructor = NULL,
 };
+dictType watchtype = {
+    .hashFunction =  dbDictKeyHash,
+    .keyCompare = dbDictKeyCmp,
+    .valDup = NULL,
+    .keyDup = NULL,
+    .keyDestructor = dbDictKeyfree,
+    .valDestructor = dbDictValfreelist,
+};
 void dbInit(redisDb* db, int id)
 {
     db->kv = dictCreate(&kvtype, NULL);
 
     db->id = id;
     db->expires = dictCreate(&expiretype, NULL);
+    db->watched_keys = dictCreate(&watchtype, NULL);
 }
 
 
@@ -127,6 +141,29 @@ void expireIfNeed(redisDb* db, sds* key)
                 log_debug("OK.Delete expire key  %s", key->buf);
         }
     }
+}
+
+/**
+ * 添加client到key上监视. 如果key还没有监视列表，就创建
+ * @param db
+ * @param key
+ * @param client
+ */
+void dbAddWatch(redisDb* db, sds* key, redisClient* client)
+{
+    list* clients;
+    if (!dictContains(db->watched_keys, key))
+    {
+        clients = listCreate();
+        dictAdd(db->watched_keys, key, clients);
+    }
+    clients = dictFetchValue(db->watched_keys, key);
+    listAddNodeTail(clients, listCreateNode(client));
+}
+
+int dbIsWatching(redisDb* db, sds* key)
+{
+    return dictContains(db->watched_keys, key);
 }
 
 void dbPrint(redisDb* db)
