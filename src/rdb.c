@@ -1,5 +1,5 @@
 /**
- * RDB 内存完全映射。
+ * RDB 快照。
  *
  * RDB 文件格式
  * REDIS 标识
@@ -17,12 +17,15 @@
 #include <stdio.h>
 #include "redis.h"
 #include "rdb.h"
+
+#include <fcntl.h>
 #include <stdint.h>
 #include "log.h"
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include "crypto.h"
+#include "util.h"
 /**
  * @brief 对象类型、RDB操作符
  * 
@@ -128,7 +131,7 @@ void rdbSave()
     log_debug("======RDB Save(child:%u)======", getpid());
     int nwritten = 0;
     int nread = 0;
-    FILE* fp = fopen(server->rdbFileName, "w+");
+    FILE* fp = fopen(fullPath(server->rdbFileName), "w+");
     if (!fp) {
         perror("rdbSave can't open file"); 
         return;
@@ -192,6 +195,11 @@ void rdbSave()
     log_debug("Save the RDB file success");
 }
 
+/**
+ * 开启一个子进程，做rdbsave
+ * @warning 需要控制资源开销，调整bgsave。
+ * @details 每次fork都相当于内存快照。
+ */
 void bgsave()
 {
     pid_t pid = fork();
@@ -339,8 +347,13 @@ robj* _rdbLoadObject(FILE* fp, unsigned char type)
  */
 void rdbLoad()
 {
-    FILE *fp = fopen(server->rdbFileName, "r");
-    if (fp == NULL) return;
+
+    FILE *fp = fopen(fullPath(server->rdbFileName), "w+");
+    if (fp == NULL)
+    {
+        log_error("rdb load failed. %s, %s", fullPath(server->rdbFileName), strerror(errno));
+        exit(EXIT_FAILURE);
+    }
     
     // 1. read magic
     char buf[9];
@@ -405,14 +418,18 @@ void rdbLoad()
  */
 void receiveRDBfile(char* buf, int n)
 {
+    // TODO 不应该直接覆盖，应该通过一个临时完整文件 去覆盖
     log_debug("Receive RDB to: %s", server->rdbFileName);
-    FILE* fp = fopen(server->rdbFileName, "w");
-    if (fp == NULL) {
-        perror("saveRdbFile can't open file");
-        return;
+    FILE* fp = fopen(fullPath(server->rdbFileName), "w+");
+    if (fp == NULL)
+    {
+        log_error("Open rdb failed. %s, %s", fullPath(server->rdbFileName), strerror(errno));
+        exit(EXIT_FAILURE);
     }
-    fwrite(buf, 1, n, fp);
-    fclose(fp);
+    size_t  nwrite =  fwrite(buf, 1, n, fp);
+    if (nwrite != n)
+    {
+        log_error("Save buf to rdb uncomplete!");
+    }
     log_debug("Save the RDB file success");
-    
 }

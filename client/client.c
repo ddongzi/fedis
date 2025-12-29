@@ -63,10 +63,11 @@ void send_command(int sock, const char *command)
 }
 
 // 读取 Redis 响应
-// -1 关闭client， 1 异常读取， 0正常
+// -1 关闭client， 1 异常关闭， 0正常
 int read_response(int sock) {
     char buffer[BUFFER_SIZE];
-    int bytes_received = recv(sock, buffer, BUFFER_SIZE - 1, 0);
+    ssize_t bytes_received = read(sock, buffer, BUFFER_SIZE - 1);
+    printf("read %d bytes", bytes_received);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
         char* endptr;
@@ -78,14 +79,12 @@ int read_response(int sock) {
             printf("<<< %s\n", resp_str(buf));
             sdsrange(sbuf, endptr - sbuf->buf + 1, sdslen(sbuf) - 1);
         }
-        if (strstr(buffer, "+bye" ) != NULL) {
-            return -1;
-        }
         return 0;
     } else if (bytes_received == 0)
     {
         // 对端关闭
-        printf("Connection closed by peer.\n");
+        printf("Connection closed by peer Normally.\n");
+        close(sock);
         return -1;
     } else {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -93,13 +92,11 @@ int read_response(int sock) {
             return 0;
         } else {
             // 真正错误
-            perror("recv failed");
+            printf("Connection error : %s. Close !", strerror(errno));
             close(sock);
-            sock = connect_to_redis(redis_host, redis_port);
             return 1;
         }
     }
-    
 }
 
 void completion(const char* buf, linenoiseCompletions* lc)
@@ -111,6 +108,7 @@ void completion(const char* buf, linenoiseCompletions* lc)
     if (!strncasecmp(buf, "s", 1))
     {
         linenoiseAddCompletion(lc, "set");
+        linenoiseAddCompletion(lc, "slaveof");
     }
     if (!strncasecmp(buf, "g", 1))
     {
@@ -125,6 +123,10 @@ char *hints(const char *buf, int *color, int *bold) {
     if (!strcasecmp(buf, "get")) {
         *color = 35; // 紫色
         return " <key>";
+    }
+    if (!strcasecmp(buf, "slaveof")) {
+        *color = 35; // 紫色
+        return " <host>:<port>";
     }
     return NULL;
 }
@@ -142,6 +144,11 @@ void handleInterCommand(char* cmd)
         printf("get k\n");
         printf("object encoding k\n");
         printf("expire k\n");
+        printf("slaveof host:port\n");
+        printf("bye\n");
+        printf("multi\n");
+        printf("exec\n");
+        printf("watch\n");
     }
 }
 
@@ -167,6 +174,7 @@ int main(int argc, char* argv[])
 
     while (1)
     {
+        // 注意：如果只是回车/换行，不会从linenoise出来。
         line = linenoise(">>> ");
         if (line == NULL) break;
         if (line[0] == '\0')
@@ -174,6 +182,7 @@ int main(int argc, char* argv[])
             free(line);
             continue;
         }
+
         // 内部指令
         if (line[0] == '/')
         {
@@ -185,7 +194,8 @@ int main(int argc, char* argv[])
             linenoiseHistorySave("history.txt");
 
             send_command(sock, line);
-            if (read_response(sock) == -1) { // bye
+            int ret = read_response(sock);
+            if ( ret != 0 ) { // bye
                 break;  // 断开连接时，主循环结束
             }
         }

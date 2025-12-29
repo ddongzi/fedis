@@ -75,6 +75,7 @@ struct redisServer {
     // 事件循环
     aeEventLoop* eventLoop; // 事件循环
 
+    // TODO 考虑使用flags标
     int role; // 角色 REDIS_CLUSTER_
 
     // Slave特性

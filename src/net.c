@@ -462,7 +462,7 @@ void connectMaster()
     anetEnableTcpNoDelay(fd);
     int err = 0;
     server->master = redisClientCreate(fd, server->masterhost, server->masterport);
-    server->master->flags = REDIS_CLIENT_MASTER;
+    server->master->flags |= REDIS_CLIENT_MASTER;
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     server->repltimeout = REPL_TIMEOUT;
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。

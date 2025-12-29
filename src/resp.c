@@ -50,7 +50,7 @@ struct RespShared resp = {
  * 
  * @param [in] argc 
  * @param [in] argv 
- * @return char* 
+ * @return char* 返回编码后结果
  */
 char* respEncodeArrayString(int argc, char* argv[])
 {

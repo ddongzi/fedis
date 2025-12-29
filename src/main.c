@@ -20,8 +20,12 @@ int main(int argc, char **argv)
 {
     log_set_level(LOG_DEBUG);
     log_info("Process id: [%d]", getpid());
-    log_debug("hello log.");
     server = calloc(1,sizeof(struct redisServer));
+    if (!server)
+    {
+        log_error("Server malloc error. %s", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
 
     server->configfile = "server.conf";
     if (argc == 2)

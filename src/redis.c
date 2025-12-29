@@ -238,10 +238,10 @@ void masterToSlave(const char* ip, int port)
 {
     log_info("Master => Slave");
     server->role = REDIS_CLUSTER_SLAVE;
-    server->rdbFileName = RDB_FILENAME_2;
     server->masterhost = ip;
     server->masterport = port;
-    loadCommands();    
+
+    loadCommands();
 }
 
 // 127.0.0.1:6668
@@ -508,15 +508,15 @@ void initServerConfig()
     if (!strncasecmp(consistency, "aof", 3)) server->aofOn = true;
     char* dbnum = get_config("dbnum");
     server->dbnum = atoi(dbnum);
-    //
+    char* rdbfile = get_config("rdb_file");
+    server->rdbFileName = rdbfile;
+
+    // bagsave
     server->saveCondSize = 0;
     server->saveParams = NULL;
-    // bgsave条件，
     appendServerSaveParam(900, 1);
     appendServerSaveParam(300, 10000);
     appendServerSaveParam(10, 1); //10秒内修改一次
-    
-    server->rdbFileName = RDB_FILENAME_1;
     
     server->maxclients = REDIS_MAX_CLIENTS;
     loadCommands();
@@ -788,7 +788,7 @@ void initServer()
  * @brief 1. 从服务器拒绝执行来自普通客户端的写命令
  * 
  * @param [in] cmd 
- * @return int 
+ * @return int 支持返回1， 不支持返回0
  */
 int isSupportedCmd(redisClient* c, redisCommand* cmd)
 {
@@ -798,7 +798,6 @@ int isSupportedCmd(redisClient* c, redisCommand* cmd)
         c->flags == REDIS_CLIENT_NORMAL &&
         cmd->flags & CMD_WRITE
     ) {
-        log_debug("UNsupported cmd %s", cmd->name);
         return 0;
     }
     
@@ -963,7 +962,7 @@ void processClientQueryBuf(redisClient* client)
     }
     else if (*scpy->buf == '+' || *scpy->buf == '-') {
         // 按照响应执行
-        log_info("Get RESP from client %s", scpy->buf);    
+        log_info("Get RESP from client %s", resp_str(scpy->buf));
     }
     sdsfree(scpy);
 }
@@ -984,7 +983,7 @@ void readRespFromClient(aeEventLoop *el, int fd, void *privData)
     ssize_t nread = rioRead(&r, buf, sizeof(buf));
     int checked = checkSockRead(client, nread);
     if (checked) {
-        log_info("Get RESP from client %s", buf);    
+        log_info("Get RESP from client.  %s", resp_str(buf));
         client->lastinteraction = server->unixtime;
     }
     // 恢复默认的读事件处理
@@ -1029,13 +1028,9 @@ void saveRDBToSlave(redisClient *client)
 
     if (server->rdbfd == -1)
     {
-        server->rdbfd = open(server->rdbFileName, O_RDONLY);
-        if (server->rdbfd == -1)
-        {
-            log_error("Open RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
-            return;
-        }
+        server->rdbfd = open(fullPath(server->rdbFileName), O_RDWR);
     }
+
     if (fstat(server->rdbfd, &st) == -1)
     {
         log_error("Stat RDB file: %s failed: %s", server->rdbFileName, strerror(errno));
@@ -1043,14 +1038,13 @@ void saveRDBToSlave(redisClient *client)
     }
 
     rdb_len = st.st_size;
-    log_debug("Stat RDB file , size: %d", st.st_size);
 
     // 发送 $length\r\n
     sprintf(length_buf, "$%lu\r\n", rdb_len);
     length_len = strlen(length_buf);
     rioInitWithSocket(&sio, client->fd);
     nwritten = rioWrite(&sio, length_buf, length_len);
-    log_debug("send RDB length: %s", length_buf);
+    log_debug("send RDB length field: %d", rdb_len);
     if (nwritten == 0 && sio.error)
     {
         close(client->fd);
@@ -1071,13 +1065,14 @@ void saveRDBToSlave(redisClient *client)
         return;
     }
 
-    log_debug("RDB sent to slave %d， size:%lld", client->fd, rdb_len);
+    log_debug("Send rdb data to slave %d， size:%lld", client->fd, rdb_len);
 }
 
 void sendToClient(aeEventLoop *el, int fd, void *privdata)
 {
     redisClient *client = (redisClient *)privdata;
     char *msg = client->writeBuf->buf;
+
     size_t msg_len = sdslen(client->writeBuf);
     ssize_t nwritten;
 

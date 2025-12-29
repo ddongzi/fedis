@@ -54,15 +54,12 @@ void sendReplAckToMaster()
 void sendReplconfToMaster()
 {
     //  REPLCONF listening-port <从监听port>
-    log_debug("sendReplconf port: %d", server->port);
+    log_debug("Send Replconf, slave-port: %d", server->port);
     char* portstr = calloc(1, REDIS_MAX_STRING);
     sprintf(portstr, "%d", server->port);
     char* argv[] = {"REPLCONF", "listen-port", portstr};
     char* buf = respEncodeArrayString(3, argv);
-    log_debug("sendReplconf content : %s", buf);
     addWrite(server->master, buf);
-    log_debug("addwrite ok");
-    // TODO Buf free
     free(portstr);
     free(buf);
 }
@@ -81,22 +78,21 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
     {
     case REPL_STATE_SLAVE_CONNECTING:
         sendPingToMaster();
-        log_debug("<<== 1. [REPL_STATE_SLAVE_CONNECTING] send ping to master");
+        log_debug(">> 1. [REPL_STATE_SLAVE_CONNECTING] send ping to master");
         break;
     case REPL_STATE_SLAVE_SEND_REPLCONF:
         sendReplconfToMaster();
-        log_debug("<<== 2. [REPL_STATE_SLAVE_SEND_REPLCONF] send replconf to master");
+        log_debug(">> 2. [REPL_STATE_SLAVE_SEND_REPLCONF] send replconf to master");
         break;
     case REPL_STATE_SLAVE_SEND_SYNC:
         //  发送SYNC
         sendSyncToMaster();
-        log_debug("<<== 3. [REPL_STATE_SLAVE_SEND_SYNC] send sync to master");
+        log_debug(">> 3. [REPL_STATE_SLAVE_SEND_SYNC] send sync to master");
         break;
     case REPL_STATE_SLAVE_CONNECTED:
         //  发送REPLCONF ACK
-        log_debug("ready send repl ack");
         sendReplAckToMaster();
-        log_debug("<<== 4. [REPL_STATE_SLAVE_CONNECTED] send REPLACK to master");
+        log_debug(">> 4. [REPL_STATE_SLAVE_CONNECTED] send REPLACK to master");
         break;
     default:
         break;
@@ -146,7 +142,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             if (strstr(c->readBuf->buf, "PONG") != NULL) {
                 // 收到PONG, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
-                log_debug("==>> 1. [REPL_STATE_SLAVE_CONNECTING] receive pong. => [REPL_STATE_SLAVE_SEND_REPLCONF]");
+                log_debug("<< 1. [REPL_STATE_SLAVE_CONNECTING] receive pong. => [REPL_STATE_SLAVE_SEND_REPLCONF]");
             }
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c);
             sdsclear(c->readBuf);
@@ -155,7 +151,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             if (strstr(server->master->readBuf->buf, "+OK")!= NULL) {
                 // 收到REPLCONF OK, 转到REPLCONF
                 server->replState = REPL_STATE_SLAVE_SEND_SYNC;
-                log_debug("==>> 2. [REPL_STATE_SLAVE_SEND_REPLCONF] receive REPLCONF OK. => [REPL_STATE_SLAVE_SEND_SYNC]");
+                log_debug("<< 2. [REPL_STATE_SLAVE_SEND_REPLCONF] receive REPLCONF OK. => [REPL_STATE_SLAVE_SEND_SYNC]");
 
             }
             aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c);
@@ -170,17 +166,17 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 sdsrange(c->readBuf, strlen(token) + 2, sdslen(c->readBuf)-1);
                 // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
                 server->replState = REPL_STATE_SLAVE_TRANSFER;
-                log_debug("==>> 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_TRANSFER]");
+                log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_TRANSFER]");
             }
         case REPL_STATE_SLAVE_TRANSFER:
-            printBuf("$<length>\r\n<RDB DATA> ", c->readBuf->buf, sdslen(c->readBuf));
+            // printBuf("$<length>\r\n<RDB DATA> ", c->readBuf->buf, sdslen(c->readBuf));
             //  $<length>\r\n<RDB DATA> 
             // 1. 因为解析不到一个RESP协议，就一直读直到读完。 即使包括其他RDB外的数据。但我们已知length，就可以读取固定字节数
             int len = 0;
             int lenLength = 0;
             // 特殊用法， %n不消耗，记录消耗的字符数
             if (sscanf(c->readBuf->buf, "$%d\r\n%n", &len, &lenLength)!= 1) {
-                log_error("==>> 4.[REPL_STATE_SLAVE_TRANSFER] sscanf failed. Will repl again.  =>[REPL_STATE_SLAVE_CONNECTING]");
+                log_error("<< 4.[REPL_STATE_SLAVE_TRANSFER] sscanf failed. Will repl again.  =>[REPL_STATE_SLAVE_CONNECTING]");
                 // 返回初始状态。重新repl
                 server->replState = REPL_STATE_SLAVE_CONNECTING;
             } else {
@@ -191,14 +187,14 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 rdbLoad();
                 log_debug("rdbload finished.");
                 server->replState = REPL_STATE_SLAVE_CONNECTED;
-                log_debug("==>> 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
+                log_debug("<< 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
                 aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c);
             }
             sdsclear(c->readBuf);
             break;
         case REPL_STATE_SLAVE_CONNECTED:
             if (strstr(c->readBuf->buf, "+OK") != NULL) {
-                log_debug("==>> 5. [REPL_STATE_SLAVE_CONNECTED] receive ok.  Normally slave !! √");
+                log_debug("<< 5. [REPL_STATE_SLAVE_CONNECTED] receive ok.  Normally slave !! √");
                 aeCreateFileEvent(el, fd, AE_READABLE, readFromClient, c);
             }
             sdsclear(c->readBuf);
@@ -217,11 +213,8 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
  */
 int replicationCron(aeEventLoop* eventLoop, long long id, void* clientData)
 {
-    log_debug("Repli Cron.");
+    // log_debug("Repli Cron.");
     assert(server->role == REDIS_CLUSTER_SLAVE);
-    if (server->master) {
-        log_debug("TIME [%ld] %ld", server->repltimeout, server->unixtime - server->master->lastinteraction);
-    }
     if (server->replState == REPL_STATE_SLAVE_CONNECTED) {
         log_debug("Heartbeat..");
         sendPingToMaster();
