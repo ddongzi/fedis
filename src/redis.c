@@ -306,19 +306,12 @@ void commandReplconfProc(redisClient* client)
 {
     //  暂不处理，不影响
     addWrite(client, resp.ok);
+    client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
 }
 
 void commandReplACKProc(redisClient* client)
 {
-    if ((server->unixtime - client->lastinteraction) > MASTER_SLAVE_TIMEOUT)
-    {
-        // 心跳断链，释放salve client
-        log_info("Heartbeart broken, free salve...");
-        clientToclose(client);
-        return;
-    }
     client->lastinteraction = server->unixtime;
-    client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
     addWrite(client, resp.ok);
 }
 
@@ -595,13 +588,30 @@ void updateServerTime()
 
 void closeClients()
 {
-    listNode* node = listHead(server->clientsToClose);
+    // 构造关闭链表
+    listNode* node = listHead(server->clients);
+    redisClient* client;
+    listNode* next = NULL;
+    while (node != NULL)
+    {
+        next = node->next;
+        client = (redisClient*) listNodeValue(node);
+        if (client->flags & CLIENT_TO_CLOSE)
+        {
+            log_debug("have found a client to close !");
+            listAddNodeTail(server->clientsToClose, listCreateNode(client));
+            listDelNode(server->clients, node);
+        }
+        node = next;
+    }
+
+    node = listHead(server->clientsToClose);
     while (node)
     {
         redisClient* client = node->value;
         log_debug("Close client [%d]%s:%d", client->fd, client->ip, client->port);
-        listDelNode(server->clientsToClose, node);
         freeClient(client);
+        listDelNode(server->clientsToClose, node);
         node = listHead(server->clientsToClose);
     }
 }
@@ -703,11 +713,35 @@ int sentinelInfoCron(aeEventLoop* eventLoop, long long id, void* clientData)
     }
     return 5000;
 }
+void masterCheckSlave()
+{
+    // 可能应该单独吧slave放在一个链表
+    listNode* node = listHead(server->clients);
+    redisClient* client;
+    while (node)
+    {
+        client = (redisClient*)node->value;
+        if (client->flags & REDIS_CLIENT_SLAVE)
+        {
+            log_debug("Heartbeat %d", server->unixtime - client->lastinteraction);
+            // 检查心跳时间
+            if (server->unixtime - client->lastinteraction > MASTER_SLAVE_TIMEOUT)
+            {
+                log_debug("Master lost client[%d] 's heartbeat. will close", client->fd);
+                clientToclose(client);
+            }
+        }
+        node = node->next;
+    }
+
+}
 int masterCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
 {
     // 检查SAVE条件，执行BGSAVE
     if (server->rdbOn)
         bgSaveIfNeeded();
+    // 主 感知从是否断线了.如果断线就应该清除client了
+    masterCheckSlave();
     return 3000;
 }
 
@@ -957,11 +991,12 @@ void commandPropagate(sds* s)
             sdscat(c->writeBuf, s->buf);
             if ( aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readFromClient, c) == AE_ERROR)
             {
-                //
+                log_debug("command propagate ae failed! ");
                 clientToclose(c);
             }
             if (aeCreateFileEvent(server->eventLoop, c->fd, AE_WRITABLE, sendToClient, c) == AE_ERROR)
             {
+                log_debug("command propagate ae failed! ");
                 clientToclose(c);
             }
         }
@@ -1081,6 +1116,7 @@ void processClientQueryBuf(redisClient* client)
         }
         if (aeCreateFileEvent(server->eventLoop, client->fd, AE_WRITABLE, sendToClient, client) == AE_ERROR)
         {
+            log_debug("process client query buf ae failed!!");
             clientToclose(client);
         }
     }
@@ -1088,6 +1124,11 @@ void processClientQueryBuf(redisClient* client)
     {
         // 按照响应执行
         log_info("Get RESP from client %s", resp_str(scpy->buf));
+        // slave从 会在这里收到响应。
+        if (client->flags & REDIS_CLIENT_MASTER)
+        {
+            server->master->lastinteraction = server->unixtime;
+        }
     }
     sdsfree(scpy);
 }
@@ -1110,7 +1151,6 @@ void readRespFromClient(aeEventLoop* el, int fd, void* privData)
     if (checkSockReadWrite(client, nread))
     {
         log_info("Get RESP from client.  %s", resp_str(buf));
-        client->lastinteraction = server->unixtime;
     } else
     {
         log_debug("read resp from client failed!");
@@ -1142,7 +1182,6 @@ void readFromClient(aeEventLoop* el, int fd, void* privData)
         sdscat(client->readBuf, buf);
         processClientQueryBuf(client);
         sdsclear(client->readBuf);
-        client->lastinteraction = server->unixtime;
     } else
     {
         log_debug("read from client failed");
@@ -1242,7 +1281,6 @@ void sendToClient(aeEventLoop* el, int fd, void* privdata)
         saveRDBToSlave(client); // 发送 RDB
     }
     aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
-    client->lastinteraction = server->unixtime;
     if (client->toclose)
     {
         // 发送完再关闭

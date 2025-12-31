@@ -9,6 +9,7 @@
 #define REDIS_MULTI (1<<5) // 处于事务入队状态
 #define REDIS_EXEC (1<<6) // 处于事务执行状态
 #define REDIS_DIRTY_CAS (1<<7) // 客户端监视的键被修改过
+#define CLIENT_TO_CLOSE (1<<8) // 客户端待关闭标识
 
 #include "sds.h"
 #include "db.h"
@@ -37,7 +38,7 @@ struct redisClient {
     int flags;  ///< 表示对端角色 REDIS_CLIENT_
     char* ip;
     int port;
-    time_t lastinteraction; // 最后一次交流时间
+    time_t lastinteraction; // 最后一次收到请求(或者具体请求)的时间
     int toclose; // 将要关闭
 
     // 读写缓冲

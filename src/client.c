@@ -64,29 +64,21 @@ void addWrite(redisClient* client, char* s)
     sdscat(client->writeBuf, s);
 }
 /**
- * @brief 将client加入待关闭链表，取消epoll
+ * @brief 设置client待关闭位。取消epoll
  * 
  * @param [in] c 
  */
 void clientToclose(redisClient* c)
 {
-    listNode* node;
-    node = listSearchKey(server->clientsToClose, c);
-    if (node) {
-        // 已经在close链表了
-        node = listSearchKey(server->clients, c);
+    if (c->flags & CLIENT_TO_CLOSE)
         return;
-    }
+    c->flags |= CLIENT_TO_CLOSE;
+
+    // 立即取消fd监听
     aeDeleteFileEvent(server->eventLoop, c->fd, AE_WRITABLE);
     aeDeleteFileEvent(server->eventLoop, c->fd, AE_READABLE);
 
-    node = listSearchKey(server->clients, c);
-    assert(c);
-    assert(node);
-
-    // 加到clientstoclose
-    listAddNodeTail(server->clientsToClose, listCreateNode(node->value));
-    listDelNode(server->clients, node);
+    // 可以考虑不动链表，只是表示client将要关闭。因为外部可能正在遍历。 而是先标记，然后一起close定时
 }
 /**
  * @brief 释放client, 不能直接调用，   除非需要立马清除如重连。
@@ -95,6 +87,8 @@ void clientToclose(redisClient* c)
  */
 void freeClient(redisClient* client)
 {
+    if (!client)
+        return;
     log_debug("free client %d", client->fd);
     // 确保epoll fd释放
     aeDeleteFileEvent(server->eventLoop, client->fd, AE_READABLE);

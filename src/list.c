@@ -205,6 +205,22 @@ void listRelease(list *list)
     }
     free(list);
 }
+void listClear(list* list)
+{
+    unsigned long len = list->len;
+    listNode *current = list->head;
+    listNode *next;
+    while (len--)
+    {
+        next = current->next;
+        if (list->free)
+        {
+            list->free(current->value);
+        }
+        free(current);
+        current = next;
+    }
+}
 void listDup(list *src, list *dest)
 {
     listNode *node = src->head;

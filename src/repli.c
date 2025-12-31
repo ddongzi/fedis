@@ -284,5 +284,5 @@ int slaveCron(aeEventLoop* eventLoop, long long id, void* clientData)
         log_warn("Master heartbeat timeout, will reconnect...");
         reconnectMaster();
     }
-    return 10000;
+    return 5000;
 }

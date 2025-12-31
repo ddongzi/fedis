@@ -44,6 +44,7 @@ void listDelNode(list *list, listNode *node);
 void listRotate(list *list);         // 将尾部节点弹出，加到头前，成为新的头
 void listDup(list *src, list *dest); // 复制链表
 void listRelease(list *list);        // 释放链表及节点
+void listClear(list* list); // 清空链表
 
 unsigned long listSize(list *list); //
 

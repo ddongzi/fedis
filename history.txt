@@ -1,17 +1,4 @@
 multi
-set k2 v2
-set k3 v3
-exec
-multi
-set k1 v1
-exec
-multi
-set k1 v1
-exec
-multi
-set k1 v1
-exec
-multi
 set k1 v1
 exec
 multi
@@ -97,3 +84,17 @@ set name
 set name ww
 get name
 slaveof 127.0.0.1:6667
+get name
+set name
+set name zyd
+get name
+get age
+set age
+set age 10
+l
+get name
+set name iio
+ge
+get name
+set name
+set name io
