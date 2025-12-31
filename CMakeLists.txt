@@ -33,8 +33,12 @@ add_executable(unit_tests
         test/test_robj.cpp
         test/test_command.cpp
         test/test_transaction.cpp
+        test/test_conf.cpp
+        src/conf.c src/util.c
         src/resp.c src/robj.c src/sds.c
         src/log.c
+        test/test_repli.cpp
+        test/ATestClient.h
 )
 target_include_directories(unit_tests PUBLIC
         ${PROJECT_SOURCE_DIR}/include

@@ -131,7 +131,7 @@ void rdbSave()
     log_debug("======RDB Save(child:%u)======", getpid());
     int nwritten = 0;
     int nread = 0;
-    FILE* fp = fopen(fullPath(server->rdbFileName), "w+");
+    FILE* fp = fopen(server->rdbfile, "w+");
     if (!fp) {
         perror("rdbSave can't open file"); 
         return;
@@ -348,10 +348,10 @@ robj* _rdbLoadObject(FILE* fp, unsigned char type)
 void rdbLoad()
 {
 
-    FILE *fp = fopen(fullPath(server->rdbFileName), "w+");
+    FILE *fp = fopen(server->rdbfile, "w+");
     if (fp == NULL)
     {
-        log_error("rdb load failed. %s, %s", fullPath(server->rdbFileName), strerror(errno));
+        log_error("rdb load failed. %s, %s", server->rdbfile, strerror(errno));
         exit(EXIT_FAILURE);
     }
     
@@ -419,11 +419,11 @@ void rdbLoad()
 void receiveRDBfile(char* buf, int n)
 {
     // TODO 不应该直接覆盖，应该通过一个临时完整文件 去覆盖
-    log_debug("Receive RDB to: %s", server->rdbFileName);
-    FILE* fp = fopen(fullPath(server->rdbFileName), "w+");
+    log_debug("Receive RDB to: %s", server->rdbfile);
+    FILE* fp = fopen(server->rdbfile, "w+");
     if (fp == NULL)
     {
-        log_error("Open rdb failed. %s, %s", fullPath(server->rdbFileName), strerror(errno));
+        log_error("Open rdb failed. %s, %s", server->rdbfile, strerror(errno));
         exit(EXIT_FAILURE);
     }
     size_t  nwrite =  fwrite(buf, 1, n, fp);

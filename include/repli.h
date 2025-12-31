@@ -1,7 +1,8 @@
 #ifndef REPLI_H
 #define REPLI_H
 
-#define REPL_TIMEOUT 20 // 与主超时阈值：20s
+#define MASTER_SLAVE_TIMEOUT 20 // 从<=>主都采用这个
+
 // 主从复制状态
 enum REPL_STATE {
     // 从服务器server.replState 字段
@@ -27,7 +28,7 @@ void sendSyncToMaster();
 
 void repliWriteHandler(aeEventLoop *el, int fd, void* privData);
 void repliReadHandler(aeEventLoop *el, int fd, void* privData);
-int replicationCron(aeEventLoop* eventLoop, long long id, void* clientData);
+int slaveCron(aeEventLoop* eventLoop, long long id, void* clientData);
 
 
 #endif

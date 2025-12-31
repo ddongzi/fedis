@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include "log.h"
 #include <poll.h>
+#include <sys/socket.h>
+
 #include "redis.h"
 #include "net.h"
 #include "aof.h"
@@ -73,7 +75,7 @@ static int aeGetTime(long long* seconds, long long* milliseconds)
  * @brief epoll_wait, 触发事件添加到fireEvents
  * 
  * @param [in] eventLoop 
- * @param [in] tvp timeout=0 : 立即返回，返回当前可就绪的， timeout=-1:一直等待
+ * @param [in] tvp null表示 一直等待，
  * @return int numevents
  * @note 
  */
@@ -85,7 +87,7 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
     // if (server->replState == REPL_STATE_SLAVE__NONE) {
     //     log_debug("checking master fd !!");
     // }
-
+    // timeout=0 : 立即返回，返回当前可就绪的， timeout=-1:一直等待
     numevents = epoll_wait(eventLoop->apiState->epfd, 
         eventLoop->apiState->events, 
         eventLoop->maxsize, 
@@ -113,7 +115,7 @@ int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp)
             mask |= AE_WRITABLE;
         }
         if (e->events & EPOLLERR) {
-            log_error("epoll_error on fd[%d]", e->data.fd);
+            checkSockErr(e->data.fd);
         }
 
         eventLoop->fireEvents[i].fd = e->data.fd;
@@ -169,17 +171,23 @@ aeEventLoop *aeCreateEventLoop(int maxsize)
 }
 
 /**
- * @brief 注册文件事件
+ * @brief 为fd注册读写事件。
  * 
  * @param [in] loop 
  * @param [in] fd 
  * @param [in] mask ：[AE_READABLE, AE_WRITABLE] 只能一种
  * @param [in] proc : aeFileProc
  * @param [in] data 
- * @return int : [AE_OK, AE_ERROR]
+ * @return int : [AE_OK, AE_ERROR] 如果AE_ERROR 应该释放fd资源
  */
 int aeCreateFileEvent(aeEventLoop* loop, int fd, int mask, aeFileProc *proc, void* data)
 {
+    // 很可能连接已经失效/不可用等，所以必须处理
+    if (!checkSockErr(fd))
+    {
+        return AE_ERROR;
+    }
+
     if (fd >= loop->maxsize || fd < 0) {
         return AE_ERROR;
     }
@@ -230,7 +238,6 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask)
     }
     int op = eventLoop->events[fd].mask == AE_NONE ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
     if (epoll_ctl(eventLoop->apiState->epfd, op, fd, &ee) == -1) {
-        log_error("epoll_ctl [%d], err:%s", fd, strerror(errno));
         checkSockErr(fd);
         return AE_ERROR;
     }
@@ -379,7 +386,7 @@ static int aeProcessEvents(aeEventLoop* loop, int flags)
     return AE_OK;
 }
 /**
- * @brief 更新apiState
+ * @brief 删除epoll上读或者写监听
  * 
  * @param [in] eventLoop 
  * @param [in] fd 
@@ -391,7 +398,7 @@ int aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask)
     aeApiState* apiState = eventLoop->apiState;
     struct epoll_event ee;
     if (mask == AE_NONE) {
-        // log_debug("Del epoll fd [%d]", fd);
+        log_debug("Del epoll fd [%d]", fd);
         epoll_ctl(apiState->epfd, EPOLL_CTL_DEL, fd, NULL);
         return AE_OK;
     }
@@ -409,7 +416,7 @@ int aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask)
 }
 
 /**
- * @brief 删除fd上的mask事件监听
+ * @brief 删除fd上的mask事件监听，epoll取消
  * 
  * @param [in] loop 
  * @param [in] fd 

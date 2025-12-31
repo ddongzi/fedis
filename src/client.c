@@ -64,7 +64,7 @@ void addWrite(redisClient* client, char* s)
     sdscat(client->writeBuf, s);
 }
 /**
- * @brief 加入close链表
+ * @brief 将client加入待关闭链表，取消epoll
  * 
  * @param [in] c 
  */
@@ -77,18 +77,16 @@ void clientToclose(redisClient* c)
         node = listSearchKey(server->clients, c);
         return;
     }
-    // 第一次添加
     aeDeleteFileEvent(server->eventLoop, c->fd, AE_WRITABLE);
     aeDeleteFileEvent(server->eventLoop, c->fd, AE_READABLE);
 
-    node = listSearchKey(server->clients, c);    
+    node = listSearchKey(server->clients, c);
     assert(c);
     assert(node);
 
     // 加到clientstoclose
     listAddNodeTail(server->clientsToClose, listCreateNode(node->value));
     listDelNode(server->clients, node);
-
 }
 /**
  * @brief 释放client, 不能直接调用，   除非需要立马清除如重连。
@@ -106,7 +104,6 @@ void freeClient(redisClient* client)
     sdsfree(client->readBuf);
     sdsfree(client->writeBuf);
     free(client);
-    client = NULL;
 }
 
 /**

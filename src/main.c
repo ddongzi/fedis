@@ -12,6 +12,8 @@
 #include "log.h"
 #include <string.h>
 #include <unistd.h>
+
+#include "util.h"
 // todo
 #define BASE_DIR "/home/dong/fedis"
 
@@ -27,11 +29,11 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    server->configfile = "server.conf";
+    server->configfile = fullPath("conf/default.conf");
     if (argc == 2)
     {
         char* conf_file = argv[1];
-        server->configfile = strdup(conf_file);
+        server->configfile = fullPath(conf_file);
     }
     initServerConfig();
     initServer();

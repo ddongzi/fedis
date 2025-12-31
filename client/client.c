@@ -67,7 +67,6 @@ void send_command(int sock, const char *command)
 int read_response(int sock) {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received = read(sock, buffer, BUFFER_SIZE - 1);
-    printf("read %d bytes", bytes_received);
     if (bytes_received > 0) {
         buffer[bytes_received] = '\0';
         char* endptr;

@@ -64,6 +64,7 @@ sds* sdsdump(const sds* ss)
 }
 void sdsclear(sds* ss)
 {
+    // 防御性清除。
     if (ss == NULL) return;
     ss->free = ss->len + ss->free ;
     memset(ss->buf, 0, ss->len);

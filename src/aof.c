@@ -52,7 +52,7 @@ void aof_init()
     aof->isAofing = false;
     aof->lastAofTime = 0;
 
-    char* aofFileName = get_config("aof_file");
+    char* aofFileName = get_config(server->configfile,"aof_file");
     FILE* fp = fopen(fullPath(aofFileName), "a+");
     if (fp == NULL) {
         log_error("Aof (%s) open failed %s", aofFileName ,strerror(errno));
@@ -73,7 +73,7 @@ bool needAOF() {
     struct AOF* aof = &(server->aof);
     if (aof->isAofing) return false;
     
-    char* aofAction = get_config("appendfsync");
+    char* aofAction = get_config(server->configfile,"appendfsync");
     if (strcmp(aofAction, "everysec") == 0) {
         if (mstime() - aof->lastAofTime > 1000) {
             if (sdslen(aof->active_buf) > 0) 

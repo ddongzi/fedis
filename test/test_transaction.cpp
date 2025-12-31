@@ -15,6 +15,8 @@ extern "C" {
 #include "sds.h"
 }
 
+
+
 class Client
 {
 public:
@@ -94,7 +96,6 @@ private:
     long id;
     int sock;
 };
-
 struct ThreadArgs
 {
     pthread_barrier_t* barrier;

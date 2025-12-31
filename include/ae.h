@@ -17,7 +17,7 @@
 #define AE_READABLE 1
 #define AE_WRITABLE 2
 
-#define AE_ERROR    -1
+#define AE_ERROR    (-1)
 #define AE_OK       0
 
 struct aeEventLoop;
@@ -49,8 +49,8 @@ typedef struct aeApiState {
 // 时间事件处理函数
 typedef struct aeTimeEvent {
     long long id;   // 时间事件id
-    long long when;  //  秒
-    long long when_ms;   // 毫秒
+    long long when;  //  发生时间：秒
+    long long when_ms;   // 发生时间：毫秒
     aeTimeProc* timeProc;   // 时间事件处理函数
     void* data;  // 时间事件处理函数参数
     struct aeTimeEvent* next;   // 下一个时间事件

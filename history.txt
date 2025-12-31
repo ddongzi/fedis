@@ -1,20 +1,3 @@
-exec
-multi
-set k1 v1
-exec
-multi
-set k2 v2
-set k3 v3
-exec
-multi
-set k8 v8
-multi
-set k8 v8
-multi
-set k2 v2
-exec
-multi
-set k1 v1
 multi
 set k2 v2
 set k3 v3
@@ -98,3 +81,19 @@ get name
 set name zyd
 get name
 l
+slaveof 127.0.0.1:6667
+get name
+set name zyd
+a
+slaveof 127.0.0.1:6667
+l
+slaveof 127.0.0.1:6667
+l
+slaveof 127.0.0.1:6667
+l
+slaveof 127.0.0.1:6667
+get name
+set name
+set name ww
+get name
+slaveof 127.0.0.1:6667

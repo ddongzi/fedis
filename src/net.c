@@ -277,7 +277,10 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *data)
 
     log_debug("Accepted connection from [%d]%s:%d。 Current all connections %d", cfd, ip, port, listLength(server->clients));
     // 注册读事件
-    aeCreateFileEvent(el, cfd, AE_READABLE, readFromClient, client);
+    if (aeCreateFileEvent(el, cfd, AE_READABLE, readFromClient, client) == AE_ERROR)
+    {
+        clientToclose(client);
+    }
 }
 
 
@@ -311,7 +314,7 @@ int anetTcpConnect(const char *host, int port)
 
     if ((ret = getaddrinfo(host, portStr, &hints, &servinfo)) != 0)
     {
-        log_error(stderr, "getaddrinfo error: %s", gai_strerror(ret));
+        log_error( "getaddrinfo error: %s", gai_strerror(ret));
         return NET_ERR;
     }
     printAddrinfo(servinfo);
@@ -337,7 +340,7 @@ int anetTcpConnect(const char *host, int port)
 
     if (p == NULL)
     { // 遍历所有地址仍然连接失败
-        log_error(stderr, "Failed to connect to %s:%d", host, port);
+        log_error( "Failed to connect to %s:%d", host, port);
         return NET_ERR;
     }
 
@@ -441,13 +444,14 @@ ssize_t getRespLength(const char *buf, size_t len)
  */
 void reconnectMaster()
 {
-    freeClient(server->master);    
+    freeClient(server->master);
+    server->master = NULL;
     connectMaster();
 }
 
 /**
- * @brief 连接主，切换到CONNECTING
- *
+ * @brief 主切从/ 从断线重连
+ * 已经在调用时候设置了 host，port
  */
 void connectMaster()
 {
@@ -460,42 +464,53 @@ void connectMaster()
     // 非阻塞
     anetNonBlock(fd);
     anetEnableTcpNoDelay(fd);
+
+    if (server->master == NULL)
+    {
+        server->master = redisClientCreate(fd, server->masterhost, server->masterport);
+    }
+
     int err = 0;
-    server->master = redisClientCreate(fd, server->masterhost, server->masterport);
     server->master->flags |= REDIS_CLIENT_MASTER;
+    // 每次从服务器启动，都完全开始重新同步。
     server->replState = REPL_STATE_SLAVE_CONNECTING;
-    server->repltimeout = REPL_TIMEOUT;
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
-    aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master);
-    aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, server->master);
+    if (aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master) == AE_ERROR)
+    {
+        //
+        reconnectMaster();
+    }
+    if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, server->master) == AE_ERROR)
+    {
+        reconnectMaster();
+    }
 
-    log_debug("Connecting Master fd %d", fd);
-
-    server->master->lastinteraction =server->unixtime;
-    // 开启心跳检测
-    aeCreateTimeEvent(server->eventLoop, 1000, replicationCron, NULL);
+    log_debug("Connected Master fd %d", fd);
 }
 
 
 /**
- * @brief 打印sock上的err
+ * @brief 检查并打印socket上的err
  * 
- * @param [in] sockfd 
+ * @param [in] sockfd
+ * @warning 有些错误是应该就有的，比如断链等，所以不必焦虑
+ * @return 如果没有错误就返回true
  */
-void checkSockErr(int sockfd)
+bool checkSockErr(int sockfd)
 {
     int err;
     socklen_t len = sizeof(err);
     // 查看错误状态
     if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &err, &len) == 0) { 
         // getsockopt 成功了，再看 err
-        if (err == 0) {
-            log_debug("Socket [%d] is OK, no error.", sockfd);
-        } else {
+        if (err != 0) {
             log_error("Socket [%d] error:  %s", sockfd, strerror(err));  // 打印错误信息
+            return false;
         }
     } else {
         log_error("Socket getsockopt failed: [%d] %s", sockfd,strerror(errno));
+        return false;
     }
+    return true;
 }
 

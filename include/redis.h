@@ -83,7 +83,7 @@ struct redisServer {
     char* masterhost; // （从字段）主host
     int masterport; // （从字段）主port
     int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
-    time_t repltimeout; // 心跳检测阈值
+    time_t repltimeout; // 心跳检测阈值. 从服务器检测主的阈值
 
     // 模块化
 
@@ -97,7 +97,7 @@ struct redisServer {
     int saveCondSize; // 
     struct saveparam* saveParams; // SAVE条件数组
     int rdbfd;     ///< 不关闭rdbfd
-    char* rdbFileName; //
+    char* rdbfile; //
     pid_t rdbChildPid; // 正在执行BGSAVE的子进程ID
     int isBgSaving; // 正在BGSAVE
 
@@ -114,7 +114,7 @@ void initServerConfig();
 void readRespFromClient(aeEventLoop *el, int fd, void *privData);
 
 void readFromClient(aeEventLoop *el, int fd, void *privData);
-void connectMaster();
+int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData);
 
 void processClientQueryBuf(redisClient* client);
 
