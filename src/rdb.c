@@ -27,7 +27,7 @@
 #include "crypto.h"
 #include "util.h"
 /**
- * @brief 对象类型、RDB操作符
+ * @brief 1字节。对象类型、RDB操作符
  * 
  * @param [in] fp 
  * @param [in] type 
@@ -320,6 +320,7 @@ unsigned char _rdbLoadType(FILE* fp)
 }
 sds*  _rdbLoadKey(FILE *fp)
 {
+
     uint32_t len = _rdbLoadLen(fp);
     sds* key = sdsempty();
     char buf[1024];
@@ -339,6 +340,7 @@ robj* _rdbLoadObject(FILE* fp, unsigned char type)
     default:
         break;
     }
+    return obj;
 }
 
 /**
@@ -347,8 +349,8 @@ robj* _rdbLoadObject(FILE* fp, unsigned char type)
  */
 void rdbLoad()
 {
-
-    FILE *fp = fopen(server->rdbfile, "w+");
+    // TODO rdb加载不起来？？？
+    FILE *fp = fopen(server->rdbfile, "r+");
     if (fp == NULL)
     {
         log_error("rdb load failed. %s, %s", server->rdbfile, strerror(errno));
@@ -356,8 +358,13 @@ void rdbLoad()
     }
     
     // 1. read magic
-    char buf[9];
-    fread(buf, 1, 9, fp);
+    char buf[10];
+    size_t n= fread(buf, 1, 9, fp);
+    if (n != 9)
+    {
+        if (ferror(fp)) perror("rdb load magic failed");
+        if (ferror(fp)) perror("rdb load magic EOF");
+    }
     buf[9] = '\0';
     if (strcmp(buf, "REDIS0001") != 0) return;
 
