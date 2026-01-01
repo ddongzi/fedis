@@ -31,6 +31,8 @@ struct redisServer* server;
 
 extern struct RespShared resp;
 
+
+
 char* getRoleStr(int role);
 
 static void commandSetProc(redisClient* client);
@@ -298,8 +300,25 @@ void commandPingProc(redisClient* client)
 
 void commandSyncProc(redisClient* client)
 {
-    client->replState = REPL_STATE_MASTER_WAIT_SEND_FULLSYNC; // 状态等待clientbuf 发送出FULLSYNC
-    addWrite(client, resp.sync);
+    // TODO 根据偏移量，来判断进行FULLSYNC, 还是APPENDSYNC
+    unsigned long offset = atoi(client->argv[1]);
+    if (offset == 0)
+    {
+        // 第一次连接， 完全同步
+        client->replState = REPL_STATE_MASTER_SEND_FULLSYNC; // 状态等待clientbuf 发送出FULLSYNC
+        addWrite(client, resp.fullsync);
+    }
+    if (offset < client->offset)
+    {
+        // 从缺失一部分数据，考虑增量同步
+        client->replState = REPL_STATE_MASTER_SEND_APPENDSYNC; // 状态等待clientbuf 发送出FULLSYNC
+        addWrite(client, resp.appendsync);
+    }
+    if (offset > client->offset)
+    {
+        // unexpected
+        addWrite(client, resp.err);
+    }
 }
 
 void commandReplconfProc(redisClient* client)
@@ -1063,9 +1082,11 @@ void processCommand(redisClient* c)
             touchWatchKey(c);
         }
     }
-
     if (cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER)
     {
+    // TODO 命令传播时候应该，同时暂存到缓冲区g_repli_buf。
+        c->readBuf->buf;
+
         commandPropagate(c->readBuf);
     }
     // log_debug("Process ok , clear!");
@@ -1275,11 +1296,12 @@ void sendToClient(aeEventLoop* el, int fd, void* privdata)
     }
 
     // 写完FULLSYNC之后触发状态转移
-    if (client->replState == REPL_STATE_MASTER_WAIT_SEND_FULLSYNC)
+    if (client->replState == REPL_STATE_MASTER_SEND_FULLSYNC)
     {
         client->replState = REPL_STATE_MASTER_SEND_RDB;
         saveRDBToSlave(client); // 发送 RDB
     }
+    // TODO 发送 appendSYNC后 继续数据buf数据
     aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
     if (client->toclose)
     {

@@ -27,6 +27,8 @@ extern struct redisServer* server;
 
 #define REDIS_MAX_STRING 256
 
+// TODO 主从同步中， 主维持的buf. 应该作为环形缓冲区。
+
 
 // 命令标志：命令-服务器角色
 #define CMD_MASTER (1<<0)   //      0001 主服务器可以执行
@@ -78,12 +80,16 @@ struct redisServer {
     // TODO 考虑使用flags标
     int role; // 角色 REDIS_CLUSTER_
 
+    // master 特性
+    struct RingBuffer repli_buffer;
+
     // Slave特性
     redisClient* master; // （从字段）主客户端
     char* masterhost; // （从字段）主host
     int masterport; // （从字段）主port
     int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
     time_t repltimeout; // 心跳检测阈值. 从服务器检测主的阈值
+    unsigned long offset; // 自己的复
 
     // 模块化
 

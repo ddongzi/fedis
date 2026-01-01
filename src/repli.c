@@ -16,7 +16,7 @@
  * >> 主开始做rdb。向从传输rdb数据.
  * << 从接受rdb完成，返回replack。表示复制成功
  * << 持续heartbeat
- * TODO（为了重连：持久化server部分信息到conf，如role，master信息）
+ * 为了重连：持久化server部分信息到conf，如role，master,offset信息
  * 在这个过程中，主服务和从服务器都没有新开线程/进程。可能会耗时。
  *
  * @copyright Copyright (c) 2025
@@ -44,9 +44,13 @@ void sendPingToMaster()
 
 void sendSyncToMaster()
 {
-    char* argv[] = {"SYNC"};
-    char* buf = respEncodeArrayString(1, argv);
-    //  SYNC
+    char offset[16] = {0};
+    snprintf(offset, sizeof(offset), "%lu", server->master->offset);
+    char* argv[2];
+    argv[0] = "SYNC";
+    argv[1] = strdup(offset);
+    char* buf = respEncodeArrayString(2, argv);
+    //  SYNC <OFFSET>
     addWrite(server->master, buf);
     free(buf);
 }
@@ -94,6 +98,11 @@ void repliWriteHandler(aeEventLoop *el, int fd, void* privData)
         break;
     case REPL_STATE_SLAVE_SEND_SYNC:
         //  发送SYNC
+        /* TODO 为了断线后增量同步（缺失的命令传播）， SYNC应该伴随自己的同步偏移（状态），
+         * 主判断如何给他同步返回FULLSYNC,或者增量SYNC，
+         * 从根据请求方法进行请求， 读取/处理数据。
+         * 增量同步：
+         */
         sendSyncToMaster();
         log_debug(">> 3. [REPL_STATE_SLAVE_SEND_SYNC] send sync to master");
         break;
@@ -158,7 +167,6 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 }
                 if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
                 {
-                    // TODO
                     reconnectMaster();
                 }
                 sdsclear(c->readBuf);
@@ -191,6 +199,9 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
 
         case REPL_STATE_SLAVE_SEND_SYNC:
             {
+
+                // TODO 根据返回FULLSYNC , APPENDSYNC
+
                 // 读取+FULLSYNC
                 // +FULLSYNC\r\n$<length>\r\n<RDB binary data>
 
@@ -198,11 +209,11 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 if (strcmp(token, "+FULLSYNC") == 0) {
                     sdsrange(c->readBuf, strlen(token) + 2, sdslen(c->readBuf)-1);
                     // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
-                    server->replState = REPL_STATE_SLAVE_TRANSFER;
-                    log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_TRANSFER]");
+                    server->replState = REPL_STATE_SLAVE_RECEIVE_RDB;
+                    log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_RECEIVE_RDB]");
                 }
             }
-        case REPL_STATE_SLAVE_TRANSFER:
+        case REPL_STATE_SLAVE_RECEIVE_RDB:
             {
                 // printBuf("$<length>\r\n<RDB DATA> ", c->readBuf->buf, sdslen(c->readBuf));
                 //  $<length>\r\n<RDB DATA>
@@ -211,7 +222,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                 int lenLength = 0;
                 // 特殊用法， %n不消耗，记录消耗的字符数
                 if (sscanf(c->readBuf->buf, "$%d\r\n%n", &len, &lenLength)!= 1) {
-                    log_error("<< 4.[REPL_STATE_SLAVE_TRANSFER] sscanf failed. Will repl again.  =>[REPL_STATE_SLAVE_CONNECTING]");
+                    log_error("<< 4.[REPL_STATE_SLAVE_RECEIVE_RDB] sscanf failed. Will repl again.  =>[REPL_STATE_SLAVE_CONNECTING]");
                     // 返回初始状态。重新repl
                     server->replState = REPL_STATE_SLAVE_CONNECTING;
                     sdsclear(c->readBuf);
@@ -223,7 +234,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                     rdbLoad();
                     log_debug("rdbload finished.");
                     server->replState = REPL_STATE_SLAVE_CONNECTED;
-                    log_debug("<< 4. [REPL_STATE_SLAVE_TRANSFER] finished. => [REPL_STATE_SLAVE_CONNECTED]");
+                    log_debug("<< 4. [REPL_STATE_SLAVE_RECEIVE_RDB] finished. => [REPL_STATE_SLAVE_CONNECTED]");
                     if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
                     {
                         reconnectMaster();

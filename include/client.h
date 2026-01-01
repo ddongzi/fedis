@@ -54,6 +54,7 @@ struct redisClient {
     char** argv;    ///< 参数数组
 
     // repli复制特性
+    unsigned long offset; // 复制偏移量
     int replState; ///< 对端同步状态。
 
     // sentinel 客户实例特性

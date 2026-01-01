@@ -8,7 +8,8 @@ struct RespShared {
     char* keyNotFound;
     char* bye;
     char* invalidCommand;
-    char* sync;
+    char* fullsync;
+    char* appendsync;
     char* dupkey;
     char* ping;
     char* info;

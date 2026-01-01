@@ -1,10 +1,3 @@
-multi
-set k1 v1
-exec
-multi
-set k1 v1
-exec
-multi
 set k1 v1
 exec
 MULTI
@@ -98,3 +91,10 @@ ge
 get name
 set name
 set name io
+d
+set name zyd
+get
+get name
+set name zyd
+l
+get name
