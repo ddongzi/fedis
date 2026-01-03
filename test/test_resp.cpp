@@ -161,5 +161,4 @@ TEST(Resptest, ParseAresp)
     endptr = respParse(s, strlen(s));
     EXPECT_EQ(endptr, nullptr);
 
-
 }

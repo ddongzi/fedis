@@ -10,6 +10,7 @@
 #include "client.h"
 #include <stdbool.h>
 #include "aof.h"
+#include "ringbuffer.h"
 
 #define REDIS_SERVERPORT 6666
 #define REDIS_MAX_CLIENTS 10000
@@ -81,7 +82,7 @@ struct redisServer {
     int role; // 角色 REDIS_CLUSTER_
 
     // master 特性
-    struct RingBuffer repli_buffer;
+     RingBuffer repli_buffer;
 
     // Slave特性
     redisClient* master; // （从字段）主客户端

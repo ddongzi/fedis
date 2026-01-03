@@ -27,6 +27,7 @@
 #include "util.h"
 #include "aof.h"
 #include "resp.h"
+#include "ringbuffer.h"
 struct redisServer* server;
 
 extern struct RespShared resp;
@@ -301,8 +302,8 @@ void commandPingProc(redisClient* client)
 void commandSyncProc(redisClient* client)
 {
     // TODO 根据偏移量，来判断进行FULLSYNC, 还是APPENDSYNC
-    unsigned long offset = atoi(client->argv[1]);
-    if (offset == 0)
+    long offset = atoi(client->argv[1]);
+    if (offset == -1)
     {
         // 第一次连接， 完全同步
         client->replState = REPL_STATE_MASTER_SEND_FULLSYNC; // 状态等待clientbuf 发送出FULLSYNC
@@ -1044,7 +1045,12 @@ void touchWatchKey(redisClient* client)
         }
     }
 }
-
+void addRepliBuf(uint8_t buf[], long size)
+{
+    log_debug("add repli buf. %lu bytes", size);
+    // TODO 如果readbuf大于最大缓冲. ？
+    ringBufferInQeueueBulk(&server->repli_buffer, buf,size);
+}
 /**
  * @brief 调用执行命令。已有argc,argv[]
  *
@@ -1084,9 +1090,7 @@ void processCommand(redisClient* c)
     }
     if (cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER)
     {
-    // TODO 命令传播时候应该，同时暂存到缓冲区g_repli_buf。
-        c->readBuf->buf;
-
+        addRepliBuf(c->readBuf->buf, c->readBuf->len);
         commandPropagate(c->readBuf);
     }
     // log_debug("Process ok , clear!");
@@ -1201,6 +1205,8 @@ void readFromClient(aeEventLoop* el, int fd, void* privData)
     if (checkSockReadWrite(client, nread))
     {
         sdscat(client->readBuf, buf);
+        // TODO 如果是从服务器接受到了主的命令传播，还要记录offset
+
         processClientQueryBuf(client);
         sdsclear(client->readBuf);
     } else

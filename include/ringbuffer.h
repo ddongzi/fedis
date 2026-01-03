@@ -6,16 +6,21 @@
  */
 #include <stdbool.h>
 #include <stdint.h>
+#define RBUFFER_SIZE 1024
+/**
+ * 固定大小1023环形缓冲
+ * head = tail 为空。 所以少一个
+ */
 typedef  struct
 {
-    unsigned char data[1024];
-    long head; // 数据开头
-    long tail; // 数据结尾
+    unsigned char data[RBUFFER_SIZE];
+    long head; // 
+    long tail; // 
 }RingBuffer;
-
-
-RingBuffer* ringBufferCreate(long size);
-void ringBufferDestroy(RingBuffer* rb);
-bool ringBufferAdd(RingBuffer* rb, uint8_t data[], long size);
+RingBuffer* ringBufferCreate();
+bool ringBufferDequeue(RingBuffer* rb, uint8_t *data);
+bool ringBufferDequeueBulk(RingBuffer* rb, uint8_t data[], long size);
+bool ringBufferEnQeueueBulk(RingBuffer* rb, uint8_t data[], long size);
+bool ringBufferEnQeueue(RingBuffer* rb, uint8_t data);
 
 #endif

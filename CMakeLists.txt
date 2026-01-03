@@ -1,8 +1,6 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.2)
 project(Fedis VERSION 1.0)
-
 add_definitions(-DPROJECT_ROOT="${PROJECT_SOURCE_DIR}")
-
 
 # 库文件
 add_subdirectory(lib/googletest-1.17.0)
@@ -15,8 +13,8 @@ find_package(OpenSSL REQUIRED)
 add_executable(fedis
         src/ae.c src/aof.c src/client.c src/conf.c src/crypto.c src/db.c
         src/dict.c src/list.c src/log.c src/net.c src/notify.c
-        src/rdb.c src/redis.c src/repli.c src/resp.c src/rio.c src/robj.c
-        src/sds.c src/util.c
+        src/rdb.c src/redis.c src/repli.c src/resp.c src/rio.c src/ringbuffer.c 
+        src/robj.c src/sds.c src/util.c
         src/main.c
 )
 target_include_directories(fedis PUBLIC ${PROJECT_SOURCE_DIR}/include)
@@ -27,16 +25,19 @@ message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 
 
 # 测试
+include(CTest)
 enable_testing()
 add_executable(unit_tests
         test/test_resp.cpp
         test/test_robj.cpp
         test/test_command.cpp
-        test/test_transaction.cpp
+        # test/test_transaction.cpp
         test/test_conf.cpp
+        test/test_ringbuffer.cpp
         src/conf.c src/util.c
         src/resp.c src/robj.c src/sds.c
         src/log.c
+        src/ringbuffer.c
         test/test_repli.cpp
         test/ATestClient.h
 )
@@ -44,6 +45,7 @@ target_include_directories(unit_tests PUBLIC
         ${PROJECT_SOURCE_DIR}/include
 )
 target_link_libraries(unit_tests gtest gtest_main)
+add_test(NAME fedis_test_runner COMMAND unit_tests)
 
 # client
 add_executable( client

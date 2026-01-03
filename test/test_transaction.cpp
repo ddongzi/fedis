@@ -54,7 +54,7 @@ public:
             len += snprintf(buffer + len, sizeof(buffer) - len,
                 "$%lu\r\n%s\r\n", strlen(args[i]), args[i]);
         }
-        send(sock, buffer, len, 0);
+        int nsend = send(sock, buffer, len, 0);
         free(cmd);
     }
     std::string readResponse()

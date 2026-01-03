@@ -36,7 +36,6 @@
 #include "conf.h"
 #include "resp.h"
 
-
 void sendPingToMaster()
 {
     addWrite(server->master, resp.ping);
@@ -296,4 +295,55 @@ int slaveCron(aeEventLoop* eventLoop, long long id, void* clientData)
         reconnectMaster();
     }
     return 5000;
+}
+/**
+ * @brief 中断当前master连接，重新连接
+ * 
+ */
+void reconnectMaster()
+{
+    freeClient(server->master);
+    server->master = NULL;
+    connectMaster();
+}
+
+/**
+ * @brief 主切从/ 从断线重连
+ * 已经在调用时候设置了 host，port
+ */
+void connectMaster()
+{
+    int fd = anetTcpConnect(server->masterhost, server->masterport);
+    if (fd < 0)
+    {
+        log_debug("connectMaster failed: %s", strerror(errno));
+        return;
+    }
+    // 非阻塞
+    anetNonBlock(fd);
+    anetEnableTcpNoDelay(fd);
+
+    if (server->master == NULL)
+    {
+        server->master = redisClientCreate(fd, server->masterhost, server->masterport);
+    }
+
+    int err = 0;
+    server->master->flags |= REDIS_CLIENT_MASTER;
+    // 每次从服务器启动 都要尝试同步
+    server->replState = REPL_STATE_SLAVE_CONNECTING;
+    // 上次同步位置
+    server->master->offset = get_config(server->configfile, "offset");
+    // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
+    if (aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master) == AE_ERROR)
+    {
+        //
+        reconnectMaster();
+    }
+    if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, server->master) == AE_ERROR)
+    {
+        reconnectMaster();
+    }
+
+    log_debug("Connected Master fd %d", fd);
 }
