@@ -44,7 +44,7 @@ void sendPingToMaster()
 void sendSyncToMaster()
 {
     char offset[16] = {0};
-    snprintf(offset, sizeof(offset), "%lu", server->master->offset);
+    snprintf(offset, sizeof(offset), "%ld", server->master->offset);
     char* argv[2];
     argv[0] = "SYNC";
     argv[1] = strdup(offset);
@@ -200,7 +200,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
             {
 
                 // TODO 根据返回FULLSYNC , APPENDSYNC
-
+                
                 // 读取+FULLSYNC
                 // +FULLSYNC\r\n$<length>\r\n<RDB binary data>
 
@@ -333,7 +333,13 @@ void connectMaster()
     // 每次从服务器启动 都要尝试同步
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     // 上次同步位置
-    server->master->offset = get_config(server->configfile, "offset");
+    char *endptr;
+    long offset = -1;
+    if (!string2long(get_config(server->configfile, "offset"), &offset)) {
+        log_error("string2long failed. offset!");
+        update_config(server->configfile, "offset", "-1");
+    }
+    server->master->offset = offset;
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
     if (aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master) == AE_ERROR)
     {

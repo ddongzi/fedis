@@ -46,6 +46,7 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     c->port = port;
     c->name = calloc(1, CLIENT_NAME_MAX);
     c->toclose = 0;
+    c->offset = -1;
     c->multiCmdCount = 0;
     c->multcmds = malloc(sizeof(sds* ) * 10);
     for (int i = 0; i < 10; ++i)

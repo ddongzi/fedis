@@ -9,12 +9,12 @@
  * @copyright Copyright (c) 2025
  *
  */
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <errno.h>
@@ -85,7 +85,7 @@ static int anetSetReuseAddr(int fd)
  * @param [in] fd
  * @return int
  */
-static int anetNonBlock(int fd)
+int anetNonBlock(int fd)
 {
     int flags;
     if ((flags = fcntl(fd, F_GETFL)) == -1)
@@ -107,7 +107,7 @@ static int anetNonBlock(int fd)
  * @param [in] fd
  * @return int
  */
-static int anetEnableTcpNoDelay(int fd)
+int anetEnableTcpNoDelay(int fd)
 {
     int yes = 1;
     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1)

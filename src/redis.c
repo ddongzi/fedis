@@ -28,32 +28,30 @@
 #include "aof.h"
 #include "resp.h"
 #include "ringbuffer.h"
-struct redisServer* server;
+struct redisServer *server;
 
 extern struct RespShared resp;
 
+char *getRoleStr(int role);
 
-
-char* getRoleStr(int role);
-
-static void commandSetProc(redisClient* client);
-static void commandGetProc(redisClient* client);
-static void commandDelProc(redisClient* client);
-static void commandObjectProc(redisClient* client);
-static void commandByeProc(redisClient* client);
-static void commandSlaveofProc(redisClient* client);
-static void commandPingProc(redisClient* client);
-static void commandReplconfProc(redisClient* client);
-static void commandSyncProc(redisClient* client);
-static void commandReplACKProc(redisClient* client);
-static void commandInfoProc(redisClient* client);
-static void commandHeartBeatProc(redisClient* client);
-static void commandSelectProc(redisClient* client);
-static void commandExpireProc(redisClient* client);
-static void commandTtlProc(redisClient* client);
-static void commandMultiProc(redisClient* client);
-static void commandExecProc(redisClient* client);
-static void commandWatchProc(redisClient* client);
+static void commandSetProc(redisClient *client);
+static void commandGetProc(redisClient *client);
+static void commandDelProc(redisClient *client);
+static void commandObjectProc(redisClient *client);
+static void commandByeProc(redisClient *client);
+static void commandSlaveofProc(redisClient *client);
+static void commandPingProc(redisClient *client);
+static void commandReplconfProc(redisClient *client);
+static void commandSyncProc(redisClient *client);
+static void commandReplACKProc(redisClient *client);
+static void commandInfoProc(redisClient *client);
+static void commandHeartBeatProc(redisClient *client);
+static void commandSelectProc(redisClient *client);
+static void commandExpireProc(redisClient *client);
+static void commandTtlProc(redisClient *client);
+static void commandMultiProc(redisClient *client);
+static void commandExecProc(redisClient *client);
+static void commandWatchProc(redisClient *client);
 
 // 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
@@ -62,10 +60,10 @@ redisCommand commandsTable[] = {
     {CMD_WRITE | CMD_MASTER, "DEL", commandDelProc, 2},
     {CMD_READ | CMD_MASTER | CMD_SLAVE, "OBJECT", commandObjectProc, 3},
     {CMD_MASTER | CMD_SLAVE, "BYE", commandByeProc, 1},
-    {CMD_MASTER , "SLAVEOF", commandSlaveofProc, 3},
+    {CMD_MASTER, "SLAVEOF", commandSlaveofProc, 3},
     {CMD_MASTER | CMD_SLAVE, "PING", commandPingProc, 1},
     {CMD_MASTER | CMD_SLAVE, "REPLCONF", commandReplconfProc, 3},
-    {CMD_MASTER | CMD_SLAVE, "SYNC", commandSyncProc, 1},
+    {CMD_MASTER | CMD_SLAVE, "SYNC", commandSyncProc, 2},
     {CMD_MASTER | CMD_SLAVE, "REPLACK", commandReplACKProc, 1},
     {CMD_MASTER | CMD_SLAVE, "INFO", commandInfoProc, 1},
     {CMD_MASTER | CMD_SLAVE, "HEARTBEAT", commandHeartBeatProc, 1},
@@ -77,12 +75,11 @@ redisCommand commandsTable[] = {
     {CMD_MASTER, "WATCH", commandWatchProc, 1},
 };
 
-
 // command dictType
-static unsigned long commandDictHashFunction(const void* key)
+static unsigned long commandDictHashFunction(const void *key)
 {
     unsigned long hash = 5381;
-    const char* str = key;
+    const char *str = key;
     while (*str)
     {
         hash = ((hash << 5) + hash) + *str; // hash * 33 + c
@@ -91,41 +88,41 @@ static unsigned long commandDictHashFunction(const void* key)
     return hash;
 }
 
-static int commandDictKeyCompare(void* privdata, const void* key1, const void* key2)
+static int commandDictKeyCompare(void *privdata, const void *key1, const void *key2)
 {
-    return strcmp((char*)key1, (char*)key2);
+    return strcmp((char *)key1, (char *)key2);
 }
 
-static void commandDictKeyDestructor(void* privdata, void* key)
+static void commandDictKeyDestructor(void *privdata, void *key)
 {
 }
 
-static void commandDictValDestructor(void* privdata, void* val)
+static void commandDictValDestructor(void *privdata, void *val)
 {
-    free((redisCommand*)val);
+    free((redisCommand *)val);
 }
 
-static void* commandDictKeyDup(void* privdata, const void* key)
+static void *commandDictKeyDup(void *privdata, const void *key)
 {
     if (key == NULL)
     {
         return NULL;
     }
-    size_t size = strlen((char*)key);
-    char* res = malloc(size + 1);
+    size_t size = strlen((char *)key);
+    char *res = malloc(size + 1);
     strcpy(res, key);
-    return (void*)res;
+    return (void *)res;
 }
 
-static void* commandDictValDup(void* privdata, const void* obj)
+static void *commandDictValDup(void *privdata, const void *obj)
 {
     if (obj == NULL)
     {
         return NULL;
     }
-    redisCommand* res = malloc(sizeof(redisCommand));
+    redisCommand *res = malloc(sizeof(redisCommand));
     memcpy(res, obj, sizeof(redisCommand));
-    return (void*)res;
+    return (void *)res;
 }
 
 dictType commandDictType = {
@@ -134,8 +131,7 @@ dictType commandDictType = {
     .keyDup = commandDictKeyDup,
     .valDup = commandDictValDup,
     .keyDestructor = commandDictKeyDestructor,
-    .valDestructor = commandDictValDestructor
-};
+    .valDestructor = commandDictValDestructor};
 
 /**
  * @brief 添加全局命令表， 如果命令不支持，在处理时候禁止
@@ -150,16 +146,16 @@ void loadCommands()
     server->commands = dictCreate(&commandDictType, NULL);
     for (int i = 0; i < sizeof(commandsTable) / sizeof(commandsTable[0]); i++)
     {
-        redisCommand* cmd = malloc(sizeof(redisCommand));
+        redisCommand *cmd = malloc(sizeof(redisCommand));
         memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
         dictAdd(server->commands, cmd->name, cmd);
     }
-    char* rolestr = getRoleStr(server->role);
+    char *rolestr = getRoleStr(server->role);
     log_info("Load commands for role %s", rolestr);
     free(rolestr);
 }
 
-void _encodingStr(int encoding, char* buf, int maxlen)
+void _encodingStr(int encoding, char *buf, int maxlen)
 {
     switch (encoding)
     {
@@ -183,7 +179,7 @@ void _encodingStr(int encoding, char* buf, int maxlen)
  * @param client
  * @warning set命令 值必须传入
  */
-void commandSetProc(redisClient* client)
+void commandSetProc(redisClient *client)
 {
     log_debug("Set proc..key: %s", client->argv[1]);
     if (client->argc == 2)
@@ -195,8 +191,8 @@ void commandSetProc(redisClient* client)
     }
     else
     {
-        sds* key = sdsnew(client->argv[1]);
-        robj* v = robjCreateStringObject(client->argv[2]);
+        sds *key = sdsnew(client->argv[1]);
+        robj *v = robjCreateStringObject(client->argv[2]);
         int retcode = dbAdd(client->db, key, v);
         if (retcode == DICT_OK)
         {
@@ -212,10 +208,10 @@ void commandSetProc(redisClient* client)
     }
 }
 
-void commandGetProc(redisClient* client)
+void commandGetProc(redisClient *client)
 {
-    sds* k = sdsnew(client->argv[1]);
-    robj* res = (robj*)dbGet(client->db, k);
+    sds *k = sdsnew(client->argv[1]);
+    robj *res = (robj *)dbGet(client->db, k);
     if (res == NULL)
     {
         addWrite(client, resp.keyNotFound);
@@ -226,9 +222,9 @@ void commandGetProc(redisClient* client)
     }
 }
 
-void commandDelProc(redisClient* client)
+void commandDelProc(redisClient *client)
 {
-    sds* k = sdsnew(client->argv[1]);
+    sds *k = sdsnew(client->argv[1]);
     int retcode = dbDelete(client->db, k);
     if (retcode == DICT_OK)
     {
@@ -241,13 +237,13 @@ void commandDelProc(redisClient* client)
     }
 }
 
-void commandObjectProc(redisClient* client)
+void commandObjectProc(redisClient *client)
 {
-    char* key = client->argv[2];
-    char* op = client->argv[1];
+    char *key = client->argv[2];
+    char *op = client->argv[1];
     if (strcasecmp(op, "ENCODING") == 0)
     {
-        robj* val = dbGet(client->db, sdsnew(key));
+        robj *val = dbGet(client->db, sdsnew(key));
         if (val == NULL)
         {
             addWrite(client, resp.keyNotFound);
@@ -262,13 +258,13 @@ void commandObjectProc(redisClient* client)
     }
 }
 
-void commandByeProc(redisClient* client)
+void commandByeProc(redisClient *client)
 {
     client->toclose = 1;
     addWrite(client, resp.bye);
 }
 
-void masterToSlave(const char* ip, int port)
+void masterToSlave(const char *ip, int port)
 {
     log_info("Master => Slave");
     // TODO
@@ -280,10 +276,10 @@ void masterToSlave(const char* ip, int port)
 }
 
 // 127.0.0.1:6668
-void commandSlaveofProc(redisClient* client)
+void commandSlaveofProc(redisClient *client)
 {
-    char* s = strdup(client->argv[1]);
-    char* ip = strtok(s, ":");
+    char *s = strdup(client->argv[1]);
+    char *ip = strtok(s, ":");
     int port = atoi(strtok(NULL, ":"));
     masterToSlave(ip, port);
 
@@ -291,17 +287,15 @@ void commandSlaveofProc(redisClient* client)
     connectMaster();
 }
 
-
-void commandPingProc(redisClient* client)
+void commandPingProc(redisClient *client)
 {
     // todo replstate要小心设置。
     client->replState = REPL_STATE_MASTER_WAIT_PING;
     addWrite(client, resp.pong);
 }
 
-void commandSyncProc(redisClient* client)
+void commandSyncProc(redisClient *client)
 {
-    // TODO 根据偏移量，来判断进行FULLSYNC, 还是APPENDSYNC
     long offset = atoi(client->argv[1]);
     if (offset == -1)
     {
@@ -309,35 +303,38 @@ void commandSyncProc(redisClient* client)
         client->replState = REPL_STATE_MASTER_SEND_FULLSYNC; // 状态等待clientbuf 发送出FULLSYNC
         addWrite(client, resp.fullsync);
     }
-    if (offset < client->offset)
+    else
     {
-        // 从缺失一部分数据，考虑增量同步
-        client->replState = REPL_STATE_MASTER_SEND_APPENDSYNC; // 状态等待clientbuf 发送出FULLSYNC
-        addWrite(client, resp.appendsync);
-    }
-    if (offset > client->offset)
-    {
-        // unexpected
-        addWrite(client, resp.err);
+        if (offset < client->offset)
+        {
+            // 从缺失一部分数据，考虑增量同步
+            client->replState = REPL_STATE_MASTER_SEND_APPENDSYNC; // 状态等待clientbuf 发送出FULLSYNC
+            addWrite(client, resp.appendsync);
+        }
+        if (offset > client->offset)
+        {
+            // unexpected
+            addWrite(client, resp.err);
+        }
     }
 }
 
-void commandReplconfProc(redisClient* client)
+void commandReplconfProc(redisClient *client)
 {
     //  暂不处理，不影响
     addWrite(client, resp.ok);
     client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
 }
 
-void commandReplACKProc(redisClient* client)
+void commandReplACKProc(redisClient *client)
 {
     client->lastinteraction = server->unixtime;
     addWrite(client, resp.ok);
 }
 
-char* getRoleStr(int role)
+char *getRoleStr(int role)
 {
-    char* buf = malloc(16);
+    char *buf = malloc(16);
     switch (role)
     {
     case REDIS_CLUSTER_MASTER:
@@ -356,12 +353,11 @@ char* getRoleStr(int role)
     return buf;
 }
 
-
-void generateInfoRespContent(int* argc, char** argv[])
+void generateInfoRespContent(int *argc, char **argv[])
 {
     assert(server->role == REDIS_CLUSTER_MASTER);
-    listNode* node;
-    redisClient* c;
+    listNode *node;
+    redisClient *c;
 
     *argc = 2; // runid, role
     // slaves
@@ -376,7 +372,7 @@ void generateInfoRespContent(int* argc, char** argv[])
         node = node->next;
     }
 
-    *argv = malloc(*argc * sizeof(char*));
+    *argv = malloc(*argc * sizeof(char *));
     char buf[REDIS_MAX_STRING] = {0};
     size_t len = 0;
     int argi = 0;
@@ -388,7 +384,7 @@ void generateInfoRespContent(int* argc, char** argv[])
     argi++;
 
     // 2. role
-    char* rolestr = getRoleStr(server->role);
+    char *rolestr = getRoleStr(server->role);
     len = snprintf(buf, REDIS_MAX_STRING, "role:%s", rolestr);
     (*argv)[argi] = malloc(len + 1);
     strncpy((*argv)[argi], buf, len + 1);
@@ -404,8 +400,7 @@ void generateInfoRespContent(int* argc, char** argv[])
         if (c->flags == REDIS_CLIENT_SLAVE)
         {
             len = snprintf(buf, REDIS_MAX_STRING, "slave%d:ip=%s,port=%d,state=online",
-                           slavei, c->ip, c->port
-            );
+                           slavei, c->ip, c->port);
             (*argv)[argi] = malloc(len + 1);
             strncpy((*argv)[argi], buf, len + 1);
             memset(buf, 0, REDIS_MAX_STRING);
@@ -416,25 +411,25 @@ void generateInfoRespContent(int* argc, char** argv[])
     }
 }
 
-void commandInfoProc(redisClient* client)
+void commandInfoProc(redisClient *client)
 {
-    char** argv;
+    char **argv;
     int argc;
     generateInfoRespContent(&argc, &argv);
-    char* res = respEncodeArrayString(argc, argv);
+    char *res = respEncodeArrayString(argc, argv);
     log_debug("INFO PROC: res : %s", res);
     addWrite(client, res);
 }
 
-void commandHeartBeatProc(redisClient* client)
+void commandHeartBeatProc(redisClient *client)
 {
     addWrite(client, resp.ok);
 }
 
-void commandSelectProc(redisClient* client)
+void commandSelectProc(redisClient *client)
 {
     //
-    char* s = client->argv[1];
+    char *s = client->argv[1];
     long dbid;
     if (!string2long(s, &dbid))
     {
@@ -455,10 +450,10 @@ void commandSelectProc(redisClient* client)
  * 秒为单位
  * @param client
  */
-void commandExpireProc(redisClient* client)
+void commandExpireProc(redisClient *client)
 {
-    sds* key = sdsnew(client->argv[1]);
-    char* expire = client->argv[2]; //
+    sds *key = sdsnew(client->argv[1]);
+    char *expire = client->argv[2]; //
     long expireat;
     if (string2long(expire, &expireat))
     {
@@ -479,9 +474,9 @@ void commandExpireProc(redisClient* client)
     }
 }
 
-void commandTtlProc(redisClient* client)
+void commandTtlProc(redisClient *client)
 {
-    sds* key = sdsnew(client->argv[1]);
+    sds *key = sdsnew(client->argv[1]);
     if (dictContains(server->db->expires, key))
     {
         long ttl = dbGetTTL(client->db, key);
@@ -495,13 +490,13 @@ void commandTtlProc(redisClient* client)
     }
 }
 
-void commandMultiProc(redisClient* client)
+void commandMultiProc(redisClient *client)
 {
     client->flags |= REDIS_MULTI;
     addWrite(client, resp.ok);
 }
 
-void commandExecProc(redisClient* client)
+void commandExecProc(redisClient *client)
 {
     // 清除multi状态 进入 exec状态
     client->flags &= ~REDIS_MULTI;
@@ -516,7 +511,7 @@ void commandExecProc(redisClient* client)
         // 执行事务队列的命令
         for (int i = 0; i < client->multiCmdCount; ++i)
         {
-            sds* cmd = client->multcmds[i];
+            sds *cmd = client->multcmds[i];
             sdsclear(client->readBuf);
             sdscatsds(client->readBuf, cmd);
             processClientQueryBuf(client);
@@ -535,11 +530,11 @@ void commandExecProc(redisClient* client)
  * 在exec执行时，检查监视的键是否被修改过，如果被修改过，拒绝事务，保证事务安全
  * @param client
  */
-void commandWatchProc(redisClient* client)
+void commandWatchProc(redisClient *client)
 {
     for (int i = 1; i < client->argc; ++i)
     {
-        sds* key = sdsnew(client->argv[i]);
+        sds *key = sdsnew(client->argv[i]);
         dbAddWatch(client->db, key, client);
     }
     addWrite(client, resp.ok);
@@ -561,25 +556,30 @@ void appendServerSaveParam(time_t sec, int changes)
 void initServerConfig()
 {
     // 加载配置文件必要参数
-    char* role = get_config(server->configfile,"role");
-    if (!strncasecmp(role, "sentinel", 8)) server->role = REDIS_CLUSTER_SENTINEL;
-    if (!strncasecmp(role, "master", 6)) server->role = REDIS_CLUSTER_MASTER;
-    if (!strncasecmp(role, "slave", 5)) server->role = REDIS_CLUSTER_SLAVE;
-    char* port = get_config(server->configfile,"port");
+    char *role = get_config(server->configfile, "role");
+    if (!strncasecmp(role, "sentinel", 8))
+        server->role = REDIS_CLUSTER_SENTINEL;
+    if (!strncasecmp(role, "master", 6))
+        server->role = REDIS_CLUSTER_MASTER;
+    if (!strncasecmp(role, "slave", 5))
+        server->role = REDIS_CLUSTER_SLAVE;
+    char *port = get_config(server->configfile, "port");
     server->port = atoi(port);
-    char* consistency = get_config(server->configfile,"consistency");
-    if (!strncasecmp(consistency, "rdb", 3)) server->rdbOn = true;
-    if (!strncasecmp(consistency, "aof", 3)) server->aofOn = true;
-    char* dbnum = get_config(server->configfile,"dbnum");
+    char *consistency = get_config(server->configfile, "consistency");
+    if (!strncasecmp(consistency, "rdb", 3))
+        server->rdbOn = true;
+    if (!strncasecmp(consistency, "aof", 3))
+        server->aofOn = true;
+    char *dbnum = get_config(server->configfile, "dbnum");
     server->dbnum = atoi(dbnum);
-    char* rdbfile = get_config(server->configfile,"rdb_file");
+    char *rdbfile = get_config(server->configfile, "rdb_file");
     server->rdbfile = fullPath(rdbfile);
 
     if (server->role & REDIS_CLUSTER_SLAVE)
     {
         // 加载master
-        char* master = get_config(server->configfile,"master");
-        char* ip = strtok(master, ":");
+        char *master = get_config(server->configfile, "master");
+        char *ip = strtok(master, ":");
         int port = atoi(strtok(NULL, ":"));
         server->masterhost = ip;
         server->masterport = port;
@@ -591,14 +591,13 @@ void initServerConfig()
     server->saveParams = NULL;
     appendServerSaveParam(900, 1);
     appendServerSaveParam(300, 10000);
-    appendServerSaveParam(10, 1); //10秒内修改一次
+    appendServerSaveParam(10, 1); // 10秒内修改一次
 
     server->maxclients = REDIS_MAX_CLIENTS;
     loadCommands();
 
     log_debug("√ init server config.  ");
 }
-
 
 void updateServerTime()
 {
@@ -609,13 +608,13 @@ void updateServerTime()
 void closeClients()
 {
     // 构造关闭链表
-    listNode* node = listHead(server->clients);
-    redisClient* client;
-    listNode* next = NULL;
+    listNode *node = listHead(server->clients);
+    redisClient *client;
+    listNode *next = NULL;
     while (node != NULL)
     {
         next = node->next;
-        client = (redisClient*) listNodeValue(node);
+        client = (redisClient *)listNodeValue(node);
         if (client->flags & CLIENT_TO_CLOSE)
         {
             log_debug("have found a client to close !");
@@ -628,7 +627,7 @@ void closeClients()
     node = listHead(server->clientsToClose);
     while (node)
     {
-        redisClient* client = node->value;
+        redisClient *client = node->value;
         log_debug("Close client [%d]%s:%d", client->fd, client->ip, client->port);
         freeClient(client);
         listDelNode(server->clientsToClose, node);
@@ -646,7 +645,6 @@ void prepareShutdown()
     exit(0);
 }
 
-
 /**
  * @brief 检查处理 socket read/recv后
  *
@@ -654,7 +652,7 @@ void prepareShutdown()
  * @param [in] n nread或者nwrite
  * @return 如果检查后需要关闭对端，返回false
  */
-bool checkSockReadWrite(redisClient* c, int n)
+bool checkSockReadWrite(redisClient *c, int n)
 {
     if (n == 0)
     {
@@ -679,9 +677,9 @@ bool checkSockReadWrite(redisClient* c, int n)
  * @param [in] fd
  * @param [in] privdata
  */
-void sentinelReadInfo(aeEventLoop* el, int fd, void* privdata)
+void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
 {
-    redisClient* client = (redisClient*)privdata;
+    redisClient *client = (redisClient *)privdata;
     char buf[1024] = {0};
     rio r;
     rioInitWithSocket(&r, fd);
@@ -692,7 +690,8 @@ void sentinelReadInfo(aeEventLoop* el, int fd, void* privdata)
         log_debug("Sentinel read info : %s", buf);
         client->lastinteraction = server->unixtime;
         sdsclear(client->readBuf);
-    } else
+    }
+    else
     {
         clientToclose(client);
     }
@@ -705,17 +704,17 @@ void sentinelReadInfo(aeEventLoop* el, int fd, void* privdata)
  * @param [in] id
  * @param [in] clientData
  */
-int sentinelInfoCron(aeEventLoop* eventLoop, long long id, void* clientData)
+int sentinelInfoCron(aeEventLoop *eventLoop, long long id, void *clientData)
 {
     log_info("sentinel info cron.");
     if (server->role == REDIS_CLUSTER_SENTINEL)
     {
         // 定时发送info命令到monitor
-        listNode* node = listHead(server->clients);
+        listNode *node = listHead(server->clients);
 
         while (node)
         {
-            redisClient* client = node->value;
+            redisClient *client = node->value;
             assert(client);
             log_debug("ready info to %s:%d", client->ip, client->port);
             addWrite(node->value, resp.info);
@@ -736,11 +735,11 @@ int sentinelInfoCron(aeEventLoop* eventLoop, long long id, void* clientData)
 void masterCheckSlave()
 {
     // 可能应该单独吧slave放在一个链表
-    listNode* node = listHead(server->clients);
-    redisClient* client;
+    listNode *node = listHead(server->clients);
+    redisClient *client;
     while (node)
     {
-        client = (redisClient*)node->value;
+        client = (redisClient *)node->value;
         if (client->flags & REDIS_CLIENT_SLAVE)
         {
             log_debug("Heartbeat %d", server->unixtime - client->lastinteraction);
@@ -753,9 +752,8 @@ void masterCheckSlave()
         }
         node = node->next;
     }
-
 }
-int masterCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
+int masterCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
 {
     // 检查SAVE条件，执行BGSAVE
     if (server->rdbOn)
@@ -773,7 +771,7 @@ int masterCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
  * @param [in] clientData
  * @return int 周期时间
  */
-int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
+int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
 {
     int period = 3000;
     if (server->role == REDIS_CLUSTER_MASTER)
@@ -797,7 +795,6 @@ int serverCron(struct aeEventLoop* eventLoop, long long id, void* clientData)
     }
     return period;
 }
-
 
 void sigChildHandler(int sig)
 {
@@ -900,7 +897,7 @@ void initServer()
     // sentinel特性，
     if (server->role == REDIS_CLUSTER_SENTINEL)
     {
-        char* monitor = get_config(server->configfile,"monitor");
+        char *monitor = get_config(server->configfile, "monitor");
         assert(monitor != NULL);
         dictType commandDictType = {
             .hashFunction = commandDictHashFunction,
@@ -908,15 +905,14 @@ void initServer()
             .keyDup = commandDictKeyDup,
             .valDup = commandDictValDup,
             .keyDestructor = commandDictKeyDestructor,
-            .valDestructor = commandDictValDestructor
-        };
+            .valDestructor = commandDictValDestructor};
         server->instances = dictCreate(&commandDictType, NULL); // 键是名字，值是client
-        char* name = strtok(monitor, ",");
-        char* host = strtok(NULL, ",");
-        char* port = strtok(NULL, ",");
+        char *name = strtok(monitor, ",");
+        char *host = strtok(NULL, ",");
+        char *port = strtok(NULL, ",");
         int fd = anetTcpConnect(host, atoi(port));
         assert(fd);
-        redisClient* client = redisClientCreate(fd, host, atoi(port));
+        redisClient *client = redisClientCreate(fd, host, atoi(port));
         client->flags = REDIS_CLIENT_MASTER;
         strcpy(client->name, name);
 
@@ -948,14 +944,13 @@ void initServer()
  * @param [in] cmd
  * @return int 支持返回1， 不支持返回0
  */
-int isSupportedCmd(redisClient* c, redisCommand* cmd)
+int isSupportedCmd(redisClient *c, redisCommand *cmd)
 {
     assert(c);
     assert(cmd);
     if (server->role == REDIS_CLUSTER_SLAVE &&
         c->flags == REDIS_CLIENT_NORMAL &&
-        cmd->flags & CMD_WRITE
-    )
+        cmd->flags & CMD_WRITE)
     {
         return 0;
     }
@@ -963,16 +958,16 @@ int isSupportedCmd(redisClient* c, redisCommand* cmd)
     return 1;
 }
 
-redisCommand* lookupCommand(redisClient* c, const char* name)
+redisCommand *lookupCommand(redisClient *c, const char *name)
 {
     assert(c);
     assert(name);
     assert(server->commands);
-    dictIterator* iter = dictGetIterator(server->commands);
-    dictEntry* entry;
+    dictIterator *iter = dictGetIterator(server->commands);
+    dictEntry *entry;
     while ((entry = dictIterNext(iter)) != NULL)
     {
-        redisCommand* cmd = entry->v.val;
+        redisCommand *cmd = entry->v.val;
         assert(cmd);
         if (isSupportedCmd(c, cmd) && strcasecmp(cmd->name, name) == 0)
         {
@@ -990,15 +985,15 @@ redisCommand* lookupCommand(redisClient* c, const char* name)
  *
  * @param [in] s 原封不动的resp字符串
  */
-void commandPropagate(sds* s)
+void commandPropagate(sds *s)
 {
     log_debug("Command propagate !");
     assert(s);
     assert(server);
     assert(server->role == REDIS_CLUSTER_MASTER);
-    redisClient* c;
+    redisClient *c;
     int slaves = 0;
-    listNode* node = listHead(server->clients);
+    listNode *node = listHead(server->clients);
     while (node)
     {
         c = node->value;
@@ -1009,7 +1004,7 @@ void commandPropagate(sds* s)
             // 对端是slave
             log_debug("Propagate to %d slave, [%d]-%s:%d", slaves, c->fd, c->ip, c->port);
             sdscat(c->writeBuf, s->buf);
-            if ( aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readFromClient, c) == AE_ERROR)
+            if (aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readFromClient, c) == AE_ERROR)
             {
                 log_debug("command propagate ae failed! ");
                 clientToclose(c);
@@ -1029,16 +1024,16 @@ void commandPropagate(sds* s)
  * 写命令 , 为watch的客户端 设置dirty标识
  * @param client
  */
-void touchWatchKey(redisClient* client)
+void touchWatchKey(redisClient *client)
 {
-    sds* key = sdsnew(client->argv[1]);
+    sds *key = sdsnew(client->argv[1]);
     if (dbIsWatching(client->db, key))
     {
-        list* clients = dictFetchValue(client->db->watched_keys, key);
-        listNode* node = listHead(clients);
+        list *clients = dictFetchValue(client->db->watched_keys, key);
+        listNode *node = listHead(clients);
         while (node)
         {
-            redisClient* watch_client = listNodeValue(node);
+            redisClient *watch_client = listNodeValue(node);
             watch_client->flags |= REDIS_DIRTY_CAS;
             listDelNode(clients, node);
             node = listHead(clients);
@@ -1048,20 +1043,20 @@ void touchWatchKey(redisClient* client)
 void addRepliBuf(uint8_t buf[], long size)
 {
     log_debug("add repli buf. %lu bytes", size);
-    // TODO 如果readbuf大于最大缓冲. ？
-    ringBufferInQeueueBulk(&server->repli_buffer, buf,size);
+    // FIXME 如果readbuf大于最大缓冲. ？
+    ringBufferEnQeueueBulk(&server->repli_buffer, buf, size);
 }
 /**
  * @brief 调用执行命令。已有argc,argv[]
  *
  * @param [in] c
  */
-void processCommand(redisClient* c)
+void processCommand(redisClient *c)
 {
-    redisCommand* cmd;
+    redisCommand *cmd;
     assert(c);
     // argv[0] 一定是字符串，sds
-    char* cmdname = c->argv[0];
+    char *cmdname = c->argv[0];
     // log_debug("process CMD %s", cmdname);
     cmd = lookupCommand(c, cmdname);
     if (cmd == NULL)
@@ -1102,7 +1097,7 @@ void processCommand(redisClient* c)
     c->argc = 0;
 }
 
-void multiInQueue(redisClient* c)
+void multiInQueue(redisClient *c)
 {
 }
 
@@ -1111,21 +1106,21 @@ void multiInQueue(redisClient* c)
  * @param [in] client
  *
  */
-void processClientQueryBuf(redisClient* client)
+void processClientQueryBuf(redisClient *client)
 {
-    if (client->readBuf == NULL) return;
-    sds* s = (sds*)(client->readBuf);
-    sds* scpy = sdsdump(s);
+    if (client->readBuf == NULL)
+        return;
+    sds *s = (sds *)(client->readBuf);
+    sds *scpy = sdsdump(s);
     int argc;
-    char** argv;
+    char **argv;
     int ret = resp_decode(scpy->buf, &argc, &argv);
     if (ret == 0)
     {
         // 按照命令执行
 
         // 如果处于事务状态，设置事务队列，暂不执行
-        if ((client->flags & REDIS_MULTI)
-            && strncasecmp(argv[0], "exec", 4) != 0)
+        if ((client->flags & REDIS_MULTI) && strncasecmp(argv[0], "exec", 4) != 0)
         {
             // 加入事务队列(即readbuf暂存一条resp)，返回queued
             clientMultiAdd(client);
@@ -1166,9 +1161,9 @@ void processClientQueryBuf(redisClient* client)
  * @param [in] privData
  * @deprecated 逻辑上由readFromClient 统一处理
  */
-void readRespFromClient(aeEventLoop* el, int fd, void* privData)
+void readRespFromClient(aeEventLoop *el, int fd, void *privData)
 {
-    redisClient* client = (redisClient*)privData;
+    redisClient *client = (redisClient *)privData;
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
@@ -1176,7 +1171,8 @@ void readRespFromClient(aeEventLoop* el, int fd, void* privData)
     if (checkSockReadWrite(client, nread))
     {
         log_info("Get RESP from client.  %s", resp_str(buf));
-    } else
+    }
+    else
     {
         log_debug("read resp from client failed!");
         clientToclose(client);
@@ -1195,9 +1191,9 @@ void readRespFromClient(aeEventLoop* el, int fd, void* privData)
  * @param [in] fd
  * @param [in] privData
  */
-void readFromClient(aeEventLoop* el, int fd, void* privData)
+void readFromClient(aeEventLoop *el, int fd, void *privData)
 {
-    redisClient* client = (redisClient*)privData;
+    redisClient *client = (redisClient *)privData;
     char buf[1024] = {0};
     rio r;
     rioInitWithFD(&r, fd);
@@ -1209,7 +1205,8 @@ void readFromClient(aeEventLoop* el, int fd, void* privData)
 
         processClientQueryBuf(client);
         sdsclear(client->readBuf);
-    } else
+    }
+    else
     {
         log_debug("read from client failed");
         clientToclose(client);
@@ -1221,8 +1218,9 @@ void readFromClient(aeEventLoop* el, int fd, void* privData)
  *
  * @param [in] client
  */
-void saveRDBToSlave(redisClient* client)
+void saveRDBToSlave(redisClient *client)
 {
+    log_debug("Will send rdb to slave! %s:%u", client->ip, client->port);
     struct stat st;
     long rdb_len;
     char length_buf[64];
@@ -1272,10 +1270,10 @@ void saveRDBToSlave(redisClient* client)
     log_debug("Send rdb data to slave %d， size:%lld", client->fd, rdb_len);
 }
 
-void sendToClient(aeEventLoop* el, int fd, void* privdata)
+void sendToClient(aeEventLoop *el, int fd, void *privdata)
 {
-    redisClient* client = (redisClient*)privdata;
-    char* msg = client->writeBuf->buf;
+    redisClient *client = (redisClient *)privdata;
+    char *msg = client->writeBuf->buf;
 
     size_t msg_len = sdslen(client->writeBuf);
     ssize_t nwritten;
@@ -1287,7 +1285,6 @@ void sendToClient(aeEventLoop* el, int fd, void* privdata)
         clientToclose(client);
         return;
     }
-
 
     // 更新缓冲区
     if (nwritten == msg_len)
@@ -1316,4 +1313,3 @@ void sendToClient(aeEventLoop* el, int fd, void* privdata)
         aeDeleteFileEvent(el, fd, AE_READABLE); // epoll 删除fd 防止后续epoll一直对他读就绪
     }
 }
-

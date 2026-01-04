@@ -21,6 +21,8 @@
 #define NET_OK 0
 #define NET_ERR -1
 int anetTcpServer(int port, char *bindaddr, int backlog);
+int anetEnableTcpNoDelay(int fd);
+int anetNonBlock(int fd);
 
 // 封装accept，接受TCP连接。服务器初始化时候，会将该处理程序与AE_READABLE关联。创建client实例，注册事件。
 void acceptTcpHandler(aeEventLoop *el, int fd, void* privData);
