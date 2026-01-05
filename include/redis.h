@@ -15,23 +15,24 @@
 #define REDIS_SERVERPORT 6666
 #define REDIS_MAX_CLIENTS 10000
 
-#define REDIS_CLUSTER_MASTER 0
-#define REDIS_CLUSTER_SLAVE 1
-#define REDIS_CLUSTER_SENTINEL 2
+#define REDIS_CLUSTER_MASTER (1<<0)
+#define REDIS_CLUSTER_SLAVE (1<<1)
+#define REDIS_CLUSTER_SENTINEL (1<<2)
+
 
 extern struct redisServer* server;
-
-#define RDB_FILENAME_1 "/home/dong/fedis/data/1.rdb"
-#define RDB_FILENAME_2 "/home/dong/fedis/data/2.rdb"
 
 #define REDIS_SHAREAD_MAX_INT 999
 
 #define REDIS_MAX_STRING 256
 
+#define MASTER_REPLI_RINGBUFFER_SIZE 1024
+
 // TODO 主从同步中， 主维持的buf. 应该作为环形缓冲区。
 
 
-// 命令标志：命令-服务器角色
+// 命令标志：不只有服务器角色，还应该有客户端角色，此后还可能会有更多。
+// 应该修正lookup，给与更多的层次
 #define CMD_MASTER (1<<0)   //      0001 主服务器可以执行
 #define CMD_SLAVE (1<<2)    //      0100 从服务器可以执行
 #define CMD_WRITE (1<<3)    //      1000 数据库写
@@ -79,10 +80,12 @@ struct redisServer {
     aeEventLoop* eventLoop; // 事件循环
 
     // TODO 考虑使用flags标
-    int role; // 角色 REDIS_CLUSTER_
+    int flags; // 角色 REDIS_CLUSTER_
 
     // master 特性
-     RingBuffer repli_buffer;
+    unsigned char repli_buffer[MASTER_REPLI_RINGBUFFER_SIZE];
+    long begin_offset; // 逻辑offset
+    long last_offset; // 逻辑offset
 
     // Slave特性
     redisClient* master; // （从字段）主客户端
@@ -90,7 +93,7 @@ struct redisServer {
     int masterport; // （从字段）主port
     int replState; ///< （从字段）状态: 从服务器维护自己主从复制状态。
     time_t repltimeout; // 心跳检测阈值. 从服务器检测主的阈值
-    unsigned long offset; // 自己的复
+    long offset; // 从服务器记录现在的同步offset。 -1表示还没同步过。0表示还没有增量同步，其他正常
 
     // 模块化
 

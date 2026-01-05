@@ -29,7 +29,9 @@ redisClient* redisFakeClientCreate()
     c->toclose = 0;
     return c;
 }
-
+/**
+ * 默认对端为普通客户端
+ */
 redisClient *redisClientCreate(int fd, char* ip, int port)
 {
     redisClient *c = malloc(sizeof(redisClient));
@@ -46,7 +48,6 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     c->port = port;
     c->name = calloc(1, CLIENT_NAME_MAX);
     c->toclose = 0;
-    c->offset = -1;
     c->multiCmdCount = 0;
     c->multcmds = malloc(sizeof(sds* ) * 10);
     for (int i = 0; i < 10; ++i)

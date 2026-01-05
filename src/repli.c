@@ -44,7 +44,7 @@ void sendPingToMaster()
 void sendSyncToMaster()
 {
     char offset[16] = {0};
-    snprintf(offset, sizeof(offset), "%ld", server->master->offset);
+    snprintf(offset, sizeof(offset), "%ld", server->offset);
     char* argv[2];
     argv[0] = "SYNC";
     argv[1] = strdup(offset);
@@ -155,114 +155,121 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
     assert(nread > 0);
     sdscatlen(c->readBuf, buf, nread);
     
-    // buf内容一定与下面的case开头匹配
-    switch (server->replState) {
-        case REPL_STATE_SLAVE_CONNECTING:
-            {
-                if (strstr(c->readBuf->buf, "PONG") != NULL) {
+    while (sdslen(c->readBuf) > 0)
+    {
+        switch (server->replState) {
+            case REPL_STATE_SLAVE_CONNECTING:
+                {
+                    if (strncmp(c->readBuf->buf, "+PONG\r\n", 7) != 0) {
+                        // 死等正确的响应
+                        break;
+                    }
                     // 收到PONG, 转到REPLCONF
                     server->replState = REPL_STATE_SLAVE_SEND_REPLCONF;
                     log_debug("<< 1. [REPL_STATE_SLAVE_CONNECTING] receive pong. => [REPL_STATE_SLAVE_SEND_REPLCONF]");
-                }
-                if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
-                {
-                    reconnectMaster();
-                }
-                sdsclear(c->readBuf);
-                break;
-            }
-        case REPL_STATE_SLAVE_SEND_REPLCONF:
-            {
-                if (strstr(server->master->readBuf->buf, "+OK")!= NULL) {
-                    // 收到REPLCONF OK, 转到REPLCONF
-                    server->replState = REPL_STATE_SLAVE_SEND_SYNC;
-                    log_debug("<< 2. [REPL_STATE_SLAVE_SEND_REPLCONF] receive REPLCONF OK. => [REPL_STATE_SLAVE_SEND_SYNC]");
-
-                }
-                // 确认主从关系后，应该持久化
-                update_config(server->configfile, "role", "slave");
-                char master[128] = {0};
-                snprintf(master, sizeof(master), "%s:%d", server->masterhost, server->masterport);
-                update_config(server->configfile, "master", master);
-                log_info("Save master relationship!.");
-
-                if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
-                {
-                    reconnectMaster();
-                } else
-                {
-                    sdsclear(c->readBuf);
-                }
-                break;
-            }
-
-        case REPL_STATE_SLAVE_SEND_SYNC:
-            {
-
-                // TODO 根据返回FULLSYNC , APPENDSYNC
-                
-                // 读取+FULLSYNC
-                // +FULLSYNC\r\n$<length>\r\n<RDB binary data>
-
-                char* token = strtok(c->readBuf->buf, "\r\n");
-                if (strcmp(token, "+FULLSYNC") == 0) {
-                    sdsrange(c->readBuf, strlen(token) + 2, sdslen(c->readBuf)-1);
-                    // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态读
-                    server->replState = REPL_STATE_SLAVE_RECEIVE_RDB;
-                    log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_RECEIVE_RDB]");
-                }
-            }
-        case REPL_STATE_SLAVE_RECEIVE_RDB:
-            {
-                // printBuf("$<length>\r\n<RDB DATA> ", c->readBuf->buf, sdslen(c->readBuf));
-                //  $<length>\r\n<RDB DATA>
-                // 1. 因为解析不到一个RESP协议，就一直读直到读完。 即使包括其他RDB外的数据。但我们已知length，就可以读取固定字节数
-                int len = 0;
-                int lenLength = 0;
-                // 特殊用法， %n不消耗，记录消耗的字符数
-                if (sscanf(c->readBuf->buf, "$%d\r\n%n", &len, &lenLength)!= 1) {
-                    log_error("<< 4.[REPL_STATE_SLAVE_RECEIVE_RDB] sscanf failed. Will repl again.  =>[REPL_STATE_SLAVE_CONNECTING]");
-                    // 返回初始状态。重新repl
-                    server->replState = REPL_STATE_SLAVE_CONNECTING;
-                    sdsclear(c->readBuf);
-                } else {
-                    sdsrange(c->readBuf, lenLength, sdslen(c->readBuf) - 1);
-                    log_debug("start transfer ..., len %u", len);
-                    receiveRDBfile(c->readBuf->buf, len);
-                    log_debug("receive finished.");
-                    rdbLoad();
-                    log_debug("rdbload finished.");
-                    server->replState = REPL_STATE_SLAVE_CONNECTED;
-                    log_debug("<< 4. [REPL_STATE_SLAVE_RECEIVE_RDB] finished. => [REPL_STATE_SLAVE_CONNECTED]");
+                    sdsrange(c->readBuf, 7, sdslen(c->readBuf) - 1);
                     if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
                     {
                         reconnectMaster();
-                    } else
-                    {
-                        sdsclear(c->readBuf);
                     }
+                    break;
                 }
+            case REPL_STATE_SLAVE_SEND_REPLCONF:
+                {
+                    if (strncmp(c->readBuf->buf, "+OK\r\n", 5) != 0) {
+                        break;
+                    }
+                    server->replState = REPL_STATE_SLAVE_SEND_SYNC;
+                    log_debug("<< 2. [REPL_STATE_SLAVE_SEND_REPLCONF] receive REPLCONF OK. => [REPL_STATE_SLAVE_SEND_SYNC]");
+
+                    // 确认主从关系后，应该持久化
+                    update_config(server->configfile, "role", "slave");
+                    char master[128] = {0};
+                    snprintf(master, sizeof(master), "%s:%d", server->masterhost, server->masterport);
+                    update_config(server->configfile, "master", master);
+                    log_info("Save master relationship!.");
+                    sdsrange(c->readBuf, 5, sdslen(c->readBuf) - 1);
+                    if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
+                    {
+                        reconnectMaster();
+                    }
+                    break;
+                }
+
+            case REPL_STATE_SLAVE_SEND_SYNC:
+                {
+                    // +FULLSYNC\r\n$<length>\r\n<RDB binary data>
+                    if (strncmp(c->readBuf->buf, resp.fullsync, strlen(resp.fullsync)) == 0) {
+                        sdsrange(c->readBuf, strlen(resp.fullsync), sdslen(c->readBuf)-1);
+                        // 收到FULLSYNC, 后面就跟着RDB文件, 切换传输状态
+                        server->replState = REPL_STATE_SLAVE_RECEIVE_RDB;
+                        log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_RECEIVE_RDB]");
+                    }
+                    if (strncmp(c->readBuf->buf, resp.appendsync, strlen(resp.appendsync)) == 0) {
+                        sdsrange(c->readBuf, strlen(resp.appendsync) + 2, sdslen(c->readBuf)-1);
+                        // 收到APPENDSYNC, 后面就跟着resp命令, 切换传输状态
+                        server->replState = REPL_STATE_MASTER_RECEIVE_APPENDSYNC;
+                        log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_MASTER_RECEIVE_APPENDSYNC]");
+                    }
+                    break;
+                }
+            case REPL_STATE_MASTER_RECEIVE_APPENDSYNC:
+                // 增量同步传来一些resp写命令
+                log_debug("TODO !! Slave append sync ");
                 break;
-            }
-        case REPL_STATE_SLAVE_CONNECTED:
-            if (strstr(c->readBuf->buf, "+OK") != NULL) {
+            case REPL_STATE_SLAVE_RECEIVE_RDB:
+                {
+                    // printBuf("$<length>\r\n<RDB DATA> ", c->readBuf->buf, sdslen(c->readBuf));
+                    //  $<length>\r\n<RDB DATA>
+                    int len = 0;
+                    int lenLength = 0;
+                    if (sscanf(c->readBuf->buf + 1, "%d%n", &len, &lenLength) != 1)
+                    {
+                        // 没有解析到。 重新sync
+                        log_error("<< 4.[REPL_STATE_SLAVE_RECEIVE_RDB] receive failed.Sync again.  =>[REPL_STATE_SLAVE_SEND_SYNC]");
+                        server->replState = REPL_STATE_SLAVE_SEND_SYNC;
+                        sdsclear(c->readBuf);
+                    } else {
+                        sdsrange(c->readBuf, 1 + lenLength + 2, sdslen(c->readBuf) - 1);
+                        log_debug("start transfer ..., len %u", len);
+                        receiveRDBfile(c->readBuf->buf, len);
+                        log_debug("receive finished.");
+                        rdbLoad();
+                        log_debug("rdbload finished.");
+                        server->replState = REPL_STATE_SLAVE_CONNECTED;
+                        log_debug("<< 4. [REPL_STATE_SLAVE_RECEIVE_RDB] finished. => [REPL_STATE_SLAVE_CONNECTED]");
+                        // 更新offset
+                        server->offset = 0;
+                        sdsrange(c->readBuf, len + 2, sdslen(c->readBuf) - 1);
+                        if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
+                        {
+                            reconnectMaster();
+                        } 
+                    }
+                    break;
+                }
+            case REPL_STATE_SLAVE_CONNECTED:
+                if (strncmp(c->readBuf->buf, resp.ok, strlen(resp.ok)) != 0) {
+                    break;
+                }
                 log_debug("<< 5. [REPL_STATE_SLAVE_CONNECTED] receive ok.  Normally slave !! √");
+                sdsrange(c->readBuf, strlen(resp.ok), sdslen(c->readBuf) - 1);
                 if (aeCreateFileEvent(el, fd, AE_READABLE, readFromClient, c) == AE_ERROR)
                 {
                     reconnectMaster();
-                } else
-                {
-                    sdsclear(c->readBuf);
                 }
-            } else
-            {
-                sdsclear(c->readBuf);
-            }
+                break;
+            default:
+                log_error("Unknow state!");
+                break;
+        }
+        // 如果buf残留不能继续读取了，即半包。break 继续读取
+        if (respParse(c->readBuf->buf, c->readBuf->len) == NULL) {
+            
             break;
-        default:
-            break;
+        }
     }
-
+       
     server->master->lastinteraction = server->unixtime;
 }
 
@@ -274,7 +281,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
 int slaveCron(aeEventLoop* eventLoop, long long id, void* clientData)
 {
     // log_debug("Repli Cron.");
-    assert(server->role == REDIS_CLUSTER_SLAVE);
+    assert(server->flags & REDIS_CLUSTER_SLAVE);
     if (server->replState == REPL_STATE_SLAVE_CONNECTED) {
         /*
          * 从主从复制角度来看，我们应该始终假定主是在线的。
@@ -329,7 +336,9 @@ void connectMaster()
     }
 
     int err = 0;
+    server->master->flags &= ~REDIS_CLIENT_NORMAL;
     server->master->flags |= REDIS_CLIENT_MASTER;
+
     // 每次从服务器启动 都要尝试同步
     server->replState = REPL_STATE_SLAVE_CONNECTING;
     // 上次同步位置
@@ -339,7 +348,7 @@ void connectMaster()
         log_error("string2long failed. offset!");
         update_config(server->configfile, "offset", "-1");
     }
-    server->master->offset = offset;
+    server->offset = offset;
     // 不能调换顺序。 epoll一个fd必须先read然后write， 否则epoll_wait监听不到就绪。
     if (aeCreateFileEvent(server->eventLoop, fd, AE_READABLE, repliReadHandler, server->master) == AE_ERROR)
     {
@@ -352,4 +361,17 @@ void connectMaster()
     }
 
     log_debug("Connected Master fd %d", fd);
+}
+/**
+ * 从更新同步的offset
+ * @param len 更新len个字节数据
+ */
+void slaveUpdateOffset(long len)
+{
+    server->offset += len;
+    // 写入config
+    char val[1024] = {0};
+    snprintf(val, sizeof(val) - 1, "%ld", server->offset);
+    update_config(server->configfile, "offset", val);
+    log_debug("slave update offset: %ld, %ld", server->offset, len);
 }

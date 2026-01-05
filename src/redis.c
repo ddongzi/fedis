@@ -55,7 +55,7 @@ static void commandWatchProc(redisClient *client);
 
 // 全局命令表，包含sentinel等所有命令
 redisCommand commandsTable[] = {
-    {CMD_WRITE | CMD_MASTER, "SET", commandSetProc, 3},
+    {CMD_WRITE | CMD_MASTER | CMD_SLAVE, "SET", commandSetProc, 3},
     {CMD_READ | CMD_MASTER | CMD_SLAVE, "GET", commandGetProc, 2},
     {CMD_WRITE | CMD_MASTER, "DEL", commandDelProc, 2},
     {CMD_READ | CMD_MASTER | CMD_SLAVE, "OBJECT", commandObjectProc, 3},
@@ -150,7 +150,7 @@ void loadCommands()
         memcpy(cmd, &commandsTable[i], sizeof(redisCommand));
         dictAdd(server->commands, cmd->name, cmd);
     }
-    char *rolestr = getRoleStr(server->role);
+    char *rolestr = getRoleStr(server->flags);
     log_info("Load commands for role %s", rolestr);
     free(rolestr);
 }
@@ -181,6 +181,7 @@ void _encodingStr(int encoding, char *buf, int maxlen)
  */
 void commandSetProc(redisClient *client)
 {
+  
     log_debug("Set proc..key: %s", client->argv[1]);
     if (client->argc == 2)
     {
@@ -269,7 +270,8 @@ void masterToSlave(const char *ip, int port)
     log_info("Master => Slave");
     // TODO
     assert(server->master == NULL);
-    server->role = REDIS_CLUSTER_SLAVE;
+    server->flags &= ~REDIS_CLUSTER_MASTER;
+    server->flags |= REDIS_CLUSTER_SLAVE;
     server->masterhost = ip;
     server->masterport = port;
     loadCommands();
@@ -297,21 +299,22 @@ void commandPingProc(redisClient *client)
 void commandSyncProc(redisClient *client)
 {
     long offset = atoi(client->argv[1]);
-    if (offset == -1)
+    if (offset == -1 || offset < server->begin_offset)
     {
-        // 第一次连接， 完全同步
+        // 第一次连接 或者 过旧的offset， 完全同步
         client->replState = REPL_STATE_MASTER_SEND_FULLSYNC; // 状态等待clientbuf 发送出FULLSYNC
         addWrite(client, resp.fullsync);
-    }
-    else
+    }  else 
     {
-        if (offset < client->offset)
+        if (offset >= server->begin_offset && offset <= server->last_offset)
         {
+            // 可以增量同步。
             // 从缺失一部分数据，考虑增量同步
             client->replState = REPL_STATE_MASTER_SEND_APPENDSYNC; // 状态等待clientbuf 发送出FULLSYNC
             addWrite(client, resp.appendsync);
+
         }
-        if (offset > client->offset)
+        if (offset > server->last_offset)
         {
             // unexpected
             addWrite(client, resp.err);
@@ -335,27 +338,24 @@ void commandReplACKProc(redisClient *client)
 char *getRoleStr(int role)
 {
     char *buf = malloc(16);
-    switch (role)
-    {
-    case REDIS_CLUSTER_MASTER:
+    if (role & REDIS_CLUSTER_MASTER) {
         sprintf(buf, "master");
-        break;
-    case REDIS_CLUSTER_SENTINEL:
+    } 
+    else if (role & REDIS_CLUSTER_SENTINEL) {
         sprintf(buf, "sentinel");
-        break;
-    case REDIS_CLUSTER_SLAVE:
+    } 
+    else if (role & REDIS_CLUSTER_SLAVE) {
         sprintf(buf, "slave");
-        break;
-    default:
+    } 
+    else {
         sprintf(buf, "unknown");
-        break;
     }
     return buf;
 }
 
 void generateInfoRespContent(int *argc, char **argv[])
 {
-    assert(server->role == REDIS_CLUSTER_MASTER);
+    assert(server->flags & REDIS_CLUSTER_MASTER);
     listNode *node;
     redisClient *c;
 
@@ -384,7 +384,7 @@ void generateInfoRespContent(int *argc, char **argv[])
     argi++;
 
     // 2. role
-    char *rolestr = getRoleStr(server->role);
+    char *rolestr = getRoleStr(server->flags);
     len = snprintf(buf, REDIS_MAX_STRING, "role:%s", rolestr);
     (*argv)[argi] = malloc(len + 1);
     strncpy((*argv)[argi], buf, len + 1);
@@ -558,11 +558,11 @@ void initServerConfig()
     // 加载配置文件必要参数
     char *role = get_config(server->configfile, "role");
     if (!strncasecmp(role, "sentinel", 8))
-        server->role = REDIS_CLUSTER_SENTINEL;
+        server->flags |= REDIS_CLUSTER_SENTINEL;
     if (!strncasecmp(role, "master", 6))
-        server->role = REDIS_CLUSTER_MASTER;
+        server->flags |= REDIS_CLUSTER_MASTER;
     if (!strncasecmp(role, "slave", 5))
-        server->role = REDIS_CLUSTER_SLAVE;
+        server->flags |= REDIS_CLUSTER_SLAVE;
     char *port = get_config(server->configfile, "port");
     server->port = atoi(port);
     char *consistency = get_config(server->configfile, "consistency");
@@ -575,7 +575,7 @@ void initServerConfig()
     char *rdbfile = get_config(server->configfile, "rdb_file");
     server->rdbfile = fullPath(rdbfile);
 
-    if (server->role & REDIS_CLUSTER_SLAVE)
+    if (server->flags & REDIS_CLUSTER_SLAVE)
     {
         // 加载master
         char *master = get_config(server->configfile, "master");
@@ -707,7 +707,7 @@ void sentinelReadInfo(aeEventLoop *el, int fd, void *privdata)
 int sentinelInfoCron(aeEventLoop *eventLoop, long long id, void *clientData)
 {
     log_info("sentinel info cron.");
-    if (server->role == REDIS_CLUSTER_SENTINEL)
+    if (server->flags & REDIS_CLUSTER_SENTINEL)
     {
         // 定时发送info命令到monitor
         listNode *node = listHead(server->clients);
@@ -774,11 +774,11 @@ int masterCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
 int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
 {
     int period = 3000;
-    if (server->role == REDIS_CLUSTER_MASTER)
+    if (server->flags & REDIS_CLUSTER_MASTER)
     {
         period = masterCron(eventLoop, id, clientData);
     }
-    if (server->role == REDIS_CLUSTER_SLAVE)
+    if (server->flags & REDIS_CLUSTER_SLAVE)
     {
         period = slaveCron(eventLoop, id, clientData);
     }
@@ -895,7 +895,7 @@ void initServer()
     log_debug(" create time event for serverCron");
 
     // sentinel特性，
-    if (server->role == REDIS_CLUSTER_SENTINEL)
+    if (server->flags& REDIS_CLUSTER_SENTINEL)
     {
         char *monitor = get_config(server->configfile, "monitor");
         assert(monitor != NULL);
@@ -929,35 +929,46 @@ void initServer()
         aof_init();
         aof_load();
     }
-
+    // master维持的复制积压缓冲区
+    memset(server->repli_buffer, 0, MASTER_REPLI_RINGBUFFER_SIZE);
+    server->begin_offset = 0;
+    server->last_offset = 0;
+    
     //
-    if (server->role & REDIS_CLUSTER_SLAVE)
+    if (server->flags & REDIS_CLUSTER_SLAVE)
     {
         connectMaster();
     }
-    log_info("√ server init finished.  ROLE:%s.", getRoleStr(server->role));
+    log_info("√ server init finished.  ROLE:%s.", getRoleStr(server->flags));
 }
 
 /**
- * @brief 1. 从服务器拒绝执行来自普通客户端的写命令
+ * @brief server, client 匹配
  *
- * @param [in] cmd
+ * @param client
+ * @param cmd
  * @return int 支持返回1， 不支持返回0
  */
 int isSupportedCmd(redisClient *c, redisCommand *cmd)
 {
     assert(c);
     assert(cmd);
-    if (server->role == REDIS_CLUSTER_SLAVE &&
-        c->flags == REDIS_CLIENT_NORMAL &&
-        cmd->flags & CMD_WRITE)
+    if ((server->flags & REDIS_CLUSTER_SLAVE) &&
+        (c->flags & REDIS_CLIENT_NORMAL) &&
+        (cmd->flags & CMD_WRITE))
     {
+        // 从服务器不支持来自普通客户端的写命令
         return 0;
     }
 
     return 1;
 }
-
+/**
+ * 查询命令, 命令权限控制
+ * @param client
+ * @param name
+ * @return 如果不可以，返回null
+ */
 redisCommand *lookupCommand(redisClient *c, const char *name)
 {
     assert(c);
@@ -990,7 +1001,7 @@ void commandPropagate(sds *s)
     log_debug("Command propagate !");
     assert(s);
     assert(server);
-    assert(server->role == REDIS_CLUSTER_MASTER);
+    assert(server->flags & REDIS_CLUSTER_MASTER);
     redisClient *c;
     int slaves = 0;
     listNode *node = listHead(server->clients);
@@ -1002,8 +1013,8 @@ void commandPropagate(sds *s)
         {
             slaves++;
             // 对端是slave
-            log_debug("Propagate to %d slave, [%d]-%s:%d", slaves, c->fd, c->ip, c->port);
             sdscat(c->writeBuf, s->buf);
+            log_debug("Propagate to %d slave, [%d]-%s:%d, %d bytes", slaves, c->fd, c->ip, c->port, c->writeBuf->len);
             if (aeCreateFileEvent(server->eventLoop, c->fd, AE_READABLE, readFromClient, c) == AE_ERROR)
             {
                 log_debug("command propagate ae failed! ");
@@ -1040,11 +1051,33 @@ void touchWatchKey(redisClient *client)
         }
     }
 }
+/**
+ * [Master]添加到环形积压缓冲区，更新主的offset
+ */
 void addRepliBuf(uint8_t buf[], long size)
 {
     log_debug("add repli buf. %lu bytes", size);
-    // FIXME 如果readbuf大于最大缓冲. ？
-    ringBufferEnQeueueBulk(&server->repli_buffer, buf, size);
+    // 数据在 begin_index - last_index之间
+    long last_index = (server->last_offset + MASTER_REPLI_RINGBUFFER_SIZE) % MASTER_REPLI_RINGBUFFER_SIZE;
+    long begin_index = (server->begin_offset + MASTER_REPLI_RINGBUFFER_SIZE) % MASTER_REPLI_RINGBUFFER_SIZE;
+    
+    if (last_index + size >= MASTER_REPLI_RINGBUFFER_SIZE) {
+        // 回环覆盖
+        long n = MASTER_REPLI_RINGBUFFER_SIZE - last_index - 1;
+        memcpy(server->repli_buffer + last_index + 1, buf, n);
+        memcpy(server->repli_buffer, buf + n, size - n);
+        if (begin_index < size - n )
+            // 如果溢出，移动旧offset
+            server->begin_offset += size -n - begin_index;
+    } else {
+        // 
+        memcpy(server->repli_buffer + last_index + 1, buf, size);
+    }
+    server->last_offset += size;
+}
+void checkProcCanDo()
+{
+    
 }
 /**
  * @brief 调用执行命令。已有argc,argv[]
@@ -1067,7 +1100,9 @@ void processCommand(redisClient *c)
     else
     {
         // 写命令写入aof
-        if (!(c->flags & REDIS_CLIENT_FAKE) && server->aofOn && (cmd->flags & CMD_WRITE))
+        if (!(c->flags & REDIS_CLIENT_FAKE) && 
+            server->aofOn &&
+              (cmd->flags & CMD_WRITE))
         {
             sdscatsds(server->aof.active_buf, c->readBuf);
         }
@@ -1083,10 +1118,21 @@ void processCommand(redisClient *c)
             touchWatchKey(c);
         }
     }
-    if (cmd && (cmd->flags & CMD_WRITE) && server->role == REDIS_CLUSTER_MASTER)
+    if (cmd && 
+        (cmd->flags & CMD_WRITE) && 
+        (server->flags & REDIS_CLUSTER_MASTER))
     {
+        // 命令添加到缓冲区
         addRepliBuf(c->readBuf->buf, c->readBuf->len);
+        // 主服务器对 写命令进行传播
         commandPropagate(c->readBuf);
+    }
+    if (cmd && 
+            (cmd->flags & CMD_WRITE) && 
+            (server->flags & REDIS_CLUSTER_SLAVE))
+    {
+        // 写命令来自主传播，更新自己的offset
+        slaveUpdateOffset(c->readBuf->len);
     }
     // log_debug("Process ok , clear!");
     sdsclear(c->readBuf);
@@ -1139,11 +1185,12 @@ void processClientQueryBuf(redisClient *client)
             log_debug("process client query buf ae failed!!");
             clientToclose(client);
         }
+    
     }
     else if (*scpy->buf == '+' || *scpy->buf == '-')
     {
         // 按照响应执行
-        log_info("Get RESP from client %s", resp_str(scpy->buf));
+        // log_info("Get RESP from client %s", resp_str(scpy->buf));
         // slave从 会在这里收到响应。
         if (client->flags & REDIS_CLIENT_MASTER)
         {
@@ -1201,9 +1248,8 @@ void readFromClient(aeEventLoop *el, int fd, void *privData)
     if (checkSockReadWrite(client, nread))
     {
         sdscat(client->readBuf, buf);
-        // TODO 如果是从服务器接受到了主的命令传播，还要记录offset
-
         processClientQueryBuf(client);
+     
         sdsclear(client->readBuf);
     }
     else
@@ -1266,8 +1312,12 @@ void saveRDBToSlave(redisClient *client)
         log_error("Failed to send RDB FILE to client %d: %s", client->fd, strerror(errno));
         return;
     }
-
-    log_debug("Send rdb data to slave %d， size:%lld", client->fd, rdb_len);
+    // \r\n
+    char crlf[2] ;
+    crlf[0] = '\r';
+    crlf[1] = '\n';
+    rioWrite(&sio, crlf, 2);
+    log_debug("Send rdb data to slave %d, size:%ld", client->fd, rdb_len);
 }
 
 void sendToClient(aeEventLoop *el, int fd, void *privdata)

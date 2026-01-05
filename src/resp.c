@@ -291,7 +291,7 @@ static char* find_line_end(char* buf, size_t len)
  * 从buf开头识别一个resp字符串。
  * @param buf
  * @param len
- * @return 指向最终位置\n。 如果识别不出来 就是NULL
+ * @return 指向最终位置\\n。 如果识别不出来 就是NULL
  */
 char* respParse(char* buf, size_t len)
 {
@@ -299,7 +299,6 @@ char* respParse(char* buf, size_t len)
     char type = buf[0];
     char* first_crlf = find_line_end(buf, len);
     if (first_crlf == NULL) return NULL;
-
     switch (type)
     {
     case '+':
@@ -339,4 +338,5 @@ char* respParse(char* buf, size_t len)
     default:
         break;
     }
+
 }

@@ -23,4 +23,5 @@ bool ringBufferDequeueBulk(RingBuffer* rb, uint8_t data[], long size);
 bool ringBufferEnQeueueBulk(RingBuffer* rb, uint8_t data[], long size);
 bool ringBufferEnQeueue(RingBuffer* rb, uint8_t data);
 
+// TODO 增加满了 覆盖写入
 #endif
