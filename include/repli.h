@@ -1,7 +1,7 @@
 #ifndef REPLI_H
 #define REPLI_H
 
-#define MASTER_SLAVE_TIMEOUT 20 // 从<=>主都采用这个
+#define MASTER_SLAVE_TIMEOUT 60 // 从<=>主都采用这个
 
 // 主从复制状态
 enum REPL_STATE {
@@ -11,7 +11,7 @@ enum REPL_STATE {
     REPL_STATE_SLAVE_SEND_REPLCONF,   // 发送port号
     REPL_STATE_SLAVE_SEND_SYNC,    // 发送SYNC请求
     REPL_STATE_SLAVE_RECEIVE_RDB,      // 接收RDB文件
-    REPL_STATE_MASTER_RECEIVE_APPENDSYNC, // 接受增量同步命令
+    REPL_STATE_SLAVE_RECEIVE_APPENDSYNC, // 接受增量同步命令
     REPL_STATE_SLAVE_RECEIVE_BUF,      // 增量接受字节数据 内容位一些RESP命令
     REPL_STATE_SLAVE_CONNECTED,      // 等待REPL ACK返回
     // 主服务器维护主向从的状态。

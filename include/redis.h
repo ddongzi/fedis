@@ -84,8 +84,8 @@ struct redisServer {
 
     // master 特性
     unsigned char repli_buffer[MASTER_REPLI_RINGBUFFER_SIZE];
-    long begin_offset; // 逻辑offset
-    long last_offset; // 逻辑offset
+    unsigned long begin_offset; // 逻辑offset
+    unsigned long last_offset; // 逻辑offset. 最新的offset = last_offset - 1
 
     // Slave特性
     redisClient* master; // （从字段）主客户端

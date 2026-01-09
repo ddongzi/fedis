@@ -10,6 +10,7 @@ struct RespShared {
     char* invalidCommand;
     char* fullsync;
     char* appendsync;
+    char* nosync;
     char* dupkey;
     char* ping;
     char* info;

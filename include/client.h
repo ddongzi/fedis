@@ -74,6 +74,8 @@ void freeClient(redisClient* client);
 void clientToclose(redisClient* c);
 
 void addWrite(redisClient* client, char* s) ;
+void addWriteBuf(redisClient* client, char* buf, size_t len);
+
 void readToReadBuf(redisClient* client) ;
 void clientMultiAdd(redisClient* c);
 #endif

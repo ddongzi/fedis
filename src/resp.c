@@ -40,6 +40,7 @@ struct RespShared resp = {
     .invalidCommand = "-Invalid command\r\n",
     .fullsync = "+FULLSYNC\r\n",
     .appendsync = "+APPENDSYNC\r\n",
+    .nosync = "+NOSYNC\r\n",
     .dupkey = "-ERR:Duplicate key\r\n",
     .ping = "*1\r\n$4\r\nPING\r\n",
     .info = "*1\r\n$4\r\nINFO\r\n",

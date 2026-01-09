@@ -1,11 +1,3 @@
-set k1 v1
-exec
-MULTI
-set k3 v3
-MULTI
-set k2 v2
-exec
-multi
 set k3 v3
 exec
 multi
@@ -98,3 +90,11 @@ get name
 set name zyd
 l
 get name
+set ko ko
+set japan ok
+set china ok
+set china ==
+set aus io
+set aup lp
+set yui iop
+get yui

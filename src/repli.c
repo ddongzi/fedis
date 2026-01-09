@@ -52,14 +52,18 @@ void sendSyncToMaster()
     //  SYNC <OFFSET>
     addWrite(server->master, buf);
     free(buf);
+    log_debug("Slave -> sync %ld", server->offset);
 }
 
 void sendReplAckToMaster()
 {
-    char* argv[] = {"REPLACK"};
-    char* buf = respEncodeArrayString(1, argv);
-    addWrite(server->master, buf);
-    free(buf);
+    char* argv[2];
+    argv[0] = "REPLACK";
+    char buf[1024];
+    snprintf(buf, sizeof(buf), "%ld", server->offset);
+    argv[1] = strdup(buf);
+    addWrite(server->master, respEncodeArrayString(2, argv));
+    log_debug("Send replack(heartbeat) %ld", server->offset);
 }
 
 void sendReplconfToMaster()
@@ -74,7 +78,28 @@ void sendReplconfToMaster()
     free(portstr);
     free(buf);
 }
-
+/** 
+ * 做增量同步
+ * 参考使用fake加载aof
+ */
+void doAppendSync()
+{
+    log_debug("do append sync");
+    sds* sbuf = server->master->readBuf;
+    long oldlen = sdslen(sbuf);
+    redisClient* fkc = redisFakeClientCreate();
+    // 从buf中读取一些完整的resp
+    char* endptr;
+    while (( endptr = respParse(sbuf->buf, sbuf->len)) != NULL)
+    {
+        sdscatlen(fkc->readBuf, sbuf->buf, endptr - sbuf->buf + 1);
+        // 找到了一个有效的resp
+        processClientQueryBuf(fkc);
+        sdsrange(sbuf, endptr - sbuf->buf + 1, sdslen(sbuf) - 1);
+    }
+    log_debug("do append done");
+    slaveUpdateOffset(server->offset + oldlen - sdslen(sbuf));
+}
 /**
  * @brief 从服务器的 主fd写处理
  * 
@@ -206,16 +231,25 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                         log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_SLAVE_RECEIVE_RDB]");
                     }
                     if (strncmp(c->readBuf->buf, resp.appendsync, strlen(resp.appendsync)) == 0) {
-                        sdsrange(c->readBuf, strlen(resp.appendsync) + 2, sdslen(c->readBuf)-1);
+                        sdsrange(c->readBuf, strlen(resp.appendsync), sdslen(c->readBuf)-1);
                         // 收到APPENDSYNC, 后面就跟着resp命令, 切换传输状态
-                        server->replState = REPL_STATE_MASTER_RECEIVE_APPENDSYNC;
-                        log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive FULLSYNC. => [REPL_STATE_MASTER_RECEIVE_APPENDSYNC]");
+                        server->replState = REPL_STATE_SLAVE_RECEIVE_APPENDSYNC;
+                        log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive appendSYNC. => [REPL_STATE_SLAVE_RECEIVE_APPENDSYNC]");
+                    }
+                    if (strncmp(c->readBuf->buf, resp.nosync, strlen(resp.nosync)) == 0) {
+                        sdsrange(c->readBuf, strlen(resp.nosync), sdslen(c->readBuf)-1);
+                        // nosync, 不需要同步
+                        server->replState = REPL_STATE_SLAVE_CONNECTED;
+                        log_debug("<< 3. [REPL_STATE_SLAVE_SEND_SYNC] receive NOSYNC. => [REPL_STATE_SLAVE_CONNECTED]");
                     }
                     break;
                 }
-            case REPL_STATE_MASTER_RECEIVE_APPENDSYNC:
-                // 增量同步传来一些resp写命令
-                log_debug("TODO !! Slave append sync ");
+            case REPL_STATE_SLAVE_RECEIVE_APPENDSYNC:
+                // 增量同步传来一些resp写命令, 转为connected状态，正常处理
+                log_debug("appendsync receive %ld bytes", sdslen(c->readBuf));
+                doAppendSync();
+                server->replState = REPL_STATE_SLAVE_CONNECTED;
+                log_debug("<< 4. [REPL_STATE_SLAVE_RECEIVE_APPENDSYNC] => [REPL_STATE_SLAVE_CONNECTED]");
                 break;
             case REPL_STATE_SLAVE_RECEIVE_RDB:
                 {
@@ -239,7 +273,7 @@ void repliReadHandler(aeEventLoop *el, int fd, void* privData)
                         server->replState = REPL_STATE_SLAVE_CONNECTED;
                         log_debug("<< 4. [REPL_STATE_SLAVE_RECEIVE_RDB] finished. => [REPL_STATE_SLAVE_CONNECTED]");
                         // 更新offset
-                        server->offset = 0;
+                        slaveUpdateOffset(0);
                         sdsrange(c->readBuf, len + 2, sdslen(c->readBuf) - 1);
                         if (aeCreateFileEvent(server->eventLoop, fd, AE_WRITABLE, repliWriteHandler, c) == AE_ERROR)
                         {
@@ -288,7 +322,6 @@ int slaveCron(aeEventLoop* eventLoop, long long id, void* clientData)
          * 1. 主服务器要掉线了，那就需要sentinel 故障切换等机制。
          * 2. 由于从心跳断了，主服务器主动断开，从认为主服务器掉线。 需要重连。
          */
-        log_debug("Heartbeat. %d", server->unixtime - server->master->lastinteraction);
         if (aeCreateFileEvent(eventLoop, server->master->fd, AE_WRITABLE, repliWriteHandler, server->master) == AE_ERROR)
         {
             reconnectMaster();
@@ -366,12 +399,12 @@ void connectMaster()
  * 从更新同步的offset
  * @param len 更新len个字节数据
  */
-void slaveUpdateOffset(long len)
+void slaveUpdateOffset(long new_offset)
 {
-    server->offset += len;
+    server->offset = new_offset;
     // 写入config
     char val[1024] = {0};
     snprintf(val, sizeof(val) - 1, "%ld", server->offset);
     update_config(server->configfile, "offset", val);
-    log_debug("slave update offset: %ld, %ld", server->offset, len);
+    log_debug("slave update offset: %ld", server->offset);
 }

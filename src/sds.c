@@ -197,6 +197,7 @@ void sdsrange(sds* ss, int start, int end)
     ss->buf[newLen] = '\0';
     ss->len = newLen;
     ss->free = ss->free + len - newLen ;
+    assert(ss->len >= 0);
     return;
 }
 void sdstrim(sds* sds, const char* s)

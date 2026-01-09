@@ -58,12 +58,20 @@ redisClient *redisClientCreate(int fd, char* ip, int port)
     return c;
 }
 /**
+ * 添加resp字符串
  * @param [in] client
  * @param [in] 为resp字符串
  */
 void addWrite(redisClient* client, char* s)
 {
     sdscat(client->writeBuf, s);
+}
+/**
+ * 添加buf
+ */
+void addWriteBuf(redisClient* client, char* buf, size_t len)
+{
+    sdscatlen(client->writeBuf, buf, len);
 }
 /**
  * @brief 设置client待关闭位。取消epoll

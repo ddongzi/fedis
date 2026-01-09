@@ -299,25 +299,29 @@ void commandPingProc(redisClient *client)
 void commandSyncProc(redisClient *client)
 {
     long offset = atoi(client->argv[1]);
-    if (offset == -1 || offset < server->begin_offset)
+
+    
+    if (offset < 0 || offset < server->begin_offset || offset >= server->last_offset)
     {
-        // 第一次连接 或者 过旧的offset， 完全同步
+        // 第一次连接 或者 过旧的offset， 或者其他， 都全同步
         client->replState = REPL_STATE_MASTER_SEND_FULLSYNC; // 状态等待clientbuf 发送出FULLSYNC
         addWrite(client, resp.fullsync);
     }  else 
     {
-        if (offset >= server->begin_offset && offset <= server->last_offset)
+        if (offset >= server->begin_offset && offset < server->last_offset)
         {
             // 可以增量同步。
             // 从缺失一部分数据，考虑增量同步
-            client->replState = REPL_STATE_MASTER_SEND_APPENDSYNC; // 状态等待clientbuf 发送出FULLSYNC
+            client->replState = REPL_STATE_MASTER_SEND_APPENDSYNC; 
             addWrite(client, resp.appendsync);
-
-        }
-        if (offset > server->last_offset)
+            // 跟着repli_buffer
+            addWriteBuf(client, server->repli_buffer + offset + 1, server->last_offset - offset);
+        }else
         {
-            // unexpected
-            addWrite(client, resp.err);
+            log_error("unknown sync offset!!error!!");
+            exit(EXIT_FAILURE);
+            // 不需要同步
+            addWrite(client, resp.nosync);
         }
     }
 }
@@ -328,6 +332,7 @@ void commandReplconfProc(redisClient *client)
     addWrite(client, resp.ok);
     client->flags = REDIS_CLIENT_SLAVE; // 设置对端为slave
 }
+
 
 void commandReplACKProc(redisClient *client)
 {
@@ -760,7 +765,7 @@ int masterCron(struct aeEventLoop *eventLoop, long long id, void *clientData)
         bgSaveIfNeeded();
     // 主 感知从是否断线了.如果断线就应该清除client了
     masterCheckSlave();
-    return 3000;
+    return 10000;
 }
 
 /**
@@ -1056,8 +1061,7 @@ void touchWatchKey(redisClient *client)
  */
 void addRepliBuf(uint8_t buf[], long size)
 {
-    log_debug("add repli buf. %lu bytes", size);
-    // 数据在 begin_index - last_index之间
+    // 数据在 [begin_index, last_index) 之间
     long last_index = (server->last_offset + MASTER_REPLI_RINGBUFFER_SIZE) % MASTER_REPLI_RINGBUFFER_SIZE;
     long begin_index = (server->begin_offset + MASTER_REPLI_RINGBUFFER_SIZE) % MASTER_REPLI_RINGBUFFER_SIZE;
     
@@ -1074,6 +1078,7 @@ void addRepliBuf(uint8_t buf[], long size)
         memcpy(server->repli_buffer + last_index + 1, buf, size);
     }
     server->last_offset += size;
+    log_debug("add repli buf. %lu bytes. Begin: %ld, Last: %ld", size, server->begin_offset, server->last_offset);
 }
 void checkProcCanDo()
 {
@@ -1132,7 +1137,7 @@ void processCommand(redisClient *c)
             (server->flags & REDIS_CLUSTER_SLAVE))
     {
         // 写命令来自主传播，更新自己的offset
-        slaveUpdateOffset(c->readBuf->len);
+        slaveUpdateOffset(server->offset + c->readBuf->len);
     }
     // log_debug("Process ok , clear!");
     sdsclear(c->readBuf);
@@ -1354,7 +1359,7 @@ void sendToClient(aeEventLoop *el, int fd, void *privdata)
         client->replState = REPL_STATE_MASTER_SEND_RDB;
         saveRDBToSlave(client); // 发送 RDB
     }
-    // TODO 发送 appendSYNC后 继续数据buf数据
+  
     aeDeleteFileEvent(el, fd, AE_WRITABLE); // 普通命令回复结束
     if (client->toclose)
     {

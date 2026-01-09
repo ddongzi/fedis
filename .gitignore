@@ -2,8 +2,6 @@
 **/bin/*
 *.log
 *.out
-../.vscode/*
-.vscode/*
 build/
 cmake-build-valgrind/
 cmake-build-debug/
@@ -11,3 +9,4 @@ lib/
 .idea/
 history.txt
 Testing
+.vscode/
